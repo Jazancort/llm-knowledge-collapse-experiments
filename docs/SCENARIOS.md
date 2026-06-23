@@ -133,3 +133,28 @@ Este documento define a priori como cada cenário de resultado será interpretad
 | 4b (CKA cai cedo) | ≫ 2 | ✓✓ | Muito forte | Submeter com claim forte |
 | 5 (forgetting) | N/A | ✗ | Pivot | Redesenhar ou publicar forgetting |
 | 6 (sem collapse) | N/A | N/A | Inconclusivo | Ajustar agressividade |
+
+---
+
+## Gate Obrigatório: Adapter Health (pré-condição para interpretar M3)
+
+**ANTES de interpretar qualquer resultado de CKA/ESI/accuracy, verificar:**
+
+| Métrica | Condição ideal (Cenário A) | Sinal de alerta (Cenário B) |
+|---|---|---|
+| Effective Rank | Variação < 20% do valor em Gen 0 | Queda > 50% |
+| Spectral Norm | Sem crescimento explosivo (< 3× Gen 0) | Explosão ou colapso |
+
+**Se Cenário A (adapter saudável):** Interpretar CKA/ESI/accuracy normalmente. H1 testável.
+
+**Se Cenário B (rank collapse):** NÃO parar. Reformular:
+- Medir se G1 e G2 diferem no effective rank (se ambos caem = artefato de FT iterativo, não de recursão)
+- Se apenas G1 cai: o rank collapse é parte da cadeia de degradação (dados → adapter → representação → accuracy)
+- Nova pergunta: "Qual é a relação entre entropia dos dados, capacidade do adapter e degradação factual?"
+- Experimento de mitigação posterior: forçar entropia alta (T>1.0, penalties) e ver se H1 se sustenta
+
+**Condição de falha REAL (artigo não publicável como Knowledge Collapse):**
+```
+G1 ≈ G2 em TODAS as métricas (effective rank, CKA, accuracy)
+```
+Nesse caso: tudo é catastrophic forgetting + adapter degeneration. Recursive collapse não detectado.
