@@ -25,7 +25,8 @@ def load_model(model_name: str, quantize_4bit: bool = True):
 
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token
+            tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.padding_side = "left"
 
     return model, tokenizer
 

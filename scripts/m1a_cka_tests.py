@@ -124,7 +124,8 @@ def main():
     )
     tokenizer = AutoTokenizer.from_pretrained(model_name)
     if tokenizer.pad_token is None:
-        tokenizer.pad_token = tokenizer.eos_token
+            tokenizer.pad_token = tokenizer.eos_token
+        tokenizer.padding_side = "left"
     model.eval()
 
     # --- TEST 1: Identity CKA(M, M) ---
