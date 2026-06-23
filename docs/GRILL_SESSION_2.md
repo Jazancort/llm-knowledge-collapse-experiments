@@ -608,3 +608,57 @@ A partir deste ponto, qualquer decisão adicional será tomada com base em DADOS
 **O que NÃO entra no M1A:**
 - H-Neurons, TruthfulQA, dataset drift, temperatura adaptativa, mitigações, novos PEFTs, FFT, logit divergence completa (isso entra no M1B quando já houver 2 gerações para comparar)
 
+---
+
+### D44: RETIRADA — CKA-normalized NÃO será implementado
+
+**Correção:** A decisão D42 (CKA-raw + CKA-normalized) está parcialmente ERRADA. Remover CKA-normalized.
+
+**Motivo:** Z-score por dimensão destrói outlier dimensions que LLMs usam como mecanismos de roteamento. Esmaga sinal semântico real e amplifica ruído em dimensões irrelevantes. Escalonamento anisotrópico causado pelo LoRA É mudança representacional válida — deve ser capturado pelo CKA, não normalizado.
+
+Adicionalmente: CKA Linear já é invariante a escala isotrópica (a centralização dupla H remove translação). Normalizar antes é redundante na melhor das hipóteses e destrutivo na pior.
+
+**Decisão final:** Usar APENAS hidden states originais. Sem Z-score. Sem normalização pré-CKA.
+
+---
+
+### D45: Cast obrigatório para float32 antes de qualquer métrica
+
+**Problema:** Ativações saem em bf16/fp16 (QLoRA). Cálculos de CKA envolvem X^T @ X em matrizes [200, 3072+]. FP16 estoura (max ~65500) → NaN/Inf silenciosos.
+
+**Regra absoluta:**
+
+```python
+# Dentro do hook, após offload:
+tensor_cpu = tensor.cpu().float()  # SEMPRE float32 para métricas
+```
+
+| Contexto | Precisão |
+|---|---|
+| Inferência do modelo | bf16/fp16 (normal) |
+| Cálculo de CKA | float32 obrigatório |
+| Cálculo de SVD (effective rank) | float32 obrigatório |
+| Cálculo de normas | float32 obrigatório |
+| Attention rollout | float32 obrigatório |
+
+---
+
+## M1A v1 — ESPECIFICAÇÃO FINAL CONGELADA
+
+**Data:** 2026-06-23T01:17
+
+Não há mais decisões de design pendentes. Implementar exatamente isto:
+
+1. Forward hooks nas camadas selecionadas (early/middle/late)
+2. Redução imediata na GPU: mean pool (Global) + slice [-5:] (Factual)
+3. CPU offload com cast para float32
+4. Buffer in-memory + flush para disco (Parquet) a cada N amostras
+5. prompt_end_idx pré-calculado na tokenização (chat template aware)
+6. CKA Global (mean pool dos tokens do prompt, sem normalização)
+7. CKA Factual-1, Factual-3, Factual-5 (média dos últimos 1/3/5 tokens)
+8. Attention rollout + ESI (segundo forward pass para modelo 3-4B)
+9. Effective Rank + Spectral Norm + Frobenius Norm (placeholder para pós-LoRA)
+10. Accuracy (exact match) + Confidence (log-prob, entropy)
+11. Calibração: identidade (≈1.0), ruído 1e-5, ruído 1e-4, 1-mini-step real
+12. Probe Set: 200 prompts estratificados (implementar estratificação no M1B, M1A pode usar qualquer 200)
+
