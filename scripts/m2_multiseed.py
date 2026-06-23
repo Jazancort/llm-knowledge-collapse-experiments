@@ -64,8 +64,8 @@ def load_base():
     )
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     if tokenizer.pad_token is None:
-            tokenizer.pad_token = tokenizer.eos_token
-        tokenizer.padding_side = "left"
+        tokenizer.pad_token = tokenizer.eos_token
+    tokenizer.padding_side = "left"
     model.eval()
     return model, tokenizer
 
