@@ -49,7 +49,7 @@ def main():
     if torch.cuda.is_available():
         allocated = torch.cuda.memory_allocated() / 1024**3
         reserved = torch.cuda.memory_reserved() / 1024**3
-        total = torch.cuda.get_device_properties(0).total_mem / 1024**3
+        total = torch.cuda.get_device_properties(0).total_memory / 1024**3
         print(f"  Allocated: {allocated:.2f} GB")
         print(f"  Reserved:  {reserved:.2f} GB")
         print(f"  Total GPU: {total:.2f} GB")
