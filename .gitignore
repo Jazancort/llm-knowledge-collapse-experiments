@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Model checkpoints and outputs (large files)
+outputs/
+logs/
+*.bin
+*.safetensors
+*.gguf
+*.pt
+*.pth
+
+# Data (downloaded at runtime)
+data/train_seed/*.json
+data/evaluation/*.json
+data/probe/*.json
+
+# HuggingFace cache
+.cache/
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/*.ipynb
+
+# Secrets
+.env

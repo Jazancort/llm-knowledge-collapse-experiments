@@ -1,0 +1,22 @@
+esi:
+  alpha: 0.5
+  beta: 0.5
+
+cka:
+  kernel: linear
+  layer_blocks:
+    early: [0, 8]
+    middle: [8, 20]
+    late: [20, 32]
+
+collapse:
+  gc_threshold_pp: 10
+  gfw_sigma_multiplier: 2
+
+fluency:
+  external_model: openai-community/gpt2-medium
+  ngram_size: 4
+
+accuracy:
+  max_answer_tokens: 5
+  prompt_template: "Answer the following question in 5 words or less.\nQuestion: {question}\nAnswer:"
