@@ -662,3 +662,70 @@ Não há mais decisões de design pendentes. Implementar exatamente isto:
 11. Calibração: identidade (≈1.0), ruído 1e-5, ruído 1e-4, 1-mini-step real
 12. Probe Set: 200 prompts estratificados (implementar estratificação no M1B, M1A pode usar qualquer 200)
 
+---
+
+### D46: M0 obrigatório — Introspecção do modelo antes de escrever extractor
+
+**Problema:** O caminho dos módulos varia por arquitetura (Gemma: `model.model.layers` vs `model.language_model.model.layers`, Qwen: `model.model.layers`). Hooks no módulo errado = dados inválidos silenciosamente.
+
+**Decisão:** Antes de implementar qualquer hook, executar:
+
+```python
+model = load_model(...)
+for name, module in model.named_modules():
+    print(name, type(module))
+```
+
+E mapear:
+- Caminho exato para layers (decoder blocks)
+- Número real de camadas
+- Hidden dim real
+- Qual output format (tuple vs tensor)
+- VRAM consumida após carregamento
+
+**Isso define:** quais índices usar para early/middle/late, como acessar os módulos no hook, se cabe na memória com ambos output_hidden_states e output_attentions.
+
+---
+
+### D47: Edge cases no Factual-3/5 — Proteger contra prompts curtos
+
+```python
+start_f3 = max(0, end_idx - 2)
+start_f5 = max(0, end_idx - 4)
+f3 = tensor[i, start_f3:end_idx+1, :].mean(dim=0)  # pad-safe
+f5 = tensor[i, start_f5:end_idx+1, :].mean(dim=0)
+```
+
+---
+
+### D48: Buffer com flush — Implementar desde o início
+
+```python
+MAX_BUFFER_SIZE = 50  # flush a cada 50 amostras
+
+def _maybe_flush(self, layer_idx):
+    if len(self.buffer[layer_idx]["global"]) >= MAX_BUFFER_SIZE:
+        self._flush_to_disk(layer_idx)
+```
+
+---
+
+### D49: Teste de identidade — NÃO usar assert. Registrar e analisar.
+
+Não travar o pipeline com `assert np.isclose(cka, 1.0, atol=1e-4)`. Variações numéricas legítimas (CPU, BLAS, ordem de operações) podem gerar 0.9997. Registrar o valor e analisar post-hoc.
+
+---
+
+### D50: Sequência final de implementação
+
+| Step | Nome | Objetivo | Dependência |
+|---|---|---|---|
+| **M0** | Model Introspection | Carregar modelo, mapear módulos, medir VRAM | Nenhuma |
+| **M1A-a** | Representation Extraction | Hooks + factual tokens + offload + buffer | M0 |
+| **M1A-b** | Metric Validation | CKA(M,M), CKA(M,M+ε), effective rank | M1A-a |
+| **M1A-c** | Accuracy + Confidence | Exact match, log-prob, entropy | M0 |
+| **M1B** | Single Cycle | QLoRA → merge → re-evaluate | M1A completo |
+| **M2** | 3 Generations | Threshold GFW, adapter health, sinal | M1B |
+
+**REGRA:** Não avançar para step N+1 até step N funcionar.
+
