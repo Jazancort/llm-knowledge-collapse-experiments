@@ -166,18 +166,25 @@ def evaluate_questions(model, tokenizer, questions, answers):
 
 
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--seed", type=int, default=15)
+    args = parser.parse_args()
+    run_seed = args.seed
+
     print("=" * 60)
-    print("G2-FULL: 3 GENERATIONS WITH INDEPENDENT REAL DATA SHARDS")
+    print(f"G2-FULL: 3 GENERATIONS WITH INDEPENDENT REAL DATA SHARDS (seed={run_seed})")
     print("=" * 60)
 
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    torch.manual_seed(SEED)
-    np.random.seed(SEED)
+    OUTPUT_DIR_SEED = Path(__file__).parent.parent / "outputs" / f"g2_full_seed{run_seed}"
+    OUTPUT_DIR_SEED.mkdir(parents=True, exist_ok=True)
+    torch.manual_seed(run_seed)
+    np.random.seed(run_seed)
 
-    # Load TriviaQA — use different region for eval/probe to avoid overlap
+    # Load TriviaQA — FIXED shuffle (seed=15) so eval set is always the same
     print("\n[SETUP] Loading TriviaQA...")
     ds = load_dataset("trivia_qa", "rc.nocontext", split="train", trust_remote_code=True)
-    ds = ds.shuffle(seed=SEED)
+    ds = ds.shuffle(seed=15)  # ALWAYS 15 for dataset split consistency
 
     # Shards: 0-2000, 2000-4000, 4000-6000
     # Eval: 6000-6200, Probe: 6200-6300
@@ -247,7 +254,7 @@ def main():
         train_ds.set_format("torch")
 
         args = TrainingArguments(
-            output_dir=str(OUTPUT_DIR / f"gen{gen}_tmp"),
+            output_dir=str(OUTPUT_DIR_SEED / f"gen{gen}_tmp"),
             num_train_epochs=2,
             per_device_train_batch_size=2,
             gradient_accumulation_steps=8,
@@ -256,7 +263,7 @@ def main():
             logging_steps=100,
             save_strategy="no",
             report_to="none",
-            seed=SEED + gen,
+            seed=run_seed + gen,
         )
         trainer = Trainer(
             model=peft_model, args=args, train_dataset=train_ds,
@@ -331,9 +338,9 @@ def main():
         "transitions": transitions,
         "cka_vs_gen0_layer13": {gen: cka_vs_gen0[gen][13] for gen in range(1, NUM_SHARDS + 1)},
     }
-    with open(OUTPUT_DIR / "results.json", "w") as f:
+    with open(OUTPUT_DIR_SEED / "results.json", "w") as f:
         json.dump(results, f, indent=2, default=str)
-    print(f"\n  Saved to {OUTPUT_DIR / 'results.json'}")
+    print(f"\n  Saved to {OUTPUT_DIR_SEED / 'results.json'}")
 
 
 if __name__ == "__main__":
