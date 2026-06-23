@@ -551,3 +551,60 @@ O design teórico E de engenharia está **fechado**. Não há mais decisões pen
 
 **Próximo gargalo:** empírico, não teórico. Rodar M1A.
 
+---
+
+### D42: CKA-raw vs CKA-normalized — Medir ambos
+
+**Problema:** LoRA pode alterar norma/escala das ativações sem mudar orientação geométrica. Se CKA opera sobre representações brutas, mudança de magnitude pode ser confundida com mudança de representação.
+
+**Decisão:** Calcular dois CKAs:
+- **CKA-raw:** sobre hidden states brutos (como implementado no linear_cka atual — já centra por mean, mas não normaliza escala)
+- **CKA-normalized:** sobre hidden states z-score normalizados por dimensão antes do cálculo
+
+Se ambos contam a mesma história: validação cruzada. Se divergem: achado importante (magnitude vs geometria).
+
+Custo: praticamente zero (normalização é O(n)).
+
+---
+
+### D43: Teste de sensibilidade inclui checkpoint real (não apenas ruído gaussiano)
+
+**Problema:** Perturbação gaussiana nos pesos é artificial. Pode produzir resposta diferente da que o treinamento real produz. CKA pode ser sensível a ruído mas insensível a transformações de gradiente.
+
+**Decisão:** Adicionar ao protocolo de sensibilidade:
+
+| Teste | Comparação | O que valida |
+|---|---|---|
+| A | M vs M (identidade) | Instrumentação correta |
+| B | M vs M + N(0, 1e-5) | Sensibilidade mínima |
+| C | M vs M + N(0, 1e-4) | Sensibilidade moderada |
+| D | M vs M pós-1-mini-step (dados reais) | Sensibilidade a transformação REAL |
+
+Se A≈1, B<1, C<B, D<C → métrica calibrada e sensível a mudanças reais.
+Se A≈1, B<1, C<B, D≈A → CKA insensível a training real. Problemático.
+
+---
+
+## DESIGN CONGELADO — NÃO ADICIONAR MAIS NADA
+
+**Data de congelamento definitivo:** 2026-06-23T01:16
+
+A partir deste ponto, qualquer decisão adicional será tomada com base em DADOS do M1A/M2, não em especulação teórica.
+
+**Lista fechada do M1A v1:**
+
+1. Forward hooks com redução imediata (GPU → CPU)
+2. Buffer in-memory + flush para disco a cada N amostras
+3. prompt_end_idx calculado na tokenização (chat template aware)
+4. CKA Global (mean pool de tokens do prompt)
+5. CKA Factual (últimos 1/3/5 tokens, extraídos como slice [-5:])
+6. CKA-raw + CKA-normalized
+7. Attention rollout + ESI
+8. Effective Rank + Spectral Norm + Frobenius Norm (placeholder)
+9. Accuracy (exact match normalizado)
+10. Confidence (avg log-prob + predictive entropy)
+11. Calibração: identidade, perturbação (1e-5, 1e-4), 1-mini-step
+
+**O que NÃO entra no M1A:**
+- H-Neurons, TruthfulQA, dataset drift, temperatura adaptativa, mitigações, novos PEFTs, FFT, logit divergence completa (isso entra no M1B quando já houver 2 gerações para comparar)
+
