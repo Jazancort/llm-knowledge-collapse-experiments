@@ -81,8 +81,8 @@ def evaluate_questions(model, tokenizer, questions, answers):
     return results
 
 
-def train_adapter_on_synthetic(model, tokenizer, synthetic_data):
-    """Train a fresh LoRA adapter on synthetic data. Returns peft_model."""
+def train_adapter_on_synthetic(model, tokenizer, synthetic_data, save_path=None):
+    """Train a fresh LoRA adapter on synthetic data. Optionally save adapter."""
     lora_config = LoraConfig(
         r=16, lora_alpha=32, lora_dropout=0.05,
         target_modules=["q_proj", "v_proj"], task_type="CAUSAL_LM",
@@ -115,6 +115,11 @@ def train_adapter_on_synthetic(model, tokenizer, synthetic_data):
     )
     trainer.train()
     peft_model.eval()
+
+    if save_path:
+        peft_model.save_pretrained(save_path)
+        print(f"    Adapter saved to {save_path}")
+
     return peft_model
 
 
@@ -134,6 +139,17 @@ def main():
 
     k0_indices = audit["correct_indices"]
     print(f"\n  K0 size: {len(k0_indices)} questions (Gen0 correct)")
+
+    # Freeze K0 to file (never recalculate)
+    k0_frozen_path = OUTPUT_DIR / "k0_indices_frozen.json"
+    if not k0_frozen_path.exists():
+        with open(k0_frozen_path, "w") as f:
+            json.dump(k0_indices, f)
+        print(f"  K0 frozen to {k0_frozen_path}")
+    else:
+        with open(k0_frozen_path) as f:
+            k0_indices = json.load(f)
+        print(f"  K0 loaded from frozen file ({len(k0_indices)} items)")
 
     # Load TriviaQA eval set
     print("  Loading TriviaQA...")
@@ -166,22 +182,30 @@ def main():
     print(f"  Global acc: {sum(gen_results_all[0])}/{len(all_questions)} = {sum(gen_results_all[0])/len(all_questions):.1%}")
 
     # Generate synthetic for Gen1
-    print("  Generating synthetic data for Gen1...")
-    synthetic = []
-    for i in range(0, len(train_questions), 8):
-        batch = train_questions[i:i+8]
-        prompts = [tokenizer.apply_chat_template(
-            [{"role": "system", "content": "Answer the following question in 5 words or less."},
-             {"role": "user", "content": q}],
-            tokenize=False, add_generation_prompt=True) for q in batch]
-        inputs = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True, max_length=256)
-        inputs = {k: v.to(model.device) for k, v in inputs.items()}
-        with torch.no_grad():
-            out = model.generate(**inputs, max_new_tokens=30, temperature=0.7, do_sample=True, top_p=0.9)
-        for seq in out:
-            synthetic.append(tokenizer.decode(seq, skip_special_tokens=False))
-        if (i + 8) % 500 == 0:
-            print(f"    {min(i+8, len(train_questions))}/{len(train_questions)}...", flush=True)
+    syn0_path = OUTPUT_DIR / "synthetic_gen0.json"
+    if syn0_path.exists():
+        print("  Loading existing synthetic_gen0...")
+        with open(syn0_path) as f:
+            synthetic = json.load(f)
+    else:
+        print("  Generating synthetic data for Gen1...")
+        synthetic = []
+        for i in range(0, len(train_questions), 8):
+            batch = train_questions[i:i+8]
+            prompts = [tokenizer.apply_chat_template(
+                [{"role": "system", "content": "Answer the following question in 5 words or less."},
+                 {"role": "user", "content": q}],
+                tokenize=False, add_generation_prompt=True) for q in batch]
+            inputs = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True, max_length=256)
+            inputs = {k: v.to(model.device) for k, v in inputs.items()}
+            with torch.no_grad():
+                out = model.generate(**inputs, max_new_tokens=30, temperature=0.7, do_sample=True, top_p=0.9)
+            for seq in out:
+                synthetic.append(tokenizer.decode(seq, skip_special_tokens=False))
+            if (i + 8) % 500 == 0:
+                print(f"    {min(i+8, len(train_questions))}/{len(train_questions)}...", flush=True)
+        with open(syn0_path, "w") as f:
+            json.dump(synthetic, f)
 
     del model
     import gc; gc.collect(); torch.cuda.empty_cache()
@@ -191,7 +215,25 @@ def main():
     for gen in range(1, 4):
         print(f"\n[Gen {gen}] Training + evaluating...")
         model, tokenizer = load_base()
-        peft_model = train_adapter_on_synthetic(model, tokenizer, prev_synthetic)
+
+        adapter_path = OUTPUT_DIR / f"adapter_gen{gen}"
+        synthetic_path = OUTPUT_DIR / f"synthetic_gen{gen-1}.json"
+
+        # Try loading existing adapter
+        if adapter_path.exists():
+            print(f"  Loading saved adapter from {adapter_path}...")
+            from peft import PeftModel as PM
+            peft_model = PM.from_pretrained(model, str(adapter_path))
+            peft_model.eval()
+        else:
+            # Need synthetic data from previous gen
+            if synthetic_path.exists() and prev_synthetic is None:
+                with open(synthetic_path) as f:
+                    prev_synthetic = json.load(f)
+
+            peft_model = train_adapter_on_synthetic(
+                model, tokenizer, prev_synthetic, save_path=str(adapter_path)
+            )
 
         # Evaluate K0
         print(f"  Evaluating K0 ({len(k0_indices)} questions)...")
@@ -206,7 +248,7 @@ def main():
         gen_results_all[gen] = all_res
         print(f"  Global acc: {sum(all_res)}/{len(all_res)} = {sum(all_res)/len(all_res):.1%}")
 
-        # Generate next synthetic
+        # Generate next synthetic (and save it)
         print(f"  Generating synthetic for Gen{gen+1}...")
         new_synthetic = []
         for i in range(0, len(train_questions), 8):
@@ -221,6 +263,11 @@ def main():
                 out = peft_model.generate(**inputs, max_new_tokens=30, temperature=0.7, do_sample=True, top_p=0.9)
             for seq in out:
                 new_synthetic.append(tokenizer.decode(seq, skip_special_tokens=False))
+
+        # Save synthetic
+        syn_save_path = OUTPUT_DIR / f"synthetic_gen{gen}.json"
+        with open(syn_save_path, "w") as f:
+            json.dump(new_synthetic, f)
 
         prev_synthetic = new_synthetic
         del peft_model, model
