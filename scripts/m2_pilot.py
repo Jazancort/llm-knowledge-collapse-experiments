@@ -41,7 +41,7 @@ TRAIN_SIZE = 2000  # Start smaller for pilot (scale to 10k in M3)
 EVAL_SIZE = 200
 PROBE_SIZE = 100
 OUTPUT_DIR = Path(__file__).parent.parent / "outputs" / "m2_pilot"
-SEED = 42
+SEED = 15
 
 NUMBER_WORDS = {
     "zero": "0", "one": "1", "two": "2", "three": "3", "four": "4",
@@ -236,9 +236,58 @@ def cleanup():
     torch.cuda.empty_cache()
 
 
+def save_checkpoint(output_dir, gen, results, synthetic_data, reps):
+    """Save generation checkpoint to disk."""
+    ckpt_dir = output_dir / f"checkpoint_gen{gen}"
+    ckpt_dir.mkdir(parents=True, exist_ok=True)
+
+    with open(ckpt_dir / "results.json", "w") as f:
+        json.dump(results, f, indent=2, default=str)
+
+    with open(ckpt_dir / "synthetic_data.json", "w") as f:
+        json.dump(synthetic_data, f)
+
+    # Save reps as npz
+    rep_data = {}
+    for idx, data in reps.items():
+        rep_data[f"layer{idx}_global"] = data["global"]
+        rep_data[f"layer{idx}_f1"] = data["f1"]
+    np.savez_compressed(ckpt_dir / "representations.npz", **rep_data)
+
+    print(f"  [CHECKPOINT] Saved gen{gen} to {ckpt_dir}", flush=True)
+
+
+def load_checkpoint(output_dir, gen, monitor_layers):
+    """Load checkpoint for a given generation. Returns (results, synthetic_data, reps) or None."""
+    ckpt_dir = output_dir / f"checkpoint_gen{gen}"
+    if not (ckpt_dir / "results.json").exists():
+        return None
+
+    with open(ckpt_dir / "results.json") as f:
+        results = json.load(f)
+
+    with open(ckpt_dir / "synthetic_data.json") as f:
+        synthetic_data = json.load(f)
+
+    npz = np.load(ckpt_dir / "representations.npz")
+    reps = {}
+    for idx in monitor_layers:
+        reps[idx] = {"global": npz[f"layer{idx}_global"], "f1": npz[f"layer{idx}_f1"]}
+
+    return results, synthetic_data, reps
+
+
 def main():
+    import argparse
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--resume", action="store_true", help="Resume from last checkpoint")
+    parser.add_argument("--no-resume", dest="resume", action="store_false")
+    parser.set_defaults(resume=True)
+    args = parser.parse_args()
+
     print("=" * 60)
     print("M2: 3-GENERATION RECURSIVE TRAINING PILOT")
+    print(f"  Seed: {SEED} | Resume: {args.resume}")
     print("=" * 60)
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -260,40 +309,63 @@ def main():
 
     print(f"  Train: {len(train_questions)}, Eval: {len(eval_questions)}, Probe: {len(probe_questions)}")
 
+    # --- Check for existing checkpoints ---
     results = []
+    start_gen = 0
+    gen0_reps = None
+    prev_reps = None
+    prev_synthetic = None
+
+    if args.resume:
+        # Find latest checkpoint
+        for g in range(NUM_GENERATIONS, -1, -1):
+            ckpt = load_checkpoint(OUTPUT_DIR, g, MONITOR_LAYERS)
+            if ckpt is not None:
+                loaded_results, prev_synthetic, prev_reps = ckpt
+                results = loaded_results if isinstance(loaded_results, list) else [loaded_results]
+                # Load gen0 reps if available
+                gen0_ckpt = load_checkpoint(OUTPUT_DIR, 0, MONITOR_LAYERS)
+                if gen0_ckpt:
+                    _, _, gen0_reps = gen0_ckpt
+                start_gen = g + 1
+                print(f"\n  [RESUME] Found checkpoint at gen{g}. Resuming from gen{start_gen}.")
+                break
 
     # --- Gen 0: Base model ---
-    print("\n" + "=" * 60)
-    print("GENERATION 0 (Base Model)")
-    print("=" * 60)
+    if start_gen == 0:
+        print("\n" + "=" * 60)
+        print("GENERATION 0 (Base Model)")
+        print("=" * 60)
 
-    model, tokenizer = load_base_model()
+        model, tokenizer = load_base_model()
 
-    print("  Evaluating accuracy...")
-    gen0_metrics = evaluate_accuracy(model, tokenizer, eval_questions, eval_answers)
-    print(f"  Accuracy: {gen0_metrics['accuracy']:.2%}")
-    print(f"  Log-prob: {gen0_metrics['avg_log_prob']:.4f}")
-    print(f"  Entropy:  {gen0_metrics['avg_entropy']:.4f}")
+        print("  Evaluating accuracy...")
+        gen0_metrics = evaluate_accuracy(model, tokenizer, eval_questions, eval_answers)
+        print(f"  Accuracy: {gen0_metrics['accuracy']:.2%}")
+        print(f"  Log-prob: {gen0_metrics['avg_log_prob']:.4f}")
+        print(f"  Entropy:  {gen0_metrics['avg_entropy']:.4f}")
 
-    print("  Extracting representations...")
-    gen0_reps = extract_representations(model, tokenizer, probe_questions, MONITOR_LAYERS)
+        print("  Extracting representations...")
+        gen0_reps = extract_representations(model, tokenizer, probe_questions, MONITOR_LAYERS)
 
-    print("  Generating synthetic data...")
-    t0 = time.time()
-    synthetic_data = generate_synthetic(model, tokenizer, train_questions)
-    print(f"  Generated {len(synthetic_data)} samples in {time.time()-t0:.0f}s")
+        print("  Generating synthetic data...")
+        t0 = time.time()
+        synthetic_data = generate_synthetic(model, tokenizer, train_questions)
+        print(f"  Generated {len(synthetic_data)} samples in {time.time()-t0:.0f}s")
 
-    results.append({"generation": 0, **gen0_metrics, "adapter": None})
+        gen0_result = {"generation": 0, **gen0_metrics, "adapter": None}
+        results = [gen0_result]
+        prev_reps = gen0_reps
+        prev_synthetic = synthetic_data
 
-    # Save reference reps
-    prev_reps = gen0_reps
-    prev_synthetic = synthetic_data
+        save_checkpoint(OUTPUT_DIR, 0, results, prev_synthetic, gen0_reps)
 
-    del model
-    cleanup()
+        del model
+        cleanup()
+        start_gen = 1
 
     # --- Generations 1-N ---
-    for gen in range(1, NUM_GENERATIONS + 1):
+    for gen in range(start_gen, NUM_GENERATIONS + 1):
         print(f"\n{'=' * 60}")
         print(f"GENERATION {gen}")
         print("=" * 60)
@@ -386,6 +458,9 @@ def main():
 
         prev_reps = gen_reps
         prev_synthetic = new_synthetic
+
+        # Save checkpoint for this generation
+        save_checkpoint(OUTPUT_DIR, gen, results, new_synthetic, gen_reps)
 
         # Cleanup
         del peft_model, trainer, train_ds
