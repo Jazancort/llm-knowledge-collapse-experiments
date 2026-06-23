@@ -175,11 +175,11 @@ def evaluate(model, tokenizer, extractor, probe_set):
         # Disable hooks for generate (avoids index errors on single-token steps)
         extractor.clear()
 
-        # Generate for accuracy
+        # Generate for accuracy (DETERMINISTIC - no sampling noise)
         with torch.no_grad():
             out = model.generate(
-                **inputs, max_new_tokens=20, temperature=0.7, do_sample=True,
-                top_p=0.9, return_dict_in_generate=True, output_scores=True,
+                **inputs, max_new_tokens=20, do_sample=False,
+                return_dict_in_generate=True, output_scores=True,
             )
         gen_ids = out.sequences[0][inputs.input_ids.shape[1]:]
         text = tokenizer.decode(gen_ids, skip_special_tokens=True).strip()
