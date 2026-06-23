@@ -1,11 +1,9 @@
-"""M1A Step 3: Accuracy, Confidence & Fluency Baseline.
+"""M1A Step 3 (corrected): Accuracy, Confidence & Fluency Baseline.
 
-Measures Gen 0 (unmodified model) performance:
-- Factual accuracy (exact match)
-- Confidence (avg log-prob, entropy)
-- Fluency (distinct-4)
-
-This establishes the baseline against which all future generations are compared.
+Fixes from review:
+1. Uses tokenizer.apply_chat_template (model's native format)
+2. Entropy via Categorical distribution (numerically stable, no NaN)
+3. Number words normalized in exact match
 
 Run: uv run python scripts/m1a_baseline.py
 """
@@ -18,6 +16,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import torch
 import numpy as np
+from torch.distributions import Categorical
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 
 
@@ -30,7 +29,7 @@ PROBE_SET = [
     {"question": "What is the largest ocean on Earth?", "answers": ["Pacific Ocean", "Pacific"]},
     {"question": "What year did World War II end?", "answers": ["1945"]},
     {"question": "Who developed the theory of relativity?", "answers": ["Albert Einstein", "Einstein"]},
-    {"question": "What is the smallest prime number?", "answers": ["2"]},
+    {"question": "What is the smallest prime number?", "answers": ["2", "two"]},
     {"question": "What is the capital of Japan?", "answers": ["Tokyo"]},
     {"question": "Who invented the telephone?", "answers": ["Alexander Graham Bell", "Bell"]},
     {"question": "What is the hardest natural substance?", "answers": ["Diamond"]},
@@ -44,9 +43,19 @@ PROBE_SET = [
     {"question": "What is the boiling point of water in Celsius?", "answers": ["100", "100 degrees"]},
 ]
 
+NUMBER_WORDS = {
+    "zero": "0", "one": "1", "two": "2", "three": "3", "four": "4",
+    "five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9",
+    "ten": "10", "eleven": "11", "twelve": "12", "thirteen": "13",
+    "fourteen": "14", "fifteen": "15", "sixteen": "16", "seventeen": "17",
+    "eighteen": "18", "nineteen": "19", "twenty": "20",
+}
+
 
 def normalize_answer(text: str) -> str:
     text = text.lower().strip()
+    for word, digit in NUMBER_WORDS.items():
+        text = re.sub(rf"\b{word}\b", digit, text)
     text = re.sub(r"\b(the|a|an)\b", " ", text)
     text = re.sub(r"[^\w\s]", "", text)
     text = re.sub(r"\s+", " ", text).strip()
@@ -71,7 +80,7 @@ def distinct_n(texts: list[str], n: int = 4) -> float:
 
 def main():
     print("=" * 60)
-    print("M1A STEP 3: ACCURACY & CONFIDENCE BASELINE")
+    print("M1A STEP 3: ACCURACY & CONFIDENCE BASELINE (CORRECTED)")
     print("=" * 60)
 
     model_name = "Qwen/Qwen2.5-1.5B-Instruct"
@@ -89,16 +98,19 @@ def main():
         tokenizer.pad_token = tokenizer.eos_token
     model.eval()
 
-    # Generate answers
-    print(f"\n[2/3] Generating answers for {len(PROBE_SET)} questions...")
-    prompt_template = "Answer the following question in 5 words or less.\nQuestion: {q}\nAnswer:"
+    # Generate answers using proper chat template
+    print(f"\n[2/3] Generating answers ({len(PROBE_SET)} questions, chat template)...")
 
     predictions = []
     all_log_probs = []
     all_entropies = []
 
     for item in PROBE_SET:
-        prompt = prompt_template.format(q=item["question"])
+        messages = [
+            {"role": "system", "content": "Answer the following question in 5 words or less."},
+            {"role": "user", "content": item["question"]},
+        ]
+        prompt = tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
 
         with torch.no_grad():
@@ -116,34 +128,38 @@ def main():
         text = tokenizer.decode(generated_ids, skip_special_tokens=True).strip()
         predictions.append(text)
 
-        # Confidence metrics from scores
+        # Confidence: avg log-prob of generated tokens
         log_probs = []
         entropies = []
         for i, logits in enumerate(outputs.scores):
             if i >= len(generated_ids):
                 break
-            probs = torch.softmax(logits[0].float(), dim=-1)
-            log_p = torch.log_softmax(logits[0].float(), dim=-1)
+            logits_f32 = logits[0].float()
             token_id = generated_ids[i].item()
+
+            # Log-prob of chosen token
+            log_p = torch.log_softmax(logits_f32, dim=-1)
             log_probs.append(log_p[token_id].item())
-            entropy = -(probs * log_p).sum().item()
-            entropies.append(entropy)
+
+            # Entropy via Categorical (numerically stable)
+            ent = Categorical(logits=logits_f32).entropy().item()
+            entropies.append(ent)
 
         if log_probs:
             all_log_probs.append(np.mean(log_probs))
+        if entropies:
             all_entropies.append(np.mean(entropies))
 
     # Evaluate
     print(f"\n[3/3] Results:")
     correct = 0
-    print(f"\n  {'#':<4} {'Correct':<8} {'Prediction':<30} {'Ground Truth'}")
-    print(f"  {'-'*70}")
+    print(f"\n  {'#':<4} {'OK':<4} {'Prediction':<30} {'Ground Truth'}")
+    print(f"  {'-'*68}")
     for i, (pred, item) in enumerate(zip(predictions, PROBE_SET)):
         match = exact_match(pred, item["answers"])
         if match:
             correct += 1
-        mark = "Y" if match else "N"
-        print(f"  {i:<4} {mark:<8} {pred[:28]:<30} {item['answers'][0]}")
+        print(f"  {i:<4} {'Y' if match else 'N':<4} {pred[:28]:<30} {item['answers'][0]}")
 
     accuracy = correct / len(PROBE_SET)
     avg_log_prob = np.mean(all_log_probs) if all_log_probs else 0
@@ -151,22 +167,20 @@ def main():
     d4 = distinct_n(predictions, n=4)
 
     print(f"\n  {'='*40}")
-    print(f"  BASELINE METRICS (Gen 0)")
+    print(f"  BASELINE METRICS (Gen 0, with chat template)")
     print(f"  {'='*40}")
     print(f"  Accuracy:       {accuracy:.2%} ({correct}/{len(PROBE_SET)})")
     print(f"  Avg log-prob:   {avg_log_prob:.4f}")
     print(f"  Avg entropy:    {avg_entropy:.4f}")
     print(f"  Distinct-4:     {d4:.4f}")
+    print(f"  Entropy NaN:    {'YES - PROBLEM' if np.isnan(avg_entropy) else 'NO - CLEAN'}")
 
-    print(f"\n  Assessment:")
     if accuracy >= 0.5:
-        print(f"    Accuracy >= 50%: Good baseline for observing degradation")
-    elif accuracy >= 0.3:
-        print(f"    Accuracy 30-50%: Acceptable but limited room for Stage B")
+        print(f"\n  Baseline adequate for collapse observation.")
     else:
-        print(f"    Accuracy < 30%: WARNING - too low for meaningful collapse observation")
+        print(f"\n  WARNING: Baseline too low.")
 
-    print(f"\n  M1A Step 3: COMPLETE")
+    print(f"\n  M1A Step 3 (corrected): COMPLETE")
 
 
 if __name__ == "__main__":
