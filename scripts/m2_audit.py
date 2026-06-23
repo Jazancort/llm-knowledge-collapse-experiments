@@ -149,20 +149,20 @@ def main():
     # Show sample errors
     print(f"\n  --- SAMPLE FORMAT ERRORS (first 10) ---")
     for e in errors["format"][:10]:
-        print(f"    Q: {e['question'][:60]}")
-        print(f"    P: {e['prediction'][:40]}  |  GT: {e['ground_truth'][0][:30]}")
+        print(f"    Q: {e['question'][:60].encode('ascii', 'replace').decode()}")
+        print(f"    P: {e['prediction'][:40].encode('ascii', 'replace').decode()}  |  GT: {e['ground_truth'][0][:30].encode('ascii', 'replace').decode()}")
         print()
 
     print(f"  --- SAMPLE PARTIAL ERRORS (first 10) ---")
     for e in errors["partial"][:10]:
-        print(f"    Q: {e['question'][:60]}")
-        print(f"    P: {e['prediction'][:40]}  |  GT: {e['ground_truth'][0][:30]}")
+        print(f"    Q: {e['question'][:60].encode('ascii', 'replace').decode()}")
+        print(f"    P: {e['prediction'][:40].encode('ascii', 'replace').decode()}  |  GT: {e['ground_truth'][0][:30].encode('ascii', 'replace').decode()}")
         print()
 
     print(f"  --- SAMPLE FACTUAL ERRORS (first 10) ---")
     for e in errors["factual"][:10]:
-        print(f"    Q: {e['question'][:60]}")
-        print(f"    P: {e['prediction'][:40]}  |  GT: {e['ground_truth'][0][:30]}")
+        print(f"    Q: {e['question'][:60].encode('ascii', 'replace').decode()}")
+        print(f"    P: {e['prediction'][:40].encode('ascii', 'replace').decode()}  |  GT: {e['ground_truth'][0][:30].encode('ascii', 'replace').decode()}")
         print()
 
     # Save
