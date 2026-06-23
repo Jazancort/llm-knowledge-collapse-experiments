@@ -777,3 +777,56 @@ Regra: ~8 pontos equiespaçados cobrindo toda a profundidade.
 | M2 | 3 gerações com adapter health + todas as métricas | "Existe sinal? Qual?" |
 
 **A primeira descoberta científica real virá dos tensores, não de mais argumentação.**
+
+
+---
+
+## Decisões M1B (pré-implementação)
+
+### D52: NÃO fazer merge de LoRA em modelo 4-bit — Adapter dinâmico
+
+**Problema:** Merge de adapter 16-bit em matriz NF4 requer dequantize → soma → requantize. A cada geração, o erro de requantização se acumula. Após 3-4 gerações, o modelo colapsa por artefato numérico, não por knowledge collapse.
+
+**Decisão:** Modelo base permanece congelado em 4-bit. Adapters são carregados dinamicamente. O erro intergeracional propaga APENAS pelo dataset sintético.
+
+**Consequência para o design original (D02):** A decisão D02 ("merge LoRA a cada geração") está REVOGADA para o regime QLoRA 4-bit. O processo recursivo agora é:
+
+```
+Gen 0: Base model (sem adapter) → gera dados sintéticos
+Gen 1: Base + LoRA_G1 (treinado nos sintéticos de Gen0) → gera dados sintéticos
+Gen 2: Base + LoRA_G2 (treinado nos sintéticos de Gen1) → gera dados sintéticos
+...
+```
+
+Cada geração treina um NOVO adapter do zero sobre o modelo base fixo. O que se acumula são os dados degradados, não os pesos.
+
+**Trade-off:** Isso testa "collapse via data only" — mais limpo, mas potencialmente mais lento que merge acumulativo. Se o fenômeno não aparecer, a limitação de hardware (impossibilidade de FFT ou merge fp16) será documentada como limitation.
+
+---
+
+### D53: LoRA target modules — q_proj + v_proj apenas
+
+**Justificativa:** Restringir adaptação ao mecanismo de atenção alinha com a métrica principal (attention rollout, CKA-Factual). Se degradação aparece apenas via atenção restrita, hipótese fica mais forte. Espalhar por MLP dilui sinal e dificulta atribuição.
+
+**Config:**
+```python
+target_modules = ["q_proj", "v_proj"]
+```
+
+---
+
+### D54: Quarentena do Probe Set — Reforço
+
+O PROBE_SET (20 perguntas com 100% accuracy) é SOMENTE avaliação. NUNCA gera dados de treino.
+
+Para M1B, gerar dados sintéticos a partir de um TRAINING_SEED separado (subconjunto de NQ/TriviaQA, ~500-2000 amostras para o ciclo mínimo).
+
+---
+
+### D55: M1B mede apenas Gen0 → Gen1 (ciclo único)
+
+Pergunta que M1B responde:
+> "O CKA-Factual reage a um único evento de fine-tuning em dados sintéticos?"
+
+Se sim: instrumento validado, prosseguir para M2.
+Se não: resolução insuficiente, reavaliar métrica ou configuração.
