@@ -138,7 +138,8 @@ def generate_synthetic(model, tokenizer, questions, batch_size=8):
     """Generate synthetic answers for a list of questions. Returns full formatted texts."""
     synthetic = []
     model.eval()
-    for i in range(0, len(questions), batch_size):
+    total = len(questions)
+    for i in range(0, total, batch_size):
         batch_q = questions[i:i+batch_size]
         prompts = [format_prompt(tokenizer, q) for q in batch_q]
         inputs = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True, max_length=256)
@@ -147,6 +148,8 @@ def generate_synthetic(model, tokenizer, questions, batch_size=8):
             out = model.generate(**inputs, max_new_tokens=30, temperature=0.7, do_sample=True, top_p=0.9)
         for seq in out:
             synthetic.append(tokenizer.decode(seq, skip_special_tokens=False))
+        if (i + batch_size) % 200 == 0 or i + batch_size >= total:
+            print(f"    Generated {min(i+batch_size, total)}/{total}...", flush=True)
     return synthetic
 
 
@@ -155,8 +158,9 @@ def evaluate_accuracy(model, tokenizer, eval_questions, eval_answers):
     model.eval()
     correct = 0
     log_probs_all, entropies_all = [], []
+    total = len(eval_questions)
 
-    for q, answers in zip(eval_questions, eval_answers):
+    for idx, (q, answers) in enumerate(zip(eval_questions, eval_answers)):
         prompt = format_prompt(tokenizer, q)
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
         with torch.no_grad():
@@ -180,8 +184,11 @@ def evaluate_accuracy(model, tokenizer, eval_questions, eval_answers):
             log_probs_all.append(np.mean(lps))
             entropies_all.append(np.mean(ents))
 
+        if (idx + 1) % 50 == 0 or idx + 1 == total:
+            print(f"    Eval {idx+1}/{total} (acc so far: {correct}/{idx+1} = {correct/(idx+1):.1%})", flush=True)
+
     return {
-        "accuracy": correct / len(eval_questions),
+        "accuracy": correct / total,
         "avg_log_prob": np.mean(log_probs_all) if log_probs_all else 0,
         "avg_entropy": np.mean(entropies_all) if entropies_all else 0,
     }
@@ -192,12 +199,15 @@ def extract_representations(model, tokenizer, probe_questions, monitor_layers):
     extractor = ProbeExtractor(model, monitor_layers)
     extractor.register()
 
-    for q in probe_questions:
+    total = len(probe_questions)
+    for idx, q in enumerate(probe_questions):
         prompt = format_prompt(tokenizer, q)
         inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
         extractor.end_indices = [inputs.input_ids.shape[1] - 1]
         with torch.no_grad():
             model(**inputs)
+        if (idx + 1) % 50 == 0 or idx + 1 == total:
+            print(f"    Probe {idx+1}/{total}...", flush=True)
 
     reps = {idx: {"global": extractor.stacked(idx, "global"),
                   "f1": extractor.stacked(idx, "f1")} for idx in monitor_layers}
