@@ -2,7 +2,7 @@
 name = "llm-knowledge-collapse"
 version = "0.1.0"
 description = "Early Detection of Knowledge Collapse Through Explanation Stability Analysis in Recursive LLM Training"
-requires-python = ">=3.10"
+requires-python = ">=3.10,<3.13"
 dependencies = [
     "torch==2.4.1",
     "transformers==4.46.3",
