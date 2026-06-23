@@ -729,3 +729,31 @@ Não travar o pipeline com `assert np.isclose(cka, 1.0, atol=1e-4)`. Variações
 
 **REGRA:** Não avançar para step N+1 até step N funcionar.
 
+
+---
+
+### D51: Camadas monitoradas — Amostragem uniforme, NÃO heurística funcional
+
+**Problema:** Definir blocos early/middle/late a priori (baseado em "factual retrieval vive nas camadas intermediárias") introduz viés confirmatório. O objetivo do M1A é descobrir ONDE o sinal vive, não confirmar onde a literatura diz que deveria estar.
+
+**Decisão:** No M0/M1A, amostrar uniformemente a profundidade do modelo:
+
+Para modelo com 32 camadas:
+```
+Camadas monitoradas: [2, 6, 10, 14, 18, 22, 26, 30]
+```
+
+Para modelo com 28 camadas:
+```
+Camadas monitoradas: [2, 6, 10, 14, 18, 22, 26]
+```
+
+Regra: ~8 pontos equiespaçados cobrindo toda a profundidade.
+
+**No M1A:** Reportar por camada individual. NÃO agregar em blocos.
+
+**Pós-M1A (para M2/M3):** Observar onde o sinal (ΔCKA na perturbação, ou drift no training) se concentra. SOMENTE ENTÃO definir blocos agregados baseado em evidência empírica.
+
+**Benefício:** Se o sinal aparece apenas nas camadas 14-22, reportar isso como achado. Se aparece uniformemente, reportar isso. Se aparece nas primeiras camadas, surpreendente mas válido.
+
+**O que evita:** Embutir na instrumentação uma hipótese que deveria ser testada pelos dados.
