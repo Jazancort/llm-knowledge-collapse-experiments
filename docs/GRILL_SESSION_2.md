@@ -830,3 +830,50 @@ Pergunta que M1B responde:
 
 Se sim: instrumento validado, prosseguir para M2.
 Se não: resolução insuficiente, reavaliar métrica ou configuração.
+
+
+---
+
+### D56: Recursão APENAS nos dados (Opção A) — Congelada
+
+**Decisão:** Cada geração treina um novo adapter do ZERO sobre o modelo base imutável. A recursão propaga APENAS via dataset sintético.
+
+**Fluxo:**
+```
+Gen 0: Base model (sem adapter) → gera respostas para Training Seed → dataset_gen0
+Gen 1: Base + LoRA_gen1 (treinado em dataset_gen0) → gera dataset_gen1 → descarta adapter
+Gen 2: Base + LoRA_gen2 (treinado em dataset_gen1) → gera dataset_gen2 → descarta adapter
+Gen 3: Base + LoRA_gen3 (treinado em dataset_gen2) → avalia → descarta
+```
+
+**Justificativa:**
+1. Impossibilidade técnica: merge 16-bit → NF4 acumula erro de requantização
+2. VRAM: empilhar múltiplos adapters estoura 8GB antes da Gen 3
+3. Causalidade limpa: se collapse aparece, é COMPROVADAMENTE dos dados
+4. Defesa para reviewer: "Pesos nunca foram herdados. Única variável recursiva é o dataset."
+
+**Opção B (recursão de pesos) descartada** para este hardware e esta configuração.
+
+---
+
+### D57: Dataset M2 — TriviaQA com splits fixos
+
+| Split | Tamanho | Fonte | Uso |
+|---|---|---|---|
+| Training Seed | 10.000 | TriviaQA train | Gerar sintéticos + treinar cada geração |
+| Evaluation Set | 1.000 | TriviaQA (disjunto) | Accuracy, confidence, entropy por geração |
+| Probe Set | 200 | TriviaQA (disjunto) | CKA, attention, ESI — NUNCA treina |
+
+---
+
+### D58: Protocolo de VRAM por geração
+
+A cada transição entre gerações:
+```python
+del peft_model
+del trainer
+torch.cuda.empty_cache()
+gc.collect()
+```
+
+Recarregar base model limpo se necessário. Nunca manter dois adapters na memória simultaneamente.
