@@ -453,3 +453,101 @@ Guardar esse índice e usá-lo no hook para extrair o hidden state correto.
 
 **Trade-off aceito:** 2× mais lento no probe set (200 prompts × 2 passes = ~10min extra). Aceitável.
 
+---
+
+### D37: NÃO salvar Parquet dentro do hook — Buffer + flush
+
+**Problema:** Escrever em disco dentro do forward hook cria gargalo de I/O que trava a GPU.
+
+**Decisão:** Hook apenas faz: detach → reduce → .cpu() → append ao buffer in-memory. Flush para disco acontece fora do forward, a cada N amostras (ex: 50 ou 100).
+
+```python
+# Dentro do hook:
+self.buffer[name].append({"global": mean_pooled, "factual": last_token})
+
+# Fora do loop de inferência:
+if len(self.buffer[name]) >= flush_interval:
+    self._flush_to_disk(name)
+```
+
+---
+
+### D38: prompt_end_idx explícito — Calculado na tokenização, não inferido de attention_mask
+
+**Problema:** Modelos instruct (Gemma, Qwen) usam chat templates com tokens especiais (`<system>`, `<user>`, `<assistant>`). O `attention_mask.sum() - 1` pode apontar para um token de template, não para o último token semântico do prompt.
+
+**Decisão:** Calcular `prompt_end_idx` durante a tokenização e passá-lo explicitamente para o hook:
+
+```python
+# Na tokenização:
+full_input = tokenizer.apply_chat_template(messages, ...)
+# O último token ANTES de "<assistant>" é o prompt_end_idx
+prompt_end_idx = find_assistant_start(full_input) - 1
+```
+
+Armazenar como `self.current_prompt_end_indices` na classe Probe, acessível pelo hook.
+
+---
+
+### D39: CKA-Factual com janela de tokens (1, 3, 5) — Não apenas last token
+
+**Decisão:** Extrair hidden states dos últimos 1, 3 e 5 tokens do prompt (antes do ponto de geração). Custo adicional desprezível.
+
+```python
+factual_1 = tensor[i, prompt_end_idx, :]
+factual_3 = tensor[i, prompt_end_idx-2:prompt_end_idx+1, :].mean(dim=0)
+factual_5 = tensor[i, prompt_end_idx-4:prompt_end_idx+1, :].mean(dim=0)
+```
+
+No M2, comparar sensibilidade de CKA-1 vs CKA-3 vs CKA-5. Usar a mais discriminativa no M3.
+
+---
+
+### D40: Teste de sensibilidade — Curva completa com 4 níveis
+
+**Protocolo no M1A:**
+
+| Teste | Comparação | CKA esperado |
+|---|---|---|
+| A (identidade) | M vs M (mesma seed) | 1.0000 |
+| B (ruído mínimo) | M vs M + N(0, 1e-5) nos pesos de atenção | ~0.999+ |
+| C (ruído moderado) | M vs M + N(0, 1e-4) | ~0.99 |
+| D (ruído significativo) | M vs M + N(0, 1e-3) | ~0.95? |
+
+Se a curva NÃO for monotonicamente decrescente, CKA está bugado ou insensível. Não prosseguir.
+
+---
+
+### D41: Probe Set estratificado por categoria de conhecimento
+
+**Decisão:** Montar o Probe Set (200 amostras) com distribuição intencional:
+
+| Categoria | Exemplos | N |
+|---|---|---|
+| Pessoa | "Who wrote Hamlet?" | 50 |
+| Local | "What is the capital of Japan?" | 50 |
+| Data/Número | "What year did WWII end?" | 50 |
+| Conceito/Ciência | "What is the chemical symbol for gold?" | 50 |
+
+**Benefício:** Permite análise pós-hoc: "O colapso aparece primeiro em qual categoria de conhecimento?" Resultado secundário potencialmente publicável.
+
+---
+
+## Status Final (definitivo)
+
+O design teórico E de engenharia está **fechado**. Não há mais decisões pendentes.
+
+**M1A v1 — Escopo final:**
+- Hooks com redução imediata + buffer + flush
+- CKA Global (mean pool)
+- CKA Factual (last 1/3/5 tokens do prompt)
+- Attention Rollout + ESI
+- Effective Rank + Spectral Norm + Frobenius Norm (placeholder para pós-LoRA)
+- Teste de identidade (CKA ≈ 1, ESI ≈ 0)
+- Teste de sensibilidade (curva de perturbação gaussiana)
+- Accuracy (exact match)
+- Confidence (log-prob, entropy)
+- Probe Set estratificado (4 categorias × 50)
+
+**Próximo gargalo:** empírico, não teórico. Rodar M1A.
+
