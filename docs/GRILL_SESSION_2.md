@@ -381,3 +381,75 @@ A cada geração, sobre o corpus de respostas geradas pelo modelo:
 ## Status Final
 
 O design teórico está **fechado**. Próximo passo: implementação do M1A atualizado com as novas métricas (CKA-Factual, logit divergence, adapter health placeholder).
+
+---
+
+## Decisões de Engenharia (Implementação M1A)
+
+### D33: Extração via Forward Hooks com redução imediata — NÃO retornar tensores brutos
+
+**Problema identificado:** `output_hidden_states=True` + `output_attentions=True` em modelo 3-4B com 32 camadas e seq_len ~512 estoura 8GB VRAM imediatamente. Attentions são [B, H, L, L] × 32 camadas.
+
+**Decisão:** Usar forward hooks do PyTorch que:
+1. Capturam output de cada camada durante forward pass
+2. Reduzem IMEDIATAMENTE para as representações de interesse (mean_pooled, last_token)
+3. Movem para CPU (.cpu())
+4. Descartam o tensor original
+
+**Arquitetura:**
+
+```python
+class RepresentationProbe:
+    def _get_hook(self, name):
+        def hook(module, input, output):
+            tensor = output[0].detach() if isinstance(output, tuple) else output.detach()
+            self.features[name] = {
+                "global": tensor.mean(dim=1).cpu(),      # mean pool → (1, hidden_dim)
+                "factual": tensor[:, prompt_end_idx, :].cpu()  # last prompt token
+            }
+        return hook
+```
+
+**Benefício:** Footprint de memória cai de ~GB (todos os hidden states + attentions brutos) para ~MB (apenas vetores reduzidos na CPU).
+
+---
+
+### D34: Token index do CKA-Factual — NÃO usar tensor[:, -1, :]
+
+**Problema:** `[:, -1, :]` é o último token da sequência processada, que pode não ser o último token do prompt (pode ser padding, EOS, ou já um token gerado).
+
+**Decisão:** Calcular explicitamente `prompt_end_idx` baseado no comprimento do input tokenizado:
+
+```python
+prompt_ids = tokenizer(prompt, return_tensors="pt")
+prompt_end_idx = prompt_ids.input_ids.shape[1] - 1  # último token real do prompt
+```
+
+Guardar esse índice e usá-lo no hook para extrair o hidden state correto.
+
+---
+
+### D35: Teste de sensibilidade do CKA — Verificar que não é insensível
+
+**Problema:** Se CKA(M, M') ≈ 1.0 mesmo após mudanças relevantes, a métrica é pouco informativa e não vai detectar nada.
+
+**Decisão:** No M1A, além do sanity check CKA(M,M) ≈ 1.0, fazer um teste de sensibilidade:
+- Adicionar perturbação gaussiana pequena aos hidden states (σ = 0.01, 0.05, 0.1)
+- Verificar que CKA decresce monotonicamente com a perturbação
+- Isso confirma que a métrica tem resolução suficiente para detectar drift real
+
+**Se CKA for insensível mesmo com perturbação moderada:** considerar métricas alternativas (Procrustes distance, PWCCA) ou ajustar granularidade (por neurônio em vez de por camada).
+
+---
+
+### D36: Atenção extraída separadamente — NÃO no mesmo forward pass que hidden states
+
+**Decisão para modelo 3-4B em 8GB:**
+- Forward pass 1: extrair hidden states via hooks (global + factual) — `output_attentions=False`
+- Forward pass 2: extrair attention maps via hooks — `output_hidden_states=False`
+- Isso duplica o tempo mas evita OOM
+
+**Para modelo piloto (1.5B):** pode fazer ambos no mesmo pass (cabe na memória).
+
+**Trade-off aceito:** 2× mais lento no probe set (200 prompts × 2 passes = ~10min extra). Aceitável.
+
