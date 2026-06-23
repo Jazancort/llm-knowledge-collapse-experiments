@@ -6,10 +6,16 @@ Experimental validation of the hypothesis that representational/explanation inst
 
 ```bash
 cd code
-pip install -r requirements.txt
+uv sync
 ```
 
 Requires: NVIDIA GPU with 8GB+ VRAM, CUDA 12.x.
+
+## Running
+
+```bash
+uv run python scripts/m1a_validate_infrastructure.py
+```
 
 ## Milestones
 
