@@ -757,3 +757,23 @@ Regra: ~8 pontos equiespaçados cobrindo toda a profundidade.
 **Benefício:** Se o sinal aparece apenas nas camadas 14-22, reportar isso como achado. Se aparece uniformemente, reportar isso. Se aparece nas primeiras camadas, surpreendente mas válido.
 
 **O que evita:** Embutir na instrumentação uma hipótese que deveria ser testada pelos dados.
+
+
+---
+
+## ENCERRAMENTO DA FASE DE DESIGN — 2026-06-23T01:20
+
+**51 decisões documentadas (D01–D51).**
+
+**Consenso final:** O protocolo está mais rigoroso que a maioria dos papers publicados de model collapse. Continuar refinando sem dados é risco de paralysis by analysis.
+
+**Próximos gates:**
+
+| Gate | Entrega | Interpretação científica |
+|---|---|---|
+| M0 | Arquitetura real, mapa de módulos, camadas candidatas, VRAM | Nenhuma |
+| M1A | CKA(M,M), CKA(M,M+ε), CKA por camada, sensibilidade Global vs Factual | Primeira pergunta real: "Factual é mais sensível que Global?" |
+| M1B | 1 ciclo recursivo completo com métricas | "O pipeline funciona ponta a ponta?" |
+| M2 | 3 gerações com adapter health + todas as métricas | "Existe sinal? Qual?" |
+
+**A primeira descoberta científica real virá dos tensores, não de mais argumentação.**
