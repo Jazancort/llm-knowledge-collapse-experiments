@@ -30,7 +30,6 @@ from datasets import load_dataset, Dataset
 MODEL_NAME = "Qwen/Qwen2.5-1.5B-Instruct"
 TRAIN_SIZE = 2000
 EVAL_SIZE = 200
-NUM_GENERATIONS = 5
 
 NUMBER_WORDS = {
     "zero": "0", "one": "1", "two": "2", "three": "3", "four": "4",
@@ -127,9 +126,11 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--rank", type=int, default=64)
     parser.add_argument("--seed", type=int, default=15)
+    parser.add_argument("--generations", type=int, default=5)
     args = parser.parse_args()
     rank = args.rank
     seed = args.seed
+    NUM_GENERATIONS = args.generations
 
     output_dir = Path(__file__).parent.parent / "outputs" / f"g1_rank{rank}_seed{seed}"
     output_dir.mkdir(parents=True, exist_ok=True)
