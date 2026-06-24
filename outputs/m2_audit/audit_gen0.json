@@ -1,0 +1,1295 @@
+{
+  "total": 200,
+  "correct": 79,
+  "format_errors": 0,
+  "partial_errors": 12,
+  "factual_errors": 109,
+  "correct_indices": [
+    0,
+    2,
+    4,
+    5,
+    9,
+    13,
+    15,
+    16,
+    17,
+    19,
+    20,
+    22,
+    25,
+    27,
+    28,
+    33,
+    34,
+    36,
+    38,
+    41,
+    43,
+    48,
+    55,
+    60,
+    62,
+    65,
+    67,
+    71,
+    72,
+    73,
+    75,
+    77,
+    78,
+    81,
+    90,
+    94,
+    96,
+    97,
+    98,
+    99,
+    100,
+    109,
+    110,
+    111,
+    112,
+    113,
+    118,
+    121,
+    123,
+    124,
+    125,
+    126,
+    127,
+    129,
+    130,
+    133,
+    134,
+    139,
+    143,
+    148,
+    149,
+    151,
+    154,
+    156,
+    162,
+    163,
+    167,
+    171,
+    177,
+    181,
+    183,
+    184,
+    185,
+    190,
+    192,
+    193,
+    196,
+    197,
+    199
+  ],
+  "errors": {
+    "format": [],
+    "partial": [
+      {
+        "idx": 3,
+        "question": "In which city was Picasso born?",
+        "prediction": "Madrid, Spain.",
+        "ground_truth": [
+          "Pedregalego",
+          "M\u00e1laga",
+          "Malaga"
+        ]
+      },
+      {
+        "idx": 32,
+        "question": "Which river forms a natural border between New York and New Jersey?",
+        "prediction": "The Delaware River.",
+        "ground_truth": [
+          "Hudson's River",
+          "Hudson River (N.Y. and N.J.)",
+          "R\u00edo Hudson"
+        ]
+      },
+      {
+        "idx": 40,
+        "question": "In 1949, when the part of Ireland that was more independent than the rest was declared a sovereign independent state outside the British Commonwealth, what name was given to it?",
+        "prediction": "Northern Ireland.",
+        "ground_truth": [
+          "The Twenty-Six Counties",
+          "Ireland (country)",
+          "Irish Republic (1937\u2013present)"
+        ]
+      },
+      {
+        "idx": 51,
+        "question": "In a famous novel, how is Sir Percy Blakeney otherwise known?",
+        "prediction": "Sir Percy Bysshevite.",
+        "ground_truth": [
+          "Lady Blakeney",
+          "The Scarlet Pimpernel",
+          "Scarlet Pimpernel"
+        ]
+      },
+      {
+        "idx": 57,
+        "question": "At 1,038 km long and emptying into the Atlantic Ocean at Lisbon, which is the longest river on the Iberian peninsula ?",
+        "prediction": "The Douro River.",
+        "ground_truth": [
+          "Rio Texo",
+          "El r\u00edo Tajo",
+          "R\u00edo Texo"
+        ]
+      },
+      {
+        "idx": 64,
+        "question": "Who did Bill Clinton beat when he stood for president first time round (1992)?",
+        "prediction": "George H.W. Bush.",
+        "ground_truth": [
+          "George Bush",
+          "George bush",
+          "Goerge Bush"
+        ]
+      },
+      {
+        "idx": 66,
+        "question": "The Ford Cortina and Ford Taunus were predecessors of which model?",
+        "prediction": "Ford Focus.",
+        "ground_truth": [
+          "Ford Probe III",
+          "Ford Sierra RS",
+          "Ford Sierra"
+        ]
+      },
+      {
+        "idx": 76,
+        "question": "The UK government was criticized in 2014 for promoting the euphemistic term 'Mitochondrial transfer' to avoid controversy about genetic modification of?",
+        "prediction": "Human embryos.",
+        "ground_truth": [
+          "Human babies",
+          "Human babies"
+        ]
+      },
+      {
+        "idx": 80,
+        "question": "According to the Acts of the Apostles what peak was the location for the ascension of Jesus?",
+        "prediction": "Mount Zion.",
+        "ground_truth": [
+          "Mount of Olves",
+          "Mount Olivet",
+          "Har hazeisim"
+        ]
+      },
+      {
+        "idx": 105,
+        "question": "Jews descended from the medieval Jewish communities along the Rhine in Germany from Alsace in the south to the Rhineland in the north are known as what?",
+        "prediction": "German Jews.",
+        "ground_truth": [
+          "\u05d0\u05b7\u05e9\u05b0\u05c1\u05db\u05b2\u05bc\u05e0\u05b8\u05d6\u05b4\u05d9\u05dd",
+          "Origins of Ashkenazi",
+          "Ashkenazim Jews"
+        ]
+      },
+      {
+        "idx": 107,
+        "question": "What is the name of the helicopter used to transport the President of the USA?",
+        "prediction": "United States Air Force One.",
+        "ground_truth": [
+          "Marine Two",
+          "Marine Corps One",
+          "Marine One"
+        ]
+      },
+      {
+        "idx": 173,
+        "question": "According to popular medical opinion (at 2011) how much sleep on average is best per night for optimum adult health?",
+        "prediction": "7 hours.",
+        "ground_truth": [
+          "6-8 hours",
+          "6-8 hours"
+        ]
+      }
+    ],
+    "factual": [
+      {
+        "idx": 1,
+        "question": "Rugby union - for which club team do England internationals Care, Easter and Robshaw play ?",
+        "prediction": "Leicester Tigers.",
+        "ground_truth": [
+          "HARLEQUINS",
+          "Harlequin (disambiguation)",
+          "Harlequins"
+        ]
+      },
+      {
+        "idx": 6,
+        "question": "Who, in 1923, wrote 'Toward An Architecture'?",
+        "prediction": "Louis Sullivan.",
+        "ground_truth": [
+          "Edouard Corbusier",
+          "Tower-in-the-park",
+          "Charles-Edouard Jeanneret"
+        ]
+      },
+      {
+        "idx": 7,
+        "question": "'Gilda' is the daughter of which eponymous character in a Verdi opera?",
+        "prediction": "Maria.",
+        "ground_truth": [
+          "Rigeletto",
+          "Questa o quella",
+          "Rigoletto (opera)"
+        ]
+      },
+      {
+        "idx": 8,
+        "question": "Which South African batsman scored 311 not out against England at the Oval in July 2012?",
+        "prediction": "AB de Villiers.",
+        "ground_truth": [
+          "HASHIM AMLA",
+          "Hashim Amla",
+          "HASHIM AMLA"
+        ]
+      },
+      {
+        "idx": 10,
+        "question": "Which film has had sequels entitled The Road Warrior and Beyond Thunderdome?",
+        "prediction": "The Road Warrior is a classic Australian survival film.",
+        "ground_truth": [
+          "Mad max 1",
+          "Jessie Rockatansky",
+          "Mad Max (film)"
+        ]
+      },
+      {
+        "idx": 11,
+        "question": "\"Which Lawn Tennis player of the 1970's later had a brief acting career, appearing in the 1983 James Bond film, \"\"Octopussy\"\"?\"",
+        "prediction": "John McEnroe",
+        "ground_truth": [
+          "\u0bb5\u0bbf\u0b9c\u0baf\u0bcd \u0b85\u0bae\u0bbf\u0bb0\u0bcd\u0ba4\u0bb0\u0bbe\u0b9c\u0bcd",
+          "VIJAY AMRITRAJ",
+          "Vijay Amitraj"
+        ]
+      },
+      {
+        "idx": 12,
+        "question": "Paul Baumer is the narrator of which 1929 War Novel?",
+        "prediction": "\"Heart of Darkness.\"",
+        "ground_truth": [
+          "All quiet",
+          "Im Westen Nichts Neues",
+          "All quiet on the Western Front"
+        ]
+      },
+      {
+        "idx": 14,
+        "question": "Which amateur jockey rode the winner of the 2011 Cheltenham Gold Cup and the runner-up in the 2011 Grand National?",
+        "prediction": "Nicky Henderson.",
+        "ground_truth": [
+          "SAM WALEY-COHEN",
+          "Sam Waley-Cohen",
+          "Sam Waley Cohen"
+        ]
+      },
+      {
+        "idx": 18,
+        "question": "Name the 1980's hit sung by Tina Turner and Rod Stewart?",
+        "prediction": "What a Wonderful Life - Jimmy Webb.",
+        "ground_truth": [
+          "It Takes Two",
+          "It Takes Two (film)",
+          "It Takes Two (disambiguation)"
+        ]
+      },
+      {
+        "idx": 21,
+        "question": "For which high street clothing chain did Kate Middleton work as an accessory buyer in 2006?",
+        "prediction": "Sephora.",
+        "ground_truth": [
+          "Jigsaw (album)",
+          "Jigsaw",
+          "Jigsaw (TV series)"
+        ]
+      },
+      {
+        "idx": 23,
+        "question": "What is the soft shawl made from the under fleece of goats in Northern India?",
+        "prediction": "Phulkas.",
+        "ground_truth": [
+          "Pashmeena",
+          "Kashmir Pashmina",
+          "Pashmina"
+        ]
+      },
+      {
+        "idx": 24,
+        "question": "\"Which music legend was the subject of Don McLean's song - \"\"American Pie\"\"?\"",
+        "prediction": "Bob Dylan.",
+        "ground_truth": [
+          "Charles Hardin Helley",
+          "Buddy Holly & the Crickets",
+          "Buddy Hollie"
+        ]
+      },
+      {
+        "idx": 26,
+        "question": "What is the better known name of St Sylvester's Day?",
+        "prediction": "Feast of blessed Pope Sylvester.",
+        "ground_truth": [
+          "Filipino New Year Celebration",
+          "New year party",
+          "Ano Novo"
+        ]
+      },
+      {
+        "idx": 29,
+        "question": "Reginald Rose wrote a play adapted from his 1957 teleplay, and later film, script of the same name. The film became famous with Henry Fonda in the lead role as foreman of a jury. What was the play?",
+        "prediction": "\"Crossfire\".",
+        "ground_truth": [
+          "Twelve Angry Men",
+          "12 Angry Men",
+          "12 men"
+        ]
+      },
+      {
+        "idx": 30,
+        "question": "Pen y Fan is the highest peak in which British national park?",
+        "prediction": "Snowdonia, Wales.",
+        "ground_truth": [
+          "Parc Cenedlaethol Bannau Brycheiniog",
+          "Bannau Brycheiniog",
+          "Brecon Beacons"
+        ]
+      },
+      {
+        "idx": 31,
+        "question": "Jazz. Who had four Top 10 hits in the 60s, including \u2018Sukiyaki\u2019 and \u2018Midnight in Moscow\u2019?",
+        "prediction": "Frank Sinatra.",
+        "ground_truth": [
+          "KENNY BALL and his Jazzmen",
+          "Kenny Ball",
+          "Kenny Ball and his Jazzmen"
+        ]
+      },
+      {
+        "idx": 35,
+        "question": "\"Who plays Lexie Grey in the US TV series \"\"Grey's Anatomy\"\"?\"",
+        "prediction": "Chad Lindley plays Lexie Grey.",
+        "ground_truth": [
+          "Chyler Leigh",
+          "Chyler Leigh"
+        ]
+      },
+      {
+        "idx": 37,
+        "question": "Originating in France, what is the name of the small ball of choux pastry, usually filled with cream and often covered with chocolate?",
+        "prediction": "Croissant.",
+        "ground_truth": [
+          "Profiterole",
+          "Cream puff",
+          "Windbeutel"
+        ]
+      },
+      {
+        "idx": 39,
+        "question": "In English the word describes a complete failure. In Italian it describes a straw covered bottle. What is the word?",
+        "prediction": "Catastrophe.",
+        "ground_truth": [
+          "Fiasco",
+          "Fiasco (disambiguation)",
+          "Fiasko"
+        ]
+      },
+      {
+        "idx": 42,
+        "question": "In the USA who is the General President of the International Brotherhood of Teamsters?",
+        "prediction": "Mike Maguire.",
+        "ground_truth": [
+          "JAMES P. HOFFA",
+          "Jimmy Hoffa Jr.",
+          "James P. Hoffa"
+        ]
+      },
+      {
+        "idx": 44,
+        "question": "What is the name of the bell in Lincoln Cathedral?",
+        "prediction": "Buckinghamshire.",
+        "ground_truth": [
+          "The Great Tom",
+          "Great Tom (bell)",
+          "Tom Tower"
+        ]
+      },
+      {
+        "idx": 45,
+        "question": "What is the name of the so-called 'first-bird'?",
+        "prediction": "Hesperia antiochus.",
+        "ground_truth": [
+          "Archaeoptryx",
+          "Archioptryx",
+          "Archaeopteryx"
+        ]
+      },
+      {
+        "idx": 46,
+        "question": "The King in the King and I is ruler of where?",
+        "prediction": "England.",
+        "ground_truth": [
+          "Muang Thai",
+          "Taihland",
+          "ISO 3166-1:TH"
+        ]
+      },
+      {
+        "idx": 47,
+        "question": "In the legends of Robin Hood what was the profession of Mutch\u2019s father?",
+        "prediction": "Blacksmith.",
+        "ground_truth": [
+          "Miller",
+          "The Miller",
+          "The miller"
+        ]
+      },
+      {
+        "idx": 49,
+        "question": "Which regiment did Lieutenant Colonel Tim Collins command during the recent Iraqi conflict?",
+        "prediction": "101st Airborne Division.",
+        "ground_truth": [
+          "Royal Irish Regiment",
+          "Royal Irish Regiment (disambiguation)",
+          "The Royal Irish Regiment"
+        ]
+      },
+      {
+        "idx": 50,
+        "question": "Which southern central US state, whose capital city has the same name, was the last to recognize Christmas as an official holiday?",
+        "prediction": "Louisiana; New Orleans.",
+        "ground_truth": [
+          "Okla.",
+          "Oklahoma",
+          "Oklahoma, United States"
+        ]
+      },
+      {
+        "idx": 52,
+        "question": "The name of which popular Italian dish is derived from the Latin for 'cooking pot'?",
+        "prediction": "Pasta.",
+        "ground_truth": [
+          "Veggie lasagne",
+          "Beef lasagne",
+          "Beef lasagna"
+        ]
+      },
+      {
+        "idx": 53,
+        "question": "Millefiore is a highly detailed and colourful decorative art of what material?",
+        "prediction": "Cork.",
+        "ground_truth": [
+          "Optical glass",
+          "Glass sheet",
+          "Glass Science"
+        ]
+      },
+      {
+        "idx": 54,
+        "question": "What defence treaty was signed by Great Britain, the USA, France, Siam, Australia, New Zealand, Pakistan and the Philippines in 1954?",
+        "prediction": "Siam became Thailand at time.",
+        "ground_truth": [
+          "Southeast Asia Treaty Organization",
+          "Seato",
+          "Treaty of Manila (1954)"
+        ]
+      },
+      {
+        "idx": 56,
+        "question": "In the novel Peter Pan, what are the first names of Wendy\u2019s two brothers?",
+        "prediction": "Peter Pan is a fictional story about a boy named Peter who lives with his parents and siblings.",
+        "ground_truth": [
+          "Michael and John",
+          "Michael and John"
+        ]
+      },
+      {
+        "idx": 58,
+        "question": "In which Country is the town of Schengen where the 1985 treaty was signed?",
+        "prediction": "Belgium.",
+        "ground_truth": [
+          "Luxemborg",
+          "Luxumburg",
+          "Lexenburg"
+        ]
+      },
+      {
+        "idx": 59,
+        "question": "In which European country was industrialist and philanthropist Andrew Carnegie born in 1835?",
+        "prediction": "USA, Pennsylvania.",
+        "ground_truth": [
+          "The Scottish Nation",
+          "Scotlander",
+          "Scotland"
+        ]
+      },
+      {
+        "idx": 61,
+        "question": "Which London landmark was designed by Sir Christopher Wren to commemorate the Great Fire of London?",
+        "prediction": "St. Paul's Cathedral.",
+        "ground_truth": [
+          "Monument to the Great Fire of London",
+          "London Monument",
+          "The Monument"
+        ]
+      },
+      {
+        "idx": 63,
+        "question": "Who was Jackie Kennedy's second husband?",
+        "prediction": "JFK's brother, Robert F. Kennedy.",
+        "ground_truth": [
+          "\u0391\u03c1\u03b9\u03c3\u03c4\u03bf\u03c4\u03ad\u03bb\u03b7\u03c2 \u03a9\u03bd\u03ac\u03c3\u03b7\u03c2",
+          "Ingeborg Dedichen",
+          "Aristotle Onasis"
+        ]
+      },
+      {
+        "idx": 68,
+        "question": "\"In Walt Disney's \"\"Snow White\"\", which dwarf was completely bald, with not even a beard?\"",
+        "prediction": "Grumpy.",
+        "ground_truth": [
+          "Dopey (disambiguation)",
+          "Dopey",
+          "Dopey"
+        ]
+      },
+      {
+        "idx": 69,
+        "question": "Which former footballer and manager co-wrote the UK television series \u2018Hazell\u2019?",
+        "prediction": "Phil McNulty.",
+        "ground_truth": [
+          "El Tel",
+          "Terry Venables",
+          "Terry Venables"
+        ]
+      },
+      {
+        "idx": 70,
+        "question": "Proton Cars were originally produced in which country?",
+        "prediction": "Germany.",
+        "ground_truth": [
+          "Etymology of Malaysia",
+          "\u9a6c\u6765\u897f\u4e9a",
+          "Malasia"
+        ]
+      },
+      {
+        "idx": 74,
+        "question": "Which Irish boxer was nicknamed the Clones Cyclone?",
+        "prediction": "John \"The Clones Cyclone\" Kelly.",
+        "ground_truth": [
+          "Barry McGuigan",
+          "Barry mcguigan",
+          "Barry McGuigan"
+        ]
+      },
+      {
+        "idx": 79,
+        "question": "Which French romantic artist painted \u201cThe Tiger Hunt\u201d and \u201cThe Massacre at Chios\u201d",
+        "prediction": "Edgar Degas.",
+        "ground_truth": [
+          "Delacroix, Ferdinand-Victor-Eug\u00e8ne",
+          "Delacroix, Ferdinand Victor Eugene",
+          "Ferdinand-Victor-Eugene Delacroix"
+        ]
+      },
+      {
+        "idx": 82,
+        "question": "Who won the women's singles title at Wimbledon in 2013?",
+        "prediction": "Simona Halep.",
+        "ground_truth": [
+          "Marion Bartoli",
+          "Marion Bartoli"
+        ]
+      },
+      {
+        "idx": 83,
+        "question": "A methuselah of wine holds the equivalent of how many bottles?",
+        "prediction": "10,000.",
+        "ground_truth": [
+          "8",
+          "eight",
+          "Eight"
+        ]
+      },
+      {
+        "idx": 84,
+        "question": "In the BBC sitcom, according to the sign on their van Trotters Independent Traders have branches in New York, Peckham and where else?",
+        "prediction": "London.",
+        "ground_truth": [
+          "Places named Paris",
+          "Paris (actor)",
+          "Paris (film)"
+        ]
+      },
+      {
+        "idx": 85,
+        "question": "A-ha's debut chart hit, 'Take On Me', only reached number 2 in the charts. What was their follow-up, their only number 1?",
+        "prediction": "Mystery Tour.",
+        "ground_truth": [
+          "The Sun Always Shines On T.V.",
+          "The Sun Always Shines on T.V.",
+          "The Sun Always Shines on T V"
+        ]
+      },
+      {
+        "idx": 86,
+        "question": "\"In the 1966 film \"\"The Good, The Bad and The Ugly\"\", who played Tuco, \"\"the Ugly\"\"?\"",
+        "prediction": "Lee Van Hoose.",
+        "ground_truth": [
+          "Eli Herschel Wallach",
+          "Eli Wallach",
+          "Ely Wallach"
+        ]
+      },
+      {
+        "idx": 87,
+        "question": "Which now retired English football referee booked Croatian Josip Simunic three times (playing against Australia) in the 2006 World Cup?",
+        "prediction": "Mark Clattenburg.",
+        "ground_truth": [
+          "Graham Poll",
+          "Graham Poll"
+        ]
+      },
+      {
+        "idx": 88,
+        "question": "Which 2009 Formula One Grand Prix was run at night time?",
+        "prediction": "Hungarian Grand Prix.",
+        "ground_truth": [
+          "Singapore City (disambiguation)",
+          "Singapore basic facts",
+          "\u65b0\u52a0\u5761\u5171\u548c\u56fd"
+        ]
+      },
+      {
+        "idx": 89,
+        "question": "Born in 1964, which model is nicknamed The Body?",
+        "prediction": "Ford Mustang.",
+        "ground_truth": [
+          "Elle Mcpherson",
+          "Eleanor Macpherson",
+          "Elle Macpherson"
+        ]
+      },
+      {
+        "idx": 91,
+        "question": "Who was the senior US diplomat held in the US Embassy in Tehran?",
+        "prediction": "Nestor Khrushchev.",
+        "ground_truth": [
+          "Bruce Laingen",
+          "Bruce Laingen"
+        ]
+      },
+      {
+        "idx": 92,
+        "question": "\"What did Shakespeare compare \"\"Katharina\"\" to?\"",
+        "prediction": "Witch.",
+        "ground_truth": [
+          "Shrew",
+          "Soricidae",
+          "Echolocating shrew"
+        ]
+      },
+      {
+        "idx": 93,
+        "question": "What animals name translates as earth pig?",
+        "prediction": "Pigmy ox.",
+        "ground_truth": [
+          "Ardvark",
+          "Aardvaark",
+          "Earth pig"
+        ]
+      },
+      {
+        "idx": 95,
+        "question": "On which river do Basle, Strasbourg and Cologne stand?",
+        "prediction": "Danube.",
+        "ground_truth": [
+          "Rhine",
+          "Alpenrhein River",
+          "Rhinen"
+        ]
+      },
+      {
+        "idx": 101,
+        "question": "Name either one of the beavers in The Angry Beavers Children's TV show",
+        "prediction": "Tommy and Tommy.",
+        "ground_truth": [
+          "Norbert and Daggett",
+          "Norbert and Daggett"
+        ]
+      },
+      {
+        "idx": 102,
+        "question": "What word can mean either a type of ribbed cloth or a measure of cut wood?",
+        "prediction": "Rope.",
+        "ground_truth": [
+          "Cord",
+          "CORD",
+          "Cord (disambiguation)"
+        ]
+      },
+      {
+        "idx": 103,
+        "question": "What was the second UK Number 1 from Gerry and the Pacemakers?",
+        "prediction": "\"Shape of You.\"",
+        "ground_truth": [
+          "I Like It (disambiguation)",
+          "I like it",
+          "I Like It"
+        ]
+      },
+      {
+        "idx": 104,
+        "question": "In which area is part or all of the Dakar Rally run since 2008?",
+        "prediction": "Africa.",
+        "ground_truth": [
+          "South amerika",
+          "South america",
+          "Prehistory of South America"
+        ]
+      },
+      {
+        "idx": 106,
+        "question": "Who composed the opera \u2018Peter Grimes\u2019?",
+        "prediction": "Ives.",
+        "ground_truth": [
+          "Britten, Benjamin",
+          "Benjamin, Baron Britten",
+          "Edward Benjamin Britten"
+        ]
+      },
+      {
+        "idx": 108,
+        "question": "What was a negative term US Southerners gave to Northerner speculators in the South soon after the Civil War?",
+        "prediction": "Yankees.",
+        "ground_truth": [
+          "Carpetbagging",
+          "Carpet-Bagger",
+          "Carpet baggers"
+        ]
+      },
+      {
+        "idx": 114,
+        "question": "Which English football league club play their home games at Boundary Park?",
+        "prediction": "Sheffield Wednesday.",
+        "ground_truth": [
+          "Oldham Athletic A F C",
+          "Oldham Athletic AFC",
+          "Oldham Athletic FC"
+        ]
+      },
+      {
+        "idx": 115,
+        "question": "What sport, the season for which is March to August, has been phased out in all states in Australia except for Victoria and South Australia, and will end in Victoria after the 2010 season?",
+        "prediction": "Cricket.",
+        "ground_truth": [
+          "Steeplechases",
+          "Steeplechaser",
+          "Steeplechase racing in Australia"
+        ]
+      },
+      {
+        "idx": 116,
+        "question": "Which group had number one hits in 1966 with 'Somebody Help Me' and 'Keep On Running'?",
+        "prediction": "The Beatles.",
+        "ground_truth": [
+          "Spencer Davis (group)",
+          "Spencer Davis Group",
+          "Spencer Davis (band)"
+        ]
+      },
+      {
+        "idx": 117,
+        "question": "Who made his film debut playing Kasper Gutman in the 1941 film \u2018Casablanca\u2019?",
+        "prediction": "Hans Zimmer.",
+        "ground_truth": [
+          "SYDNEY GREENSTREET",
+          "Sidney Greenstreet",
+          "Sydney Greenstreet"
+        ]
+      },
+      {
+        "idx": 119,
+        "question": "On which racecourse is the Prix de L'Arc de Triomphe run?",
+        "prediction": "Chantilly Racecourse.",
+        "ground_truth": [
+          "Longchamps",
+          "Longchamp",
+          "Longchamp (disambiguation)"
+        ]
+      },
+      {
+        "idx": 120,
+        "question": "Which mountain is nicknamed the Tiger of the Alps?",
+        "prediction": "The Eiger.",
+        "ground_truth": [
+          "Monte Cervino",
+          "H\u00f6rnli Ridge",
+          "Materhorn"
+        ]
+      },
+      {
+        "idx": 122,
+        "question": "Which British Olympic swimmer has a pub named after them in the town of Mansfield?",
+        "prediction": "Ben Ainslie.",
+        "ground_truth": [
+          "Rebecca Adlington",
+          "Adlington, Rebecca",
+          "Becky Adlington"
+        ]
+      },
+      {
+        "idx": 128,
+        "question": "What character was played first by Ursula Andress in a 1967 film, and by Eva Green in a 2006 remake?",
+        "prediction": "Drake.",
+        "ground_truth": [
+          "VESPER LYND",
+          "Vesper Lynd",
+          "List of Bond girls in Casino Royale"
+        ]
+      },
+      {
+        "idx": 131,
+        "question": "Who was the founding father of the US state of Texas?",
+        "prediction": "Sam Houston.",
+        "ground_truth": [
+          "Steven F Austin",
+          "Stephen Austin",
+          "Stephen F. Austin's"
+        ]
+      },
+      {
+        "idx": 132,
+        "question": "Which French tennis player defeated Serena Williams at this year's Wimbledon Championships?",
+        "prediction": "Andy Murray.",
+        "ground_truth": [
+          "Marion Bartoli",
+          "MARION BARTOLI",
+          "MARION BARTOLI"
+        ]
+      },
+      {
+        "idx": 135,
+        "question": "In the celestial hierarchy, what is the highest order of angels?",
+        "prediction": "Angels of light.",
+        "ground_truth": [
+          "The Seraphim",
+          "Seraphims",
+          "Seraphs"
+        ]
+      },
+      {
+        "idx": 136,
+        "question": "In the Lotto Thunderball draw, you choose 1 Thunderball from how many?",
+        "prediction": "40.",
+        "ground_truth": [
+          "fourteen",
+          "14",
+          "14"
+        ]
+      },
+      {
+        "idx": 137,
+        "question": "Which name is hsared by a US state capital and a British shipping forecast area?",
+        "prediction": "New York.",
+        "ground_truth": [
+          "Dover RFC",
+          "Docks Of Dover",
+          "Docks of Dover"
+        ]
+      },
+      {
+        "idx": 138,
+        "question": "Which boyband represented the UK in the 2011 Eurovision Song Contest?",
+        "prediction": "One Direction.",
+        "ground_truth": [
+          "Blue",
+          "Rgb(0, 0, 255)",
+          "Orphan blue"
+        ]
+      },
+      {
+        "idx": 140,
+        "question": "Preceding 'Cubs', what name is given to the youngest section of the Scouting movement in the UK?",
+        "prediction": "Young Explorers.",
+        "ground_truth": [
+          "Beaverdams",
+          "'BEAVERS'",
+          "Beaver house"
+        ]
+      },
+      {
+        "idx": 141,
+        "question": "In the world of Skeet shooting, also known as Inanimate Bird Shooting, what is the name of the small round disk that serves as the target?",
+        "prediction": "The bullseye.",
+        "ground_truth": [
+          "Clay pigeon (disambiguation)",
+          "Clay pigeon",
+          "Clay Pigeons (disambiguation)"
+        ]
+      },
+      {
+        "idx": 142,
+        "question": "US actor/director Jerome Silberman is better known by what name?",
+        "prediction": "Jerry Bruckheimer.",
+        "ground_truth": [
+          "Gene Wilder",
+          "Jerome Silberman",
+          "Gene Wilder"
+        ]
+      },
+      {
+        "idx": 144,
+        "question": "Who got her first big break in Grease 2?",
+        "prediction": "Christina Aguilera.",
+        "ground_truth": [
+          "Michelle Phifer",
+          "Michelle Pfeiffer",
+          "Michelle Pfeifer"
+        ]
+      },
+      {
+        "idx": 145,
+        "question": "Which soft drink, described as having a unique flavour, was first nationally marketed in the USA in 1904 and has had many advertising slogans including 'what's the worst that can happen' in 2008?",
+        "prediction": "Coke.",
+        "ground_truth": [
+          "Dr.Pepper",
+          "DCVDP",
+          "Red Fusion"
+        ]
+      },
+      {
+        "idx": 146,
+        "question": "Who directed the Beatles films 'A Hard Day's Night' and 'Help'?",
+        "prediction": "Peter Blake directed these films.",
+        "ground_truth": [
+          "Richard Lester",
+          "Dick Lester",
+          "Lester, Richard"
+        ]
+      },
+      {
+        "idx": 147,
+        "question": "What is the main dog character called in Norton Juster's 1961 popular children's/adult-crossover book The Phantom Tollbooth?",
+        "prediction": "Tollknight.",
+        "ground_truth": [
+          "Tock",
+          "Tock"
+        ]
+      },
+      {
+        "idx": 150,
+        "question": "\"Which cartoonist, famous for his work for the British newspaper the \"\"Daily Express\"\", used a cartoon family (including Grandma, the enigmatic matriarch, and Chalkie, the tyrannical school teacher), to comment on current affairs?\"",
+        "prediction": "David Horrocks.",
+        "ground_truth": [
+          "Giles",
+          "Giles (disambiguation)",
+          "Giles"
+        ]
+      },
+      {
+        "idx": 152,
+        "question": "Which fuel is formed by the fossilization of plants?",
+        "prediction": "Petroleum.",
+        "ground_truth": [
+          "Coal-fired",
+          "Low-sulfur coal",
+          "Coal business"
+        ]
+      },
+      {
+        "idx": 153,
+        "question": "Which capital city was the scene of a major summit between Reagan and Gorbachev in 1986?",
+        "prediction": "Washington, D.C.",
+        "ground_truth": [
+          "Nightlife in Reykjavik",
+          "Reykjavic, Iceland",
+          "Raykjav\u00edk"
+        ]
+      },
+      {
+        "idx": 155,
+        "question": "How many races did Ed Moses win in succession between '77 and '87?",
+        "prediction": "4.",
+        "ground_truth": [
+          "122",
+          "one hundred and twenty-two",
+          "122"
+        ]
+      },
+      {
+        "idx": 157,
+        "question": "Held sometime between March and May, which national ice cream company has sponsored a Free Cone Day each year for the last 32 years, starting the year after their founding?",
+        "prediction": "Coca-Cola.",
+        "ground_truth": [
+          "Free Cone Day",
+          "Ben & Jerry\u2019s",
+          "Ben and jereys"
+        ]
+      },
+      {
+        "idx": 158,
+        "question": "Which motorway connects Bristol to the M4?",
+        "prediction": "M57.",
+        "ground_truth": [
+          "M-32",
+          "M32",
+          "M.32"
+        ]
+      },
+      {
+        "idx": 159,
+        "question": "In which mountain range were monkey puzzle trees first discovered by Europeans?",
+        "prediction": "Australian Alps.",
+        "ground_truth": [
+          "Northern Andes",
+          "ANDES",
+          "Andean mountains"
+        ]
+      },
+      {
+        "idx": 160,
+        "question": "Which river runs through the Cumbrian town of Kendal?",
+        "prediction": "River Calder.",
+        "ground_truth": [
+          "K249DR",
+          "KENT",
+          "KAZZ (AM)"
+        ]
+      },
+      {
+        "idx": 161,
+        "question": "Which English scientist and philosopher invented the magnifying glass in 1250?",
+        "prediction": "Robert Hooke.",
+        "ground_truth": [
+          "Roger Bacon (philosopher)",
+          "Nullitate Magiae",
+          "Bacon, Roger"
+        ]
+      },
+      {
+        "idx": 164,
+        "question": "Which rock band opened the Live Aid concert at Wembley in July 1985?",
+        "prediction": "Eagles.",
+        "ground_truth": [
+          "Statu quo",
+          "Status quo",
+          "Status Quo"
+        ]
+      },
+      {
+        "idx": 165,
+        "question": "How many different people were Prime Minister of New Zealand in the first 100 years after it became a Dominion in 1907?",
+        "prediction": "4.",
+        "ground_truth": [
+          "21",
+          "twenty-one",
+          "21"
+        ]
+      },
+      {
+        "idx": 166,
+        "question": "In the UK these books are called \u2018Where\u2019s Wally?\u2019 What is his name in the USA?",
+        "prediction": "Wally's friend, Tommy.",
+        "ground_truth": [
+          "Waldo (disambiguation)",
+          "Waldo",
+          "WALDO"
+        ]
+      },
+      {
+        "idx": 168,
+        "question": "In Greek mythology, who was the King of Corinth, condemned to eternal punishment for deceitfulness to push a heavy rock up a steep hill which would always roll down again?",
+        "prediction": "Tantalus.",
+        "ground_truth": [
+          "Sisophys",
+          "Sisyphe",
+          "Sisyphid"
+        ]
+      },
+      {
+        "idx": 169,
+        "question": "What is the name of the new England Football Centre of Excellence near Burton-on-Trent?",
+        "prediction": "Brentford FC.",
+        "ground_truth": [
+          "St George\u2019s Park",
+          "St George's Park",
+          "St George's Park (disambiguation)"
+        ]
+      },
+      {
+        "idx": 170,
+        "question": "Reginald Rose wrote a play adapted from his 1957 teleplay, and later film, script of the same name. The film became famous with Henry Fonda in the lead role as foreman of a jury. What was the play?",
+        "prediction": "\"Crossfire\".",
+        "ground_truth": [
+          "Twelve Angry Men",
+          "12 Angry Men",
+          "12 men"
+        ]
+      },
+      {
+        "idx": 172,
+        "question": "In snooker, what colour ball is spotted on the centre of the table?",
+        "prediction": "The red ball is at the center.",
+        "ground_truth": [
+          "Blue",
+          "Rgb(0, 0, 255)",
+          "Orphan blue"
+        ]
+      },
+      {
+        "idx": 174,
+        "question": "Which jockey rode Red Alligator to victory in the 1968 Grand National?",
+        "prediction": "Nicky Cox.",
+        "ground_truth": [
+          "BRIAN FLETCHER",
+          "Brian Fletcher",
+          "BRIAN FLETCHER"
+        ]
+      },
+      {
+        "idx": 175,
+        "question": "Who was the unlikely European correspondent of The New York Tribune in 1853?",
+        "prediction": "Henry Morton Stanley.",
+        "ground_truth": [
+          "Karl Marx",
+          "Karl Heinrich Marx",
+          "K. H. Marx"
+        ]
+      },
+      {
+        "idx": 176,
+        "question": "In 'The Munsters' what was 'Herman Munster's' twin brother called?",
+        "prediction": "Eugene Munster.",
+        "ground_truth": [
+          "Chas Brownlow Trophy",
+          "Charles Brownlow Medal",
+          "The Charlie"
+        ]
+      },
+      {
+        "idx": 178,
+        "question": "Who directed the spaghetti Dollar westerns",
+        "prediction": "Dino De Luca directed these films.",
+        "ground_truth": [
+          "Leone's Leningrad",
+          "Sergio Leone",
+          "Sergio Leone's"
+        ]
+      },
+      {
+        "idx": 179,
+        "question": "Steve Halliwell plays which character in the UK television soap \u2018Emmerdale\u2019?",
+        "prediction": "Tom Riddle, also known as Tom Marvolo Riddle.",
+        "ground_truth": [
+          "Zak Dingle",
+          "Zak Dingle"
+        ]
+      },
+      {
+        "idx": 180,
+        "question": "What video-distribution company known for standardizing features like letterbox ratio, bonus features, and special editions started in 1984 with the releases of Citizen Kane and King Kong?",
+        "prediction": "Sony Pictures Entertainment.",
+        "ground_truth": [
+          "The Criterion Collection",
+          "Criterion.com",
+          "Criterion collection"
+        ]
+      },
+      {
+        "idx": 182,
+        "question": "Following a famous crime, the United States Congress adopted a statute in 1932 that was dubbed the Lindbergh Law. The legislation made what act a federal offense?",
+        "prediction": "Child abduction.",
+        "ground_truth": [
+          "Kidnapping in terrorism",
+          "Kidnaps",
+          "Tonya Cash"
+        ]
+      },
+      {
+        "idx": 186,
+        "question": "What murderer lived at 10 Rillington Place, Notting Hill, London?",
+        "prediction": "Sir Arthur Conan Doyle's character.",
+        "ground_truth": [
+          "John Christie (footballer)",
+          "John Christie (disambiguation)",
+          "Christie, John"
+        ]
+      },
+      {
+        "idx": 187,
+        "question": "Who was appointed manager of West Bromwich Albion FC in January?",
+        "prediction": "Mauricio Pochettino.",
+        "ground_truth": [
+          "Tony Pulis Snr",
+          "Tony Pulis",
+          "TONY PULIS"
+        ]
+      },
+      {
+        "idx": 188,
+        "question": "The Potola Palace is a famous landmark in which Asian city?",
+        "prediction": "Tokyo, Japan.",
+        "ground_truth": [
+          "Lhasa",
+          "Lhasa, Tibet",
+          "\u62c9\u8428"
+        ]
+      },
+      {
+        "idx": 189,
+        "question": "Quicksilver is the alternative name for what?",
+        "prediction": "Pistol.",
+        "ground_truth": [
+          "Mercury",
+          "Murcury",
+          "Mercury (album)"
+        ]
+      },
+      {
+        "idx": 191,
+        "question": "What is the next number in the series 1, 4, 9, 16, 25?",
+        "prediction": "36.",
+        "ground_truth": [
+          "two  time",
+          "2 hours",
+          "2 time"
+        ]
+      },
+      {
+        "idx": 194,
+        "question": "What does the musical term 'pizzicato' mean?",
+        "prediction": "Plucking strings with a bow.",
+        "ground_truth": [
+          "La morte ha fatto l'uovo",
+          "A Curious Way to Love",
+          "Plucked (film)"
+        ]
+      },
+      {
+        "idx": 195,
+        "question": "Which race had a cloaking device in Star Trek?",
+        "prediction": "Cardassians.",
+        "ground_truth": [
+          "Romulans (Star Trek)",
+          "Remus (Star Trek)",
+          "Star Trek/Romulan"
+        ]
+      },
+      {
+        "idx": 198,
+        "question": "In which film starring Humphrey Bogart did Peter Lorre play Joel Cairo and Sydney Greenstreet play Kasper Gutman?",
+        "prediction": "Casablanca.",
+        "ground_truth": [
+          "The Maltese Falcon (disambiguation)",
+          "The Maltese Falcon (film)",
+          "Maltese Falcon"
+        ]
+      }
+    ]
+  }
+}
