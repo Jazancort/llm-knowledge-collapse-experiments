@@ -127,16 +127,25 @@ def main():
     parser.add_argument("--rank", type=int, default=64)
     parser.add_argument("--seed", type=int, default=15)
     parser.add_argument("--generations", type=int, default=5)
+    parser.add_argument("--target", choices=["attention", "full_linear"], default="attention")
     args = parser.parse_args()
     rank = args.rank
     seed = args.seed
     NUM_GENERATIONS = args.generations
 
-    output_dir = Path(__file__).parent.parent / "outputs" / f"g1_rank{rank}_seed{seed}"
+    TARGET_MODULES = {
+        "attention": ["q_proj", "v_proj"],
+        "full_linear": ["q_proj", "k_proj", "v_proj", "o_proj", "gate_proj", "up_proj", "down_proj"],
+    }
+    target_modules = TARGET_MODULES[args.target]
+
+    suffix = f"_full" if args.target == "full_linear" else ""
+    output_dir = Path(__file__).parent.parent / "outputs" / f"g1_rank{rank}{suffix}_seed{seed}"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print("=" * 60)
     print(f"G1 RANK ABLATION: r={rank}, seed={seed}, {NUM_GENERATIONS} generations")
+    print(f"  Target modules: {target_modules}")
     print("=" * 60)
 
     torch.manual_seed(seed)
@@ -208,7 +217,7 @@ def main():
         torch.manual_seed(seed + gen)
         lora_config = LoraConfig(
             r=rank, lora_alpha=rank * 2, lora_dropout=0.05,
-            target_modules=["q_proj", "v_proj"], task_type="CAUSAL_LM",
+            target_modules=target_modules, task_type="CAUSAL_LM",
         )
         model.enable_input_require_grads()
         peft_model = get_peft_model(model, lora_config)
@@ -229,6 +238,7 @@ def main():
                 per_device_train_batch_size=2, gradient_accumulation_steps=8,
                 learning_rate=1e-5, bf16=True, logging_steps=100,
                 save_strategy="no", report_to="none", seed=seed + gen,
+                gradient_checkpointing=len(target_modules) > 2,
             ),
             train_dataset=train_ds,
             data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=False),
