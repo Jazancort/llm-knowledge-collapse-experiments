@@ -1,198 +1,139 @@
-# Phase 2: Methodological Armoring — Experiment Plan
+# Phase 2: Revised Plan (Post-Literature Review)
 
-**Status:** PROPOSED (pending grill)  
-**Date:** 2026-06-24  
-**Prerequisite:** Core experiments complete (dose-response, multi-seed, 10-gen)
-
----
-
-## Strategic Goal
-
-Transform the paper from "we observed this on Qwen with q_proj/v_proj" into "we observed a capacity-dependent regime under multiple configurations, architectures, and training methods."
-
-Each sprint addresses a specific reviewer attack vector.
+**Date:** 2026-06-25  
+**Status:** APPROVED — Executing
 
 ---
 
-## Sprint 1 — Full Linear LoRA (MLP Ablation)
+## CRITICAL: Novelty Correction
 
-### Reviewer Attack
+The claim "no prior work used PEFT/LoRA for recursive training" is **PARTIALLY FALSE**.
 
-> "Your homeostasis result is an artifact of restricting LoRA to attention only. The MLP layers are where factual knowledge is stored (Meng et al., 2022). Of course restricting adaptation to attention preserves facts."
+### Papers that overlap:
 
-### Design
+1. **Biderman et al. (TMLR 2024)** — "LoRA Learns Less and Forgets Less"
+   - Established that LoRA regularizes, forgets less, maintains diversity vs FFT
+   - This is precisely the mechanism we observe
+   - DOES NOT do: recursive multi-generation, dose-response, rank sweep
 
-**Model:** Qwen2.5-1.5B-Instruct (same as all prior experiments)
+2. **Adapala (2025)** — "Anti-Ouroboros Effect"  
+   - Gemma-2b-it + cumulative LoRA adapters + 5 generations of recursive synthetic training
+   - Found +6.6% improvement with selection filtering
+   - DOES NOT do: rank ablation, capacity threshold mapping, replace-without-filter protocol
 
-**Target modules:**
+3. **Fu et al. (NeurIPS 2025)** — "Self-Verification Provably Prevents Model Collapse"
+   - Combines PEFT with recursive synthetic training + verification
+   - Different mechanism (verifier-based), not capacity-based
 
-| Config | Modules | Approx Params (r=16) |
-|---|---|---|
-| ATTENTION_ONLY (current) | q_proj, v_proj | 2.2M |
-| FULL_LINEAR (new) | q_proj, k_proj, v_proj, o_proj, gate_proj, up_proj, down_proj | ~7.7M |
+### Our ACTUAL novelty (what survives):
 
-**Runs:**
+> "LoRA is known to regularize and forget less (Biderman 2024), and has been used in recursive loops (Adapala 2025). We contribute the **systematic mapping of adapter capacity as the control variable** for recursive collapse, identifying a transition between homeostatic and degradative regimes, and demonstrating topological invariance of the protective mechanism across module targeting schemes."
 
-| ID | Rank | Seed | Generations | Target |
-|---|---|---|---|---|
-| A1.1 | 16 | 15 | 5 | FULL_LINEAR |
-| A1.2 | 256 | 15 | 5 | FULL_LINEAR |
+### What the paper should NOT claim:
 
-**Metrics:** K0 retention, accuracy, transitions (C→W, W→C), effective rank, trainable params
+- ❌ "First to use PEFT/LoRA for recursive training"
+- ❌ "Novel observation that LoRA prevents collapse" (Biderman showed this)
+- ❌ "LoRA recursive training on Gemma is new" (Adapala did this)
 
-### Decision Tree
+### What the paper CAN claim:
 
-| Outcome | Interpretation | Next action |
-|---|---|---|
-| r=16 stable (>90%), r=256 degrades | Phenomenon is robust to module choice | Proceed to Sprint 2 |
-| r=16 degrades slightly (85-90%), r=256 degrades more | MLP amplifies but doesn't change regime | Report as additional finding, proceed |
-| r=16 collapses (<80%) | Protection was partially attention-restriction artifact | STOP. Reframe paper. Add as critical finding. |
-
-### Execution Order
-
-1. Run A1.1 (r=16) first — validates the homeostatic regime survives
-2. Only if A1.1 passes (>85% retention at Gen 5): run A1.2 (r=256)
+- ✅ First systematic dose-response curve (r=4 → r=256, 10 generations, 3 seeds)
+- ✅ First identification of capacity-dependent regime transition
+- ✅ First demonstration of topological invariance (attention vs full-linear)
+- ✅ Mechanistic refinement: effective rank as predictor, not just "LoRA helps"
+- ✅ Reconciliation with Dohmatob/Shumailov (PEFT changes effective hypothesis class)
 
 ---
 
-## Sprint 2 — Architectural Generalization (Gemma)
+## Execution Sequence (Revised)
 
-### Reviewer Attack
+### Item 0 — Literature Integration (NO GPU needed)
 
-> "These results are specific to Qwen's architecture. Without cross-architecture validation, the claimed 'threshold' may be a quirk of Qwen's attention head configuration."
+Update docs/PROJECT_STATUS.md and paper framing:
+- Add Biderman, Adapala, Fu to Related Work
+- Rewrite contribution as "capacity mapping" not "method novelty"
+- Differentiate from Adapala explicitly (we use replace-without-filter, they use cumulative+selection)
 
-### Design
+### Item 1 — Audit Aggregate Effective Rank (NO GPU needed)
 
-**Model:** google/gemma-2-2b-it (or gemma-2b if VRAM constrained)
+**Key insight from ChatGPT:** `compute_lora_spectrum()` in `g1_rank_ablation.py` runs on the REAL adapter after each generation. The value reported (e.g., "Effective rank: 11.53 / 16") IS the real measurement.
 
-**Runs:**
+**Task:** Confirm in code that `compute_lora_spectrum()`:
+- Is called after training, on the real peft_model of that generation
+- Computes mean over ALL active LoRA A/B pairs
 
-| ID | Rank | Seed | Generations | Target |
-|---|---|---|---|---|
-| B1.1 | 16 | 15 | 3 | ATTENTION_ONLY |
-| B1.2 | 256 | 15 | 3 | ATTENTION_ONLY |
-
-**Metrics:** K0 retention, transitions, effective rank (no CKA needed — just behavioral replication)
-
-### Success Criterion
-
-Does NOT need to reproduce exact numbers. Needs to reproduce the PATTERN:
-
+If confirmed:
 ```
-low rank  → stable
-high rank → more degradation
+aggregate_eff_rank = mean_eff_rank × num_lora_matrices
+```
+is a valid real measurement, NOT a proxy.
+
+The `extract_per_matrix_rank.py` script = Gen1 sanity check for heterogeneity only.
+
+### Item 2 — Attention r=64 Gen10 (GPU, ~5h)
+
+Run in parallel with Item 1. Only point in transition zone without Gen10.
+
+```bash
+uv run python scripts/g1_rank_ablation.py --rank 64 --target attention --seed 15 --generations 10
 ```
 
-### Decision Tree
+### Item 3 — Replot with Consistent Generations
 
-| Outcome | Interpretation | Next action |
-|---|---|---|
-| Pattern replicates | Architecture-independent phenomenon | Proceed to Sprint 3 |
-| No clear difference between ranks | Qwen-specific or need different rank thresholds for Gemma | Document as limitation, possibly test higher ranks |
-| Both collapse | Something fundamentally different about Gemma's factual encoding | Document, do not overfit interpretation |
+**Fig 5a:** Retention Gen5 vs Aggregate Effective Rank (all 8 points)  
+**Fig 5b:** Retention Gen10 vs Aggregate Effective Rank (only configs with Gen10)
 
----
+Title: "Aggregate Effective Rank as Primary Predictor of Retention"
 
-## Sprint 3 — FFT vs QLoRA Direct Comparison
+Remove: "same curve", "second-order protection", "distributed protection"
 
-### Reviewer Attack
+### Item 4 — Wording Corrections
 
-> "You claim PEFT provides implicit regularization, but you never compared against Full Fine-Tuning. Without this baseline, your 'protection mechanism' claim is unfounded."
+- Full r=16: "bounded, quasi-homeostatic; no runaway degradation"
+- Aggregate rank: "primary but not exclusive predictor"
+- Remove: "protective effect of dispersed constraints"
+- Module allocation: "may modulate retention as secondary factor" (underpowered observation)
 
-### Design
+### Item 5 — Sprint 2: Gemma 3 1B IT
 
-**Model:** Qwen2.5-0.5B-Instruct (smaller model — FFT must fit in 8GB)
+**Purpose:** Confrontation with Keisha (2025), NOT "LoRA recursion on Gemma" (Adapala did that).
 
-**Runs:**
+**Framing:** "Under the same backbone where Keisha observed three-stage collapse under FFT, QLoRA bounds the degradation trajectory."
 
-| ID | Method | Seed | Generations |
-|---|---|---|---|
-| C1.1 | QLoRA r=16 | 15 | 3 |
-| C1.2 | Full Fine-Tuning | 15 | 3 |
+**Differentiation from Adapala:**
+- We use replace (not cumulative adapters)
+- We test dose-response (r=16 vs r=256), not single-rank
+- We do NOT use selection filtering
+- We measure effective rank and transitions, not just accuracy
 
-**Dataset:** Same TriviaQA subset (2000 train, 200 eval)
-
-**Training:** Same hyperparams where applicable (LR may need adjustment for FFT)
-
-### Expected Result
-
-```
-FFT:   100 → ~85 → ~72 → ~60  (degradation)
-QLoRA: 100 → ~95 → ~95 → ~94  (homeostasis)
-```
-
-Numbers don't matter. The DIVERGENCE matters.
-
-### Scientific Value
-
-**Maximum.** This directly connects to Shumailov (2024) and Dohmatob (2025) without philosophical argument. Same model, same data, same recursion — different update method → different outcome.
-
-### Decision Tree
-
-| Outcome | Interpretation | Next action |
-|---|---|---|
-| FFT degrades, QLoRA stable | Paper's thesis directly demonstrated | Sprint complete |
-| Both degrade similarly | LoRA protection claim fails at this scale | Major reframing needed |
-| Neither degrades | Model too small to exhibit phenomenon | Try larger model or more generations |
+**Execution:**
+1. `named_modules()` on Gemma 3 1B IT first
+2. r=16 seed=15 Gen5
+3. r=256 seed=15 Gen5 (or r=128 if VRAM-constrained)
+4. Save per-matrix rank in training loop
+5. Add timing per generation
 
 ---
 
-## Sprint 4 (Optional) — Dataset Generalization
+## Positioning Statements (for paper)
 
-### Reviewer Attack
+### Gap statement (honest):
+> "Existing work explains or mitigates model collapse primarily through data composition (Gerstgrasser 2024), loss design (Zibakhsh 2024), or full-model recursive training dynamics (Shumailov 2024; Dohmatob 2025). While LoRA's regularizing properties are established (Biderman 2024) and recursive LoRA loops have been explored (Adapala 2025), no prior work systematically maps adapter capacity as the control variable for recursive collapse dynamics."
 
-> "TriviaQA is a specific format. Results may not generalize to other factual QA benchmarks."
+### Contribution statement:
+> "We contribute: (1) a five-point dose-response curve demonstrating monotonic capacity-dependent degradation under recursive PEFT; (2) identification of a regime transition between homeostatic (r≤128) and degradative (r≥256) dynamics replicated across seeds; (3) demonstration that module targeting topology does not alter the regime, with aggregate effective rank serving as the primary predictor."
 
-### Design
-
-**Dataset:** Natural Questions (closed-book) or SQuAD
-
-**Runs:**
-
-| ID | Rank | Seed | Generations |
-|---|---|---|---|
-| D1.1 | 16 | 15 | 3 |
-| D1.2 | 256 | 15 | 3 |
-
-### Priority
-
-LOW. Only if Sprints 1-3 succeed and GPU time remains.
-
-TriviaQA is a well-established factual QA benchmark. Most reviewers won't attack dataset choice as the primary concern.
+### Positioning vs Dohmatob:
+> "PEFT alters the effective hypothesis class and update subspace, so the assumptions of high-capacity recursive retraining do not directly apply. Our r=256 results, showing ~2.4pp/gen linear degradation, are consistent with Dohmatob's predictions when effective capacity approaches the regime where their bounds become operative."
 
 ---
 
 ## What We Are NOT Doing
 
-| Experiment | Reason |
+| Temptation | Why skip |
 |---|---|
-| More ranks (r=192, r=512) | 5 points already sufficient for dose-response |
-| More seeds | N=3 is defensible at workshop/short paper level |
-| More generations (>10) | Already exceeds most literature |
-| Qwen 7B / Llama 70B | Cost/benefit too low for current venue target |
-| Multiple datasets simultaneously | One validation dataset is enough to deflect |
-
----
-
-## Resource Estimates
-
-| Sprint | Approx GPU Hours | Priority |
-|---|---|---|
-| Sprint 1 (Full Linear) | ~8-10h | CRITICAL |
-| Sprint 2 (Gemma) | ~6-8h | HIGH |
-| Sprint 3 (FFT comparison) | ~4-6h | HIGH |
-| Sprint 4 (NQ dataset) | ~4-6h | LOW (optional) |
-
-Total if all run: ~22-30h GPU
-
----
-
-## Open Questions for Grill
-
-1. Is Gemma-2-2b the right choice, or should we use something lighter (Gemma-2B, Phi-3-mini)?
-2. For FFT: Qwen 0.5B or TinyLlama 1.1B? (VRAM constraint is 8GB)
-3. Should Sprint 3 use the SAME model (Qwen 1.5B with gradient checkpointing) or is a smaller model acceptable?
-4. Do we need CKA for Sprints 2-3 or is retention+transitions enough?
-5. Is 3 generations sufficient for Sprints 2-3 or do we need 5?
-6. Should FULL_LINEAR use the same LR (1e-5) or scale it down given more params?
-7. For FFT comparison: same LR as QLoRA or grid-search a reasonable FFT LR?
+| More ranks (r=192) | 5+ points sufficient, novelty is sweep not precision |
+| More seeds on Sprint 1 | N=1 is fine for ablation; N=3 is for the core result |
+| r=512 | Impossible on hardware + diminishing returns |
+| Qwen 7B | Cost/benefit too low |
+| Replicate Adapala's cumulative protocol | Not our research question |
