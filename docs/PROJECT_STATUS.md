@@ -51,22 +51,24 @@ The survey identifies three collapse regimes (model collapse, knowledge collapse
 
 ---
 
-## 5. Central Discovery: The Noise Conduction Threshold
+## 5. Central Discovery: Capacity-Dependent Regime Transition
 
-### Two distinct regimes exist under recursive synthetic PEFT:
+### Two distinct behavioral regimes observed under recursive synthetic PEFT:
 
-**Homeostatic Regime (r ≤ 128):**
-- Retention stabilizes at 88-96% and does NOT degrade over 10 generations
-- System absorbs and dissipates recursive noise
-- Effective rank remains stable (~50/128 max utilization)
-- Factual transitions approach zero (C→W ≈ 0, W→C ≈ 0)
+**Bounded/Homeostatic Regime (r ≤ 128, mean eff rank ≤ ~50):**
+- Retention stabilizes at 88-96% with no runaway degradation over 10 generations
+- System absorbs perturbation without cumulative loss
+- Effective rank remains stable across generations
+- Factual transitions approach equilibrium (C→W ≈ W→C)
 
-**Degradative Regime (r ≥ 256):**
-- Retention drops progressively: 100% → 78.0% ± 2.6% over 10 generations
+**Degradative Regime (r = 256, mean eff rank ~88):**
+- Retention declines progressively: 100% → 78.0% ± 2.6% over 10 generations
 - Rate: ~2.4 percentage points lost per generation
 - Plasticity depletes (W→C → 0 by Gen 9-10)
-- Effective rank stabilizes at ~88/256 but doesn't prevent degradation
+- Effective rank stabilizes at ~88/256 but does not prevent degradation
 - **Replicated across 3 seeds**
+
+**Note:** The transition region between r=128 and r=256 is not yet precisely located. The claim is that these two regimes exist, not that there is a sharp threshold at a specific rank value.
 
 ### Dose-Response Curve (5 data points):
 
@@ -83,8 +85,14 @@ The survey identifies three collapse regimes (model collapse, knowledge collapse
 1. **Monotonic dose-response:** More adapter capacity → more factual loss (but NOT linear)
 2. **Sublinear effective rank growth:** Doubling nominal rank does NOT double effective rank
 3. **Diminishing utilization:** The model recruits proportionally LESS capacity as rank increases
-4. **Phase transition:** Between r=128 (stable homeostasis) and r=256 (progressive degradation)
-5. **Degradation under constant complexity:** r=256 eff_rank stays ~87 while retention falls — the adapter doesn't become more complex to cause degradation
+4. **Regime transition:** Between r=128 (bounded) and r=256 (degrading) — exact location undetermined
+5. **Degradation under constant complexity:** r=256 eff_rank stays ~87 while retention falls — degradation is not driven by increasing adapter complexity
+
+### Sprint 1 Finding — Module Targeting Invariance:
+
+Adapting all linear layers (Full Linear: q,k,v,o,gate,up,down) vs attention-only (q,v) does NOT change the behavioral regime. Full Linear r=4 (4.6M params) retains 94.9% — identical to Attention r=16 (2.2M params). Full Linear r=16 at Gen10 = 87.3%, comparable to Attention r=128 at Gen10 = 88.6%. The difference is within single-seed noise.
+
+Mean effective rank per adapter is the primary predictor of retention, though not an exclusive one. Module allocation may modulate retention as a secondary, underpowered observation.
 
 ---
 
@@ -141,23 +149,26 @@ The survey identifies three collapse regimes (model collapse, knowledge collapse
 
 | Paper | Claim | Our finding |
 |---|---|---|
-| Shumailov 2024 (Nature) | Recursive training → irreversible collapse | Not under PEFT (r≤128). Partially confirmed at r=256. |
-| Dohmatob 2025 (ICLR) | Any k>0 synthetic → linear error growth | Not observed. Growth is bounded by adapter capacity. |
-| Keisha 2025 | Three-stage knowledge collapse | Stage B not observed. Different regime (PEFT vs FFT). |
-| Gerstgrasser 2024 | Accumulation prevents collapse | Our D56 (data-only recursion) also prevents it at low rank. |
-| Xu 2025 | P(improvement) < 1/2 under recursion | Consistent with our homeostasis (no improvement, but no collapse either). |
+| Shumailov 2024 (Nature) | Recursive training → irreversible collapse | Not under PEFT (r≤128). Consistent with their result at r=256. |
+| Dohmatob 2025 (ICLR) | Any k>0 synthetic → linear error growth | PEFT alters the effective hypothesis class; their high-capacity assumptions don't directly apply at low rank. r=256 shows ~linear growth consistent with their bounds when capacity is high. |
+| Keisha 2025 | Three-stage knowledge collapse (Gemma 3 1B, FFT) | Stage B not observed under QLoRA. Different update regime. |
+| Gerstgrasser 2024 | Accumulation prevents collapse | Low-rank PEFT also bounds collapse under replace protocol — complementary mechanism. |
+| Xu 2025 | P(improvement) < 1/2 under recursion | Consistent: homeostasis = no improvement, but no collapse either. |
+| Biderman 2024 (TMLR) | LoRA learns less and forgets less than FFT | Our results are consistent. We extend by showing the dose-response: HOW MUCH rank determines WHETHER forgetting accumulates. |
+| Adapala 2025 | Anti-Ouroboros: Gemma + cumulative LoRA + 5 gens | Different protocol (cumulative + selection filter). We use replace-without-filter and map the capacity threshold. |
+| Zibakhsh 2024 | TCE loss delays collapse 2.3× | LoRA and TCE are orthogonal mitigation strategies: TCE modifies the loss signal, LoRA restricts the update subspace. |
 
-**Positioning:** We do NOT contradict the theoretical results. We demonstrate that PEFT imposes a capacity constraint that intercepts the degradation spiral, and we map the exact boundary where this protection fails.
+**Positioning:** We do NOT claim novelty of "using LoRA for recursive training" — that exists (Biderman, Adapala). Our contribution is the **systematic mapping of adapter capacity as the control variable**, demonstrating a dose-response relationship and identifying the regime transition. This is mechanistic refinement of a known protective effect, not discovery of the effect itself.
 
 ---
 
 ## 10. Proposed Paper Title
 
-**"Capacity-Dependent Knowledge Degradation Under Recursive Synthetic Fine-Tuning: Mapping the Noise Conduction Threshold in Low-Rank Adapted Language Models"**
+**"Capacity-Dependent Knowledge Degradation Under Recursive Synthetic Fine-Tuning: A Dose-Response Analysis of Low-Rank Adaptation"**
 
 Or shorter:
 
-**"The Noise Conduction Threshold: How Adapter Rank Governs Knowledge Stability Under Recursive Synthetic Training"**
+**"How Much Rank Is Too Much? Mapping the Capacity Threshold for Knowledge Degradation Under Recursive Synthetic LoRA"**
 
 ---
 
@@ -181,11 +192,12 @@ Or shorter:
 
 ## 12. Key Figures for Paper
 
-1. **Longitudinal trajectories:** r=16 vs r=128 vs r=256 retention over 10 generations
-2. **Dose-response curve:** Retention loss vs effective rank (5 points)
-3. **Utilization curve:** % effective/nominal rank (diminishing returns)
-4. **Transition matrix comparison:** G1 (frozen) vs G2 (active) factual transitions
-5. **CKA-Factual vs Global:** Layer-wise sensitivity at Gen 1
+1. **Longitudinal trajectories (Fig 1):** r=16 vs r=128 vs r=256 retention over 10 generations (with ±std band for r=256)
+2. **Dose-response curve (Fig 2):** Factual loss and effective rank vs nominal rank (dual axis, log₂ scale)
+3. **Plasticity depletion (Fig 3):** C→W vs W→C transitions per generation, r=128 vs r=256 (bar chart)
+4. **Utilization curve (Fig 4):** % effective/nominal rank showing diminishing returns
+5. **Retention vs Mean Effective Rank — Gen 5 (Fig 5a):** All configs (attention + full-linear), showing trend
+6. **Retention vs Mean Effective Rank — Gen 10 (Fig 5b):** Configs with Gen10 data, marking degradative zone
 
 ---
 
