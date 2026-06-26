@@ -51,24 +51,50 @@ The survey identifies three collapse regimes (model collapse, knowledge collapse
 
 ---
 
-## 5. Central Discovery: Capacity-Dependent Regime Transition
+## 5. Central Discovery: Capacity-Gated Regime Transition
 
-### Two distinct behavioral regimes observed under recursive synthetic PEFT:
+### Core finding:
 
-**Bounded/Homeostatic Regime (r ≤ 128, mean eff rank ≤ ~50):**
-- Retention stabilizes at 88-96% with no runaway degradation over 10 generations
+Recursive synthetic fine-tuning under QLoRA exhibits a capacity-gated transition between bounded retention and progressive degradation. This transition is architecture-general but the critical threshold is backbone-dependent.
+
+**Bounded/Homeostatic Regime (below backbone-specific threshold):**
+- Retention remains stable (88-97%) with no runaway degradation over 10 generations
 - System absorbs perturbation without cumulative loss
 - Effective rank remains stable across generations
-- Factual transitions approach equilibrium (C→W ≈ W→C)
 
-**Degradative Regime (r = 256, mean eff rank ~88):**
-- Retention declines progressively: 100% → 78.0% ± 2.6% over 10 generations
-- Rate: ~2.4 percentage points lost per generation
-- Plasticity depletes (W→C → 0 by Gen 9-10)
-- Effective rank stabilizes at ~88/256 but does not prevent degradation
-- **Replicated across 3 seeds**
+**Degradative Regime (above backbone-specific threshold):**
+- Retention declines progressively
+- In Qwen: ~2.4 pp/gen, reaching 78.0% ± 2.6% at Gen10
+- In Gemma: ~6 pp/gen, reaching 68.8% ± 1.2% at Gen5
+- Plasticity depletes (W→C → 0 in later generations)
 
-**Note:** The transition region between r=128 and r=256 is not yet precisely located. The claim is that these two regimes exist, not that there is a sharp threshold at a specific rank value.
+### Threshold comparison (multi-seed confirmed):
+
+| Backbone | Homeostatic | Degradative | Threshold (mean eff rank) | Seeds |
+|---|---|---|---|---|
+| Qwen 2.5 1.5B | r≤128, eff≤50 (94.9% ± 0.7%) | r=256, eff~88 (78.0% ± 2.6%) | ~50–88 | 3 |
+| Gemma 3 1B IT | r≤4, eff≤3 (92.2% ± 1.2%) | r≥16, eff≥9 (68.8% ± 1.2%) | ~3–9 | 3 |
+
+### Critical nuance — NOT a universal continuous curve:
+
+In Qwen, retention decreases monotonically with effective rank across the full range (96% → 76%). In Gemma, once above the threshold, effective rank no longer predicts retention: r=16 (eff 9) and r=256 (eff 70) both produce 70.2%. This indicates a **degradative plateau** post-threshold in Gemma.
+
+**Defensible claim:** Effective rank defines regime boundaries (bounded vs degradative). It is NOT a universal continuous predictor of retention across architectures.
+
+### Mechanism — mixed floor + capacity (Jaccard evidence):
+
+Gemma r=16 and r=256 lose partially overlapping facts (Jaccard 0.57 → 0.47 declining over generations):
+- ~50% shared: floor-dominated fragile baseline facts that fall regardless of capacity
+- ~50% divergent: path-dependent, capacity-influenced
+
+This mixed mechanism explains WHY Gemma's threshold is lower: weak baseline contributes a floor component absent in Qwen.
+
+### Threshold drivers (confounded, future work):
+
+1. **Baseline competence/K0 fragility:** Gemma 23.5% baseline vs Qwen 39.5%
+2. **Architectural geometry:** Gemma 4 heads/1 KV vs Qwen 12 heads/2 KV
+
+These are confounded in current data. Decomposition requires future work with matched baselines or matched architectures.
 
 ### Dose-Response Curve (5 data points):
 
@@ -249,15 +275,31 @@ code/
 
 ## 15. Statistical Summary (paper-ready)
 
-**Homeostatic regime (r=16, N=3 seeds, 10 generations):**
-- Retention: 94.9% ± 0.7%
-- Effective rank: 11.08 ± 0.1
-- Transitions Gen 2-10: median 0 C→W per generation
+### Qwen 2.5 1.5B — Headline claims (N=3 seeds):
+- **Homeostatic (r=16):** 94.9% ± 0.7% at Gen10
+- **Degradative (r=256):** 78.0% ± 2.6% at Gen10
+- Difference: 16.9 pp, non-overlapping bands
+- Rate of degradation (r=256): ~2.4 pp/generation
 
-**Degradative regime (r=256, N=3 seeds, 10 generations):**
-- Retention: 78.0% ± 2.6%
-- Effective rank: 86.6 ± 1.0
-- Transitions Gen 9-10: median 2-3 C→W, 0-1 W→C
-- Rate of degradation: ~2.4 pp/generation
+### Gemma 3 1B IT — Headline claims (N=3 seeds):
+- **Homeostatic (r=4):** 92.2% ± 1.2% at Gen5; 93.6% at Gen10 (seed 15)
+- **Degradative (r=16):** 68.8% ± 1.2% at Gen5
+- Difference: 23.4 pp, non-overlapping bands
+- Degradative plateau: r=16 and r=256 both reach ~70% (capacity beyond threshold doesn't worsen)
 
-**Difference:** 16.9 pp at Gen 10 (p << 0.01 by any test)
+### Qwen supporting points (N=1, exploratory):
+- r=4: 96.2% Gen5, r=32: 94.9% Gen5, r=64: 91.1% Gen10, r=128: 88.6% Gen10
+- Full Linear r=4: 94.9% Gen5, Full Linear r=16: 87.3% Gen10
+
+### Gemma supporting points (N=1):
+- r=2: 97.9% Gen5 (strongly homeostatic)
+- r=256: 70.2% Gen5 (same as r=16 — plateau effect)
+
+### Jaccard analysis (Gemma r=16 vs r=256 lost facts):
+- Gen3: 0.571, Gen5: 0.474 (declining overlap → diverging paths)
+- Interpretation: mixed floor + path-dependent degradation
+
+### Cross-architecture:
+- Threshold differs ~10× (eff rank ~50-88 in Qwen vs ~3-9 in Gemma)
+- Regime structure generalizes; threshold is backbone-dependent
+- Post-threshold behavior differs: Qwen continues declining; Gemma plateaus
