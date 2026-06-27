@@ -1,3 +1,7 @@
+> **⚠️ OBSOLETE** — This document describes the earlier ESI/Lead-Time hypothesis.
+> The project pivoted to capacity-gated recursive QLoRA regime transitions.
+> See `PROJECT_STATUS.md` for the current experimental narrative.
+
 # Fundamento Teórico e Conexão com o Survey
 
 ---

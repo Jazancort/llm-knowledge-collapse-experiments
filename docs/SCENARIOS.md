@@ -1,3 +1,7 @@
+> **⚠️ OBSOLETE** — These scenarios describe outcomes for the ESI/Lead-Time hypothesis.
+> The project found capacity-gated regime transitions instead.
+> See `PROJECT_STATUS.md` for actual results.
+
 # Cenários de Resultado e Interpretação
 
 Este documento define a priori como cada cenário de resultado será interpretado. Escrito ANTES de rodar o experimento para evitar p-hacking narrativo.

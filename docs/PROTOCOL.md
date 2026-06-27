@@ -1,3 +1,7 @@
+> **⚠️ OBSOLETE** — This document describes the earlier ESI/Lead-Time/G1-G2-G3 hypothesis.
+> The project pivoted to capacity-gated recursive QLoRA regime transitions.
+> See `PROJECT_STATUS.md` for the current experimental narrative.
+
 # Protocolo Experimental
 
 ## Early Detection of Knowledge Collapse Through Explanation Stability Analysis in Recursive LLM Training

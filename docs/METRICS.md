@@ -1,3 +1,8 @@
+> **⚠️ OBSOLETE** — This document describes metrics for the earlier ESI/Lead-Time hypothesis.
+> The project pivoted to capacity-gated recursive QLoRA regime transitions.
+> Active metrics are: K0 retention, effective rank, transition matrices.
+> See `PROJECT_STATUS.md` for the current experimental narrative.
+
 # Definições Formais das Métricas
 
 ---

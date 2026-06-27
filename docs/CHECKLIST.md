@@ -1,3 +1,7 @@
+> **⚠️ OBSOLETE** — This checklist describes the earlier ESI/Lead-Time/3-group experiment.
+> The actual experiment used rank ablation + multi-backbone design.
+> See `PROJECT_STATUS.md` for current state.
+
 # Cronograma e Checklist Operacional
 
 ---

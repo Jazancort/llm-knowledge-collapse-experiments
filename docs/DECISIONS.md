@@ -1,3 +1,7 @@
+> **⚠️ PARTIALLY OBSOLETE** — Many decisions below (D01, D02, D03, D05, D06, D09, D10, D12, D13)
+> were revoked or superseded during execution. D52 revokes D02. D56 defines the actual recursion protocol.
+> Preserved as decision history. See `PROJECT_STATUS.md` for active state.
+
 # Registro de Decisões de Design
 
 Cada decisão foi tomada durante a sessão de grill (2026-06-23) e está congelada para o experimento.

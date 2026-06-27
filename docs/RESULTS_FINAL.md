@@ -1,3 +1,6 @@
+> **⚠️ OBSOLETE** — These are the M2 initial results only (3 generations, r=16).
+> The actual final results (rank ablation, 10 generations, multi-backbone) are in `PROJECT_STATUS.md`.
+
 # Resultados Finais M2 — Síntese Experimental
 
 **Data:** 2026-06-23

@@ -1,3 +1,7 @@
+> **⚠️ OBSOLETE** — Design decisions from the ESI/Lead-Time hypothesis phase.
+> Many decisions were revoked during execution.
+> Preserved as intellectual history of the design process.
+
 # Grill Session 2 — Revisão com Fonte Externa
 
 **Data:** 2026-06-23  
