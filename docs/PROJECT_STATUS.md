@@ -74,27 +74,23 @@ Recursive synthetic fine-tuning under QLoRA exhibits a capacity-gated transition
 |---|---|---|---|---|
 | Qwen 2.5 1.5B | r≤128, eff≤50 (94.9% ± 0.7%) | r=256, eff~88 (78.0% ± 2.6%) | ~50–88 | 3 |
 | Gemma 3 1B IT | r≤4, eff≤3 (92.2% ± 1.2%) | r≥16, eff≥9 (68.8% ± 1.2%) | ~3–9 | 3 |
+| Gemma 4 E2B IT | r≤16, eff≤5.6 (97.4%) | not located | unknown (>5.6) | 1 |
 
-### Critical nuance — NOT a universal continuous curve:
+### Critical: NO universal effective-rank threshold exists
 
-In Qwen, retention decreases monotonically with effective rank across the full range (96% → 76%). In Gemma, once above the threshold, effective rank no longer predicts retention: r=16 (eff 9) and r=256 (eff 70) both produce 70.2%. This indicates a **degradative plateau** post-threshold in Gemma.
+Qwen is homeostatic at eff rank 11, 18, 30, 50. Gemma 3 is degradative at eff rank 9.3. Same raw effective rank, opposite regimes, different backbones. Therefore:
 
-**Defensible claim:** Effective rank defines regime boundaries (bounded vs degradative). It is NOT a universal continuous predictor of retention across architectures.
+- **Within a backbone:** effective rank cleanly predicts regime (Qwen dose-response is monotonic)
+- **Across backbones:** raw effective rank is NOT commensurable. The threshold differs by ~10× (Qwen ~50-88 vs Gemma 3 ~3-9)
+- **Why:** architectures differ in hidden dim, depth, GQA head ratio — "eff rank 9" means different functional perturbation magnitudes in each model
 
-### Mechanism — mixed floor + capacity (Jaccard evidence):
+**Defensible claim:** Regime structure is architecture-general; raw effective-rank threshold is backbone-dependent. Normalizing capacity across architectures is future work.
 
-Gemma r=16 and r=256 lose partially overlapping facts (Jaccard 0.57 → 0.47 declining over generations):
-- ~50% shared: floor-dominated fragile baseline facts that fall regardless of capacity
-- ~50% divergent: path-dependent, capacity-influenced
-
-This mixed mechanism explains WHY Gemma's threshold is lower: weak baseline contributes a floor component absent in Qwen.
-
-### Threshold drivers (confounded, future work):
-
-1. **Baseline competence/K0 fragility:** Gemma 23.5% baseline vs Qwen 39.5%
-2. **Architectural geometry:** Gemma 4 heads/1 KV vs Qwen 12 heads/2 KV
-
-These are confounded in current data. Decomposition requires future work with matched baselines or matched architectures.
+**Gemma 4 E2B IT (n=1, single-seed robustness case):**
+- r=4: eff 2.1, 96.1% — homeostatic
+- r=16: eff 5.6, 97.4% — homeostatic (low eff rank, not testing threshold)
+- No degradative point found — threshold not located
+- Role in paper: additional backbone confirming low-eff-rank stability, not a headline claim
 
 ### Dose-Response Curve (5 data points):
 
