@@ -60,8 +60,8 @@ def evaluate_k0(model, tokenizer, k0_questions, k0_answers):
 def generate_synthetic(model, tokenizer, questions, seed_offset=0):
     torch.manual_seed(seed_offset)
     synthetic = []
-    for i in range(0, len(questions), 8):
-        batch = questions[i:i+8]
+    for i in range(0, len(questions), 4):
+        batch = questions[i:i+4]
         prompts = [format_prompt(tokenizer, q) for q in batch]
         inputs = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True, max_length=256)
         inputs = {k: v.to(model.device) for k, v in inputs.items()}
@@ -138,7 +138,7 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
             model=model,
             args=TrainingArguments(
                 output_dir=str(output_dir / "tmp"), num_train_epochs=2,
-                per_device_train_batch_size=8, gradient_accumulation_steps=2,
+                per_device_train_batch_size=4, gradient_accumulation_steps=4,
                 learning_rate=FFT_LR, bf16=True, logging_steps=9999,
                 save_strategy="no", report_to="none", seed=seed + gen,
                 gradient_checkpointing=True, optim="paged_adamw_8bit",
@@ -150,7 +150,8 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
         model.eval()
 
         abs_drift, rel_drift = compute_weight_drift(model, initial_state)
-        del initial_state
+        del initial_state, trainer, train_ds
+        gc.collect(); torch.cuda.empty_cache()
         print(f"    Drift: abs={abs_drift:.4f} rel={rel_drift:.6f}")
 
         k0_res = evaluate_k0(model, tok, k0_questions, k0_answers)
@@ -162,7 +163,7 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
         print(f"    Time: {elapsed:.0f}s")
 
         gen_results.append({"gen": gen, "retention": ret, "abs_drift": abs_drift, "rel_drift": rel_drift, "time": elapsed})
-        del model, trainer; gc.collect(); torch.cuda.empty_cache()
+        del model; gc.collect(); torch.cuda.empty_cache()
 
     json.dump(gen_results, open(result_path, "w"), indent=2)
     return gen_results
@@ -220,7 +221,7 @@ def run_qlora(seed, generations, train_questions, k0_questions, k0_answers, outp
             model=model,
             args=TrainingArguments(
                 output_dir=str(output_dir / "tmp"), num_train_epochs=2,
-                per_device_train_batch_size=8, gradient_accumulation_steps=2,
+                per_device_train_batch_size=4, gradient_accumulation_steps=4,
                 learning_rate=QLORA_LR, bf16=True, logging_steps=9999,
                 save_strategy="no", report_to="none", seed=seed + gen,
             ),
