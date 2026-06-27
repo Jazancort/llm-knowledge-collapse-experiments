@@ -725,7 +725,7 @@ requires-dist = [
     { name = "datasets", specifier = "==3.1.0" },
     { name = "matplotlib", specifier = ">=3.10.9" },
     { name = "numpy", specifier = "==1.26.4" },
-    { name = "peft", specifier = "==0.13.2" },
+    { name = "peft", specifier = ">=0.15" },
     { name = "pyyaml", specifier = "==6.0.2" },
     { name = "scipy", specifier = "==1.14.1" },
     { name = "torch", specifier = ">=2.5", index = "https://download.pytorch.org/whl/cu124" },
@@ -1254,7 +1254,7 @@ wheels = [
 
 [[package]]
 name = "peft"
-version = "0.13.2"
+version = "0.19.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "accelerate" },
@@ -1268,9 +1268,9 @@ dependencies = [
     { name = "tqdm" },
     { name = "transformers" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/97/e1/aab80b861b4c18e85482940d504b3a7ee525bdf6ed93a1a2871881a180f1/peft-0.13.2.tar.gz", hash = "sha256:0e0cbd40ebdf5fe4ea79f255880d02f96712d18899509369a2cc5768ad46d672", size = 350390, upload-time = "2024-10-11T11:42:21.874Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/86/cf/037f1e3d5186496c05513a6754639e2dab3038a05f384284d49a9bd06a2d/peft-0.19.1.tar.gz", hash = "sha256:0d97542fe96dcdaa20d3b81c06f26f988618f416a73544ab23c3618ccb674a40", size = 763738, upload-time = "2026-04-16T15:46:45.105Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/78/9d/5f95bfb298c8d3b4e3a107701f9a4e7774a0d4d1f8eb0c9d5420b80f7c9d/peft-0.13.2-py3-none-any.whl", hash = "sha256:d4e0951ec78eac11c45a051801c569913436888c578d48e5ce86996b715bc6ef", size = 320731, upload-time = "2024-10-11T11:42:18.905Z" },
+    { url = "https://files.pythonhosted.org/packages/e8/b6/f54d676ed93cc2dd2234c3b172ea9c8c3d7d29361e66b1b23dec57a67465/peft-0.19.1-py3-none-any.whl", hash = "sha256:2113f72a81621b5913ef28f9022204c742df111890c5f49d812716a4a301e356", size = 680692, upload-time = "2026-04-16T15:46:42.886Z" },
 ]
 
 [[package]]

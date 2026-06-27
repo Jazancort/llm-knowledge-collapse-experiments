@@ -46,3 +46,6 @@ notebooks/*.ipynb
 
 # Secrets
 .env
+
+athena_access.md
+../athena_access.md
