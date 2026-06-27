@@ -92,8 +92,10 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
     key = f"fft_lr1e-06_seed{seed}"
     result_path = output_dir / f"{key}.json"
     if result_path.exists():
-        print(f"\n[{key}] Already done, skipping.")
-        return json.load(open(result_path))
+        data = json.load(open(result_path))
+        if len(data) >= generations:
+            print(f"\n[{key}] Already done, skipping.")
+            return data
 
     print(f"\n{'='*50}")
     print(f"FFT LR=1e-6, seed={seed}")
@@ -115,10 +117,17 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
         json.dump(synthetic, open(syn_path, "w"))
         del model; gc.collect(); torch.cuda.empty_cache()
 
-    prev_synthetic = json.load(open(syn_path))
-    gen_results = []
+    # Load existing progress
+    gen_results = json.load(open(result_path)) if result_path.exists() else []
+    start_gen = len(gen_results) + 1
 
-    for gen in range(1, generations + 1):
+    for gen in range(start_gen, generations + 1):
+        # Load synthetic from previous gen
+        prev_syn_path = output_dir / f"syn_{key}_gen{gen-1}.json" if gen > 1 else syn_path
+        if not prev_syn_path.exists() and gen == 1:
+            prev_syn_path = syn_path
+        prev_synthetic = json.load(open(prev_syn_path))
+
         t0 = time.time()
         print(f"\n  [Gen {gen}]")
         model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, device_map="auto", torch_dtype=torch.bfloat16)
@@ -158,22 +167,28 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
         ret = sum(k0_res)
         print(f"    K0: {ret}/{len(k0_questions)} ({ret/len(k0_questions):.1%})")
 
-        prev_synthetic = generate_synthetic(model, tok, train_questions, seed_offset=seed + gen + 100)
+        # Generate synthetic and save to disk, then free model
+        next_syn = generate_synthetic(model, tok, train_questions, seed_offset=seed + gen + 100)
+        json.dump(next_syn, open(output_dir / f"syn_{key}_gen{gen}.json", "w"))
+        del model, next_syn; gc.collect(); torch.cuda.empty_cache()
+
         elapsed = time.time() - t0
         print(f"    Time: {elapsed:.0f}s")
 
         gen_results.append({"gen": gen, "retention": ret, "abs_drift": abs_drift, "rel_drift": rel_drift, "time": elapsed})
-        del model; gc.collect(); torch.cuda.empty_cache()
+        # Save after every generation
+        json.dump(gen_results, open(result_path, "w"), indent=2)
 
-    json.dump(gen_results, open(result_path, "w"), indent=2)
     return gen_results
 
 def run_qlora(seed, generations, train_questions, k0_questions, k0_answers, output_dir):
     key = f"qlora_r16_seed{seed}"
     result_path = output_dir / f"{key}.json"
     if result_path.exists():
-        print(f"\n[{key}] Already done, skipping.")
-        return json.load(open(result_path))
+        data = json.load(open(result_path))
+        if len(data) >= generations:
+            print(f"\n[{key}] Already done, skipping.")
+            return data
 
     print(f"\n{'='*50}")
     print(f"QLoRA r=16, seed={seed}")
@@ -194,10 +209,17 @@ def run_qlora(seed, generations, train_questions, k0_questions, k0_answers, outp
         json.dump(synthetic, open(syn_path, "w"))
         del model; gc.collect(); torch.cuda.empty_cache()
 
-    prev_synthetic = json.load(open(syn_path))
-    gen_results = []
+    # Load existing progress
+    gen_results = json.load(open(result_path)) if result_path.exists() else []
+    start_gen = len(gen_results) + 1
 
-    for gen in range(1, generations + 1):
+    for gen in range(start_gen, generations + 1):
+        # Load synthetic from previous gen
+        prev_syn_path = output_dir / f"syn_{key}_gen{gen-1}.json" if gen > 1 else syn_path
+        if not prev_syn_path.exists() and gen == 1:
+            prev_syn_path = syn_path
+        prev_synthetic = json.load(open(prev_syn_path))
+
         t0 = time.time()
         print(f"\n  [Gen {gen}]")
         bnb = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True)
@@ -232,20 +254,27 @@ def run_qlora(seed, generations, train_questions, k0_questions, k0_answers, outp
         model.eval()
 
         lora_norm = compute_lora_norm(model)
+        del trainer, train_ds
+        gc.collect(); torch.cuda.empty_cache()
         print(f"    LoRA norm: {lora_norm:.4f}")
 
         k0_res = evaluate_k0(model, tok, k0_questions, k0_answers)
         ret = sum(k0_res)
         print(f"    K0: {ret}/{len(k0_questions)} ({ret/len(k0_questions):.1%})")
 
-        prev_synthetic = generate_synthetic(model, tok, train_questions, seed_offset=seed + gen + 100)
+        # Generate synthetic and save to disk
+        next_syn = generate_synthetic(model, tok, train_questions, seed_offset=seed + gen + 100)
+        json.dump(next_syn, open(output_dir / f"syn_{key}_gen{gen}.json", "w"))
+        del model, next_syn; gc.collect(); torch.cuda.empty_cache()
+
         elapsed = time.time() - t0
         print(f"    Time: {elapsed:.0f}s")
 
         gen_results.append({"gen": gen, "retention": ret, "lora_norm": lora_norm, "time": elapsed})
-        del model, trainer; gc.collect(); torch.cuda.empty_cache()
+        # Save after every generation
+        json.dump(gen_results, open(result_path, "w"), indent=2)
 
-    json.dump(gen_results, open(result_path, "w"), indent=2)
+    return gen_results
     return gen_results
 
 
