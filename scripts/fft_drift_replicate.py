@@ -138,7 +138,7 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
             model=model,
             args=TrainingArguments(
                 output_dir=str(output_dir / "tmp"), num_train_epochs=2,
-                per_device_train_batch_size=2, gradient_accumulation_steps=8,
+                per_device_train_batch_size=8, gradient_accumulation_steps=2,
                 learning_rate=FFT_LR, bf16=True, logging_steps=9999,
                 save_strategy="no", report_to="none", seed=seed + gen,
                 gradient_checkpointing=True, optim="paged_adamw_8bit",
@@ -220,7 +220,7 @@ def run_qlora(seed, generations, train_questions, k0_questions, k0_answers, outp
             model=model,
             args=TrainingArguments(
                 output_dir=str(output_dir / "tmp"), num_train_epochs=2,
-                per_device_train_batch_size=4, gradient_accumulation_steps=4,
+                per_device_train_batch_size=8, gradient_accumulation_steps=2,
                 learning_rate=QLORA_LR, bf16=True, logging_steps=9999,
                 save_strategy="no", report_to="none", seed=seed + gen,
             ),
