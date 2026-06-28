@@ -100,14 +100,25 @@ def generate_synthetic(model, tokenizer, questions, seed_offset=0):
             synthetic.append(tokenizer.decode(seq, skip_special_tokens=False))
     return synthetic
 
-def compute_weight_drift(model, initial_state):
+def compute_weight_drift(model, initial_state_path):
+    """Compute drift by loading initial weights from disk chunk by chunk."""
+    import safetensors.torch
     total_drift_sq = 0.0
     total_norm_sq = 0.0
+    
+    # Load saved initial state
+    state = safetensors.torch.load_file(initial_state_path) if str(initial_state_path).endswith('.safetensors') else torch.load(initial_state_path, map_location='cpu', weights_only=True)
+    
     for name, param in model.named_parameters():
-        if name in initial_state and param.requires_grad:
-            diff = (param.data.float().cpu() - initial_state[name])
+        if name in state and param.requires_grad:
+            init_param = state[name].float()
+            curr_param = param.data.float().cpu()
+            diff = curr_param - init_param
             total_drift_sq += diff.norm().item() ** 2
-            total_norm_sq += initial_state[name].norm().item() ** 2
+            total_norm_sq += init_param.norm().item() ** 2
+            del init_param, curr_param, diff
+    del state
+    gc.collect()
     return total_drift_sq ** 0.5, (total_drift_sq / total_norm_sq) ** 0.5 if total_norm_sq > 0 else 0.0
 
 def compute_lora_norm(model):
@@ -165,7 +176,10 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
         if tok.pad_token is None: tok.pad_token = tok.eos_token
         tok.padding_side = "left"
 
-        initial_state = {n: p.data.float().cpu().clone() for n, p in model.named_parameters() if p.requires_grad}
+        # Save initial weights to disk (avoids holding 6GB in RAM during training)
+        init_weights_path = output_dir / "tmp_initial_weights.pt"
+        torch.save({n: p.data.float().cpu().clone() for n, p in model.named_parameters() if p.requires_grad}, init_weights_path)
+        gc.collect()
 
         def tok_fn(ex):
             return tok(ex["text"], truncation=True, max_length=256, padding="max_length")
@@ -189,8 +203,10 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
         trainer.train()
         model.eval()
 
-        abs_drift, rel_drift = compute_weight_drift(model, initial_state)
-        del initial_state, trainer, train_ds
+        abs_drift, rel_drift = compute_weight_drift(model, init_weights_path)
+        del trainer, train_ds
+        if init_weights_path.exists(): init_weights_path.unlink()
+        gc.collect()
         
         # Evaluate K0 while model is still loaded
         k0_res = evaluate_k0(model, tok, k0_questions, k0_answers)
