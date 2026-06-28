@@ -160,17 +160,30 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
 
         abs_drift, rel_drift = compute_weight_drift(model, initial_state)
         del initial_state, trainer, train_ds
-        gc.collect(); torch.cuda.empty_cache()
-        print(f"    Drift: abs={abs_drift:.4f} rel={rel_drift:.6f}")
-
+        
+        # Evaluate K0 while model is still loaded
         k0_res = evaluate_k0(model, tok, k0_questions, k0_answers)
         ret = sum(k0_res)
+        print(f"    Drift: abs={abs_drift:.4f} rel={rel_drift:.6f}")
         print(f"    K0: {ret}/{len(k0_questions)} ({ret/len(k0_questions):.1%})")
 
-        # Generate synthetic and save to disk, then free model
-        next_syn = generate_synthetic(model, tok, train_questions, seed_offset=seed + gen + 100)
+        # Save trained weights to disk, then completely free GPU
+        tmp_model_path = output_dir / "tmp_fft_model"
+        model.save_pretrained(str(tmp_model_path))
+        del model; gc.collect(); torch.cuda.empty_cache()
+        time.sleep(1)  # let CUDA fully release
+
+        # Reload in 4-bit ONLY for synthetic generation (halves VRAM)
+        bnb_gen = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True)
+        gen_model = AutoModelForCausalLM.from_pretrained(str(tmp_model_path), quantization_config=bnb_gen, device_map="auto", torch_dtype=torch.bfloat16)
+        gen_model.eval()
+        next_syn = generate_synthetic(gen_model, tok, train_questions, seed_offset=seed + gen + 100)
         json.dump(next_syn, open(output_dir / f"syn_{key}_gen{gen}.json", "w"))
-        del model, next_syn; gc.collect(); torch.cuda.empty_cache()
+        del gen_model, next_syn; gc.collect(); torch.cuda.empty_cache()
+        
+        # Cleanup tmp model
+        import shutil
+        if tmp_model_path.exists(): shutil.rmtree(tmp_model_path)
 
         elapsed = time.time() - t0
         print(f"    Time: {elapsed:.0f}s")
