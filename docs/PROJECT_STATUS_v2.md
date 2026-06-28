@@ -11,7 +11,9 @@ Recursive synthetic fine-tuning under low-rank adaptation exhibits a **capacity-
 
 **Central mechanism (confirmed):**
 
-Perturbation magnitude is the dominant factor governing recursive stability. Low-rank adaptation additionally provides a modest but consistent structural regularization (~5pp at matched perturbation, N=3 seeds). PEFT makes perturbation magnitude controllable via rank selection — this is why the dose-response curve works as a governance tool.
+Perturbation magnitude is the dominant factor governing recursive factual stability. At approximately comparable perturbation, QLoRA incurs a lower one-time factual adaptation cost than FFT (~5pp, N=3 seeds), after which both methods are equally stable. PEFT makes perturbation magnitude controllable via rank selection — this is why the dose-response curve works as a governance tool.
+
+**Mechanistic nuance:** QLoRA and FFT lose *different* facts (zero overlap in seed 15). The low-rank constraint perturbs along directions that damage fewer facts, rather than protecting the same facts that FFT damages.
 
 ---
 
@@ -99,17 +101,30 @@ Both methods are stable Gen3→Gen5 (no further degradation). Gap is consistent 
 
 **Perturbation magnitude is the dominant factor** (FFT dose-response: 92.3% → 84.6% as drift increases 10×).
 
-**Low-rank provides a modest but consistent structural benefit** (~4.7pp at matched perturbation, replicated N=3). The low-rank constraint on the update subspace provides regularization beyond what magnitude control alone achieves.
+**Low-rank reduces one-time adaptation cost** (~4.7pp at approximately matched perturbation, replicated N=3). The gap emerges entirely at Gen1 and remains constant — both methods are equally stable post-Gen1. This is NOT differential degradation rate; it is a one-time cost difference.
 
-**Paper claim (final):**
+**Fact-overlap analysis (seed 15):** FFT loses facts [24,46,48,56,74]; QLoRA loses [11,12]. Zero overlap. Both ossify completely after Gen1 (same facts lost in Gen1 and Gen5). The low-rank constraint perturbs along directions that damage fewer facts, not the same facts.
 
-> "At approximately matched perturbation magnitude, QLoRA retains ~5pp more factual knowledge than full fine-tuning under recursive synthetic training, consistent across three seeds (97.0% vs 92.3%). This confirms a structural regularization effect of low-rank adaptation beyond perturbation-magnitude control. However, the dominant factor governing stability remains update magnitude itself: FFT at drift 0.4 retains 92.3%, while FFT at drift 3.5 retains 84.6%."
+**Paper claim (final, corrected):**
 
-### 4.4 Caveats (honest in paper)
+> "At approximately matched perturbation magnitude, QLoRA incurs a lower one-time factual adaptation cost than FFT (~5pp, consistent across 3 seeds: 97.0% vs 92.3%). After the initial adaptation, both methods are equally stable through Gen5. The dominant factor governing stability is perturbation magnitude: FFT at drift 0.4 retains 92.3%, while FFT at drift 3.5 retains 84.6%. The methods damage different facts (zero item overlap), suggesting low-rank adaptation perturbs along subspace directions that affect fewer factual associations."
 
-- LoRA adapter norm and FFT weight drift are useful proxies but not strictly commensurable — comparison is "approximately perturbation-matched"
-- FFT uses paged_adamw_8bit + gradient_checkpointing for hardware constraints — different optimizer could yield different drift
-- Gen5 depth only (not Gen10) for FFT — but both methods are flat Gen3→Gen5
+### 4.4 Norm metric audit
+
+**IMPORTANT:** The `lora_norm` values reported for seeds 137/256 (17.38) and seed 15 (0.42) measure DIFFERENT things:
+- Seed 15 (sweep): `compute_lora_drift()` = `||B@A||` = effective weight delta = **0.42** (comparable to FFT drift)
+- Seeds 137/256 (replicate): `compute_lora_norm()` = `||A|| + ||B||` raw parameter norm = **17.38** (NOT comparable to anything)
+
+The drift-matched comparison is valid via seed 15's measurement (B@A norm 0.42 ≈ FFT drift 0.39). Seeds 137/256 validate retention consistency only, not perturbation magnitude.
+
+For the paper: frame as "approximately perturbation-matched" using the B@A metric; do not report the raw 17.38 values.
+
+### 4.5 Caveats (honest in paper)
+
+- Comparison is "approximately perturbation-matched" — LoRA B@A norm and FFT weight drift are useful proxies but not identical metrics
+- The ~5pp gap is entirely Gen1 — not evidence of differential degradation rate
+- Gen5 depth only for FFT (not Gen10) — but both flat Gen1→Gen5
+- FFT uses paged_adamw_8bit + gradient_checkpointing (hardware constraint)
 
 ---
 
