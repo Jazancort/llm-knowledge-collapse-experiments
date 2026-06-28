@@ -1,7 +1,7 @@
 # PROJECT STATUS v2 — Capacity-Gated Recursive Fine-Tuning
 
-**Last updated:** 2026-06-27
-**Status:** Experimental phase concluding. FFT control pending. Writing phase next.
+**Last updated:** 2026-06-28
+**Status:** Experiments complete. Statistics + writing phase.
 
 ---
 
@@ -9,16 +9,9 @@
 
 Recursive synthetic fine-tuning under low-rank adaptation exhibits a **capacity-gated regime transition** between bounded retention (homeostatic) and progressive knowledge degradation. The transition threshold is architecture-general in structure but backbone-dependent in its raw effective-rank value.
 
-### Central claim (conditional on FFT result):
+**Central mechanism (confirmed):**
 
-**If FFT degrades more than QLoRA at matched weight-drift:**
-> PEFT/low-rank constrains the update subspace and provides structural regularization that bounds recursive degradation below a capacity threshold.
-
-**If FFT matches QLoRA retention at matched weight-drift:**
-> Recursive stability is primarily mediated by update magnitude. PEFT provides a convenient capacity-control mechanism but is not uniquely protective.
-
-**If FFT is stable across the LR sweep:**
-> Recursive collapse under replace-without-filter is not inevitable in this protocol at this scale. The dose-response is an adapter-capacity artifact, not a recursive-data phenomenon.
+Perturbation magnitude is the dominant factor governing recursive stability. Low-rank adaptation additionally provides a modest but consistent structural regularization (~5pp at matched perturbation, N=3 seeds). PEFT makes perturbation magnitude controllable via rank selection — this is why the dose-response curve works as a governance tool.
 
 ---
 
@@ -80,9 +73,9 @@ Full Linear r=16: 87.3% Gen10 (≈ Attention r=128).
 
 ---
 
-## 4. FFT vs QLoRA Control
+## 4. FFT vs QLoRA Control — RESOLVED
 
-### 4.1 LR Sweep Results (seed 15, Gen3)
+### 4.1 LR Sweep (seed 15, Gen3)
 
 | Method | LR | Perturbation proxy | Gen3 Retention |
 |---|---|---|---|
@@ -92,30 +85,31 @@ Full Linear r=16: 87.3% Gen10 (≈ Attention r=128).
 | FFT | 1e-5 | abs drift 1.95 | 70/78 (89.7%) |
 | FFT | 2e-5 | abs drift 3.48 | 66/78 (84.6%) |
 
-### 4.2 Interpretation
+### 4.2 Drift-Matched Replication (3 seeds, Gen5) — DEFINITIVE
 
-**Dominant factor: perturbation magnitude.** FFT shows monotonic degradation with increasing drift. This is a dose-response in FFT space, paralleling our QLoRA rank dose-response.
+| Config | Seed 15 | Seed 137 | Seed 256 | Mean |
+|---|---|---|---|---|
+| QLoRA r=16 | 75/78 (96.2%) | 76/78 (97.4%) | 76/78 (97.4%) | **97.0%** |
+| FFT LR=1e-6 | 72/78 (92.3%) | 72/78 (92.3%) | 72/78 (92.3%) | **92.3%** |
+| **Delta** | 3.8 pp | 5.1 pp | 5.1 pp | **4.7 pp** |
 
-**At approximately matched perturbation (drift ~0.4):** QLoRA retains ~3.9pp more than FFT. This suggests a possible modest structural benefit from low-rank parameterization beyond magnitude control alone.
+Both methods are stable Gen3→Gen5 (no further degradation). Gap is consistent and non-overlapping across all seeds.
 
-### 4.3 Caveats (why fork remains open)
+### 4.3 Conclusion
 
-1. **n=1:** The ~4pp gap is a single seed (15), Gen3 only. Our seed-noise bands elsewhere are ±0.7 to ±1.2pp. 3.9pp is larger than those bands but close enough that seed replication is mandatory.
-2. **Metrics not identical:** LoRA adapter norm (0.42) and FFT full-weight drift (0.39) are useful proxies but not strictly commensurable. The comparison is "approximately perturbation-matched," not exactly drift-matched.
+**Perturbation magnitude is the dominant factor** (FFT dose-response: 92.3% → 84.6% as drift increases 10×).
 
-### 4.4 Pending: seed replication (FINAL experiment)
+**Low-rank provides a modest but consistent structural benefit** (~4.7pp at matched perturbation, replicated N=3). The low-rank constraint on the update subspace provides regularization beyond what magnitude control alone achieves.
 
-`scripts/fft_drift_replicate.py` — runs QLoRA r=16 vs FFT LR=1e-6 at seeds 137 + 256, Gen5.
+**Paper claim (final):**
 
-**Decision after replication:**
+> "At approximately matched perturbation magnitude, QLoRA retains ~5pp more factual knowledge than full fine-tuning under recursive synthetic training, consistent across three seeds (97.0% vs 92.3%). This confirms a structural regularization effect of low-rank adaptation beyond perturbation-magnitude control. However, the dominant factor governing stability remains update magnitude itself: FFT at drift 0.4 retains 92.3%, while FFT at drift 3.5 retains 84.6%."
 
-| Outcome | Paper claim |
-|---|---|
-| QLoRA consistently ~4pp ahead (3 seeds) | "Low-rank provides modest but consistent structural regularization beyond perturbation magnitude" |
-| Gap washes out (within seed noise) | "Stability is governed by perturbation magnitude; PEFT is useful because rank controls that magnitude" |
-| Mixed | "Perturbation magnitude dominates; PEFT residual benefit is modest and seed-sensitive" |
+### 4.4 Caveats (honest in paper)
 
-All three yield a publishable paper. The narrative emphasis shifts, not the core contribution (dose-response + regime transition).
+- LoRA adapter norm and FFT weight drift are useful proxies but not strictly commensurable — comparison is "approximately perturbation-matched"
+- FFT uses paged_adamw_8bit + gradient_checkpointing for hardware constraints — different optimizer could yield different drift
+- Gen5 depth only (not Gen10) for FFT — but both methods are flat Gen3→Gen5
 
 ---
 
@@ -179,11 +173,13 @@ All three yield a publishable paper. The narrative emphasis shifts, not the core
 
 | Priority | Task | Status |
 |---|---|---|
-| **P1** | ~~FFT LR sweep on Athena~~ | ✅ DONE (2026-06-27) |
-| **P1** | Drift-matched pair replication (seeds 137+256, Gen5) | **NEXT** — `fft_drift_replicate.py` |
-| **P1** | Bootstrap CIs + per-seed tables + effect sizes | After replication |
-| **P2** | Paper draft | After all results frozen |
+| ~~P1~~ | ~~FFT LR sweep~~ | ✅ DONE (2026-06-27) |
+| ~~P1~~ | ~~Drift-matched replication (seeds 137+256, Gen5)~~ | ✅ DONE (2026-06-28) |
+| **P1** | Bootstrap CIs + per-seed tables + effect sizes | **NEXT** |
+| **P2** | Paper draft | After statistics |
 | **P2** | Cross-architecture normalization (limitation/future work text) | During writing |
+
+### EXPERIMENTS CLOSED. No further GPU work.
 
 ### Cut (do not pursue):
 - Gemma 4 threshold
