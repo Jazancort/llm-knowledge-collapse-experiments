@@ -86,10 +86,11 @@ def evaluate_k0(model, tokenizer, k0_questions, k0_answers):
     return results
 
 def generate_synthetic(model, tokenizer, questions, seed_offset=0):
+    from tqdm import tqdm
     torch.manual_seed(seed_offset)
     synthetic = []
-    for i in range(0, len(questions), 4):
-        batch = questions[i:i+4]
+    for i in tqdm(range(0, len(questions), 8), desc="    Synthetic", leave=False):
+        batch = questions[i:i+8]
         prompts = [format_prompt(tokenizer, q) for q in batch]
         inputs = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True, max_length=256)
         inputs = {k: v.to(model.device) for k, v in inputs.items()}
