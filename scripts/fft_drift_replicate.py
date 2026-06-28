@@ -5,11 +5,29 @@ This is the final validation: does the ~4pp structural benefit hold across seeds
 Run on Athena:
   uv run python scripts/fft_drift_replicate.py
 """
-import sys, gc, json, time
+import sys, gc, json, time, signal, os
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import torch
+
+def vram_status():
+    if torch.cuda.is_available():
+        alloc = torch.cuda.memory_allocated() / 1024**3
+        reserved = torch.cuda.memory_reserved() / 1024**3
+        total = torch.cuda.get_device_properties(0).total_mem / 1024**3
+        print(f"    [VRAM] alloc={alloc:.1f}GB reserved={reserved:.1f}GB total={total:.1f}GB free={total-reserved:.1f}GB")
+
+def handle_signal(signum, frame):
+    sig_name = signal.Signals(signum).name
+    print(f"\n    [KILLED] Signal {sig_name} (code {signum}) received at {time.strftime('%H:%M:%S')}")
+    print(f"    [KILLED] This is likely OOM killer. Check: journalctl -k | grep -i 'oom\\|kill' (as root)")
+    vram_status()
+    sys.exit(1)
+
+# Catch SIGTERM (OOM killer sends this) and SIGINT (Ctrl+C)
+signal.signal(signal.SIGTERM, handle_signal)
+signal.signal(signal.SIGINT, handle_signal)
 import numpy as np
 from transformers import (
     AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig,
@@ -130,6 +148,7 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
 
         t0 = time.time()
         print(f"\n  [Gen {gen}]")
+        vram_status()
         model = AutoModelForCausalLM.from_pretrained(MODEL_NAME, device_map="auto", torch_dtype=torch.bfloat16)
         tok = AutoTokenizer.from_pretrained(MODEL_NAME)
         if tok.pad_token is None: tok.pad_token = tok.eos_token
@@ -168,18 +187,26 @@ def run_fft(seed, generations, train_questions, k0_questions, k0_answers, output
         print(f"    K0: {ret}/{len(k0_questions)} ({ret/len(k0_questions):.1%})")
 
         # Save trained weights to disk, then completely free GPU
+        print("    [PHASE] Saving model to disk...")
+        vram_status()
         tmp_model_path = output_dir / "tmp_fft_model"
         model.save_pretrained(str(tmp_model_path))
         del model; gc.collect(); torch.cuda.empty_cache()
         time.sleep(1)  # let CUDA fully release
+        print("    [PHASE] Model freed, reloading in 4-bit for generation...")
+        vram_status()
 
         # Reload in 4-bit ONLY for synthetic generation (halves VRAM)
         bnb_gen = BitsAndBytesConfig(load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16, bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True)
         gen_model = AutoModelForCausalLM.from_pretrained(str(tmp_model_path), quantization_config=bnb_gen, device_map="auto", torch_dtype=torch.bfloat16)
         gen_model.eval()
+        print("    [PHASE] Generating synthetic data...")
+        vram_status()
         next_syn = generate_synthetic(gen_model, tok, train_questions, seed_offset=seed + gen + 100)
         json.dump(next_syn, open(output_dir / f"syn_{key}_gen{gen}.json", "w"))
         del gen_model, next_syn; gc.collect(); torch.cuda.empty_cache()
+        print("    [PHASE] Generation complete, GPU cleared.")
+        vram_status()
         
         # Cleanup tmp model
         import shutil
