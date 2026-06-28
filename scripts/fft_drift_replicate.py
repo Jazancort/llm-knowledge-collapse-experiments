@@ -89,13 +89,13 @@ def generate_synthetic(model, tokenizer, questions, seed_offset=0):
     from tqdm import tqdm
     torch.manual_seed(seed_offset)
     synthetic = []
-    for i in tqdm(range(0, len(questions), 8), desc="    Synthetic", leave=False):
-        batch = questions[i:i+8]
+    for i in tqdm(range(0, len(questions), 16), desc="    Synthetic", leave=False):
+        batch = questions[i:i+16]
         prompts = [format_prompt(tokenizer, q) for q in batch]
         inputs = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True, max_length=256)
         inputs = {k: v.to(model.device) for k, v in inputs.items()}
-        with torch.no_grad():
-            out = model.generate(**inputs, max_new_tokens=30, temperature=0.7, do_sample=True, top_p=0.9)
+        with torch.inference_mode():
+            out = model.generate(**inputs, max_new_tokens=30, temperature=0.7, do_sample=True, top_p=0.9, pad_token_id=tokenizer.pad_token_id)
         for seq in out:
             synthetic.append(tokenizer.decode(seq, skip_special_tokens=False))
     return synthetic
