@@ -79,6 +79,19 @@ def get_train_batch_size():
     elif total_gb >= 12: return 4, 4
     else: return 2, 8
 
+def defrag():
+    """Aggressive memory cleanup between generations to prevent OOM from fragmentation."""
+    gc.collect()
+    torch.cuda.empty_cache()
+    gc.collect()
+    # Force glibc to return memory to OS (Linux only)
+    try:
+        import ctypes
+        ctypes.CDLL("libc.so.6").malloc_trim(0)
+    except Exception:
+        pass
+    time.sleep(2)
+
 def compute_weight_drift(model, initial_state_path):
     state = torch.load(initial_state_path, map_location='cpu', weights_only=True)
     total_drift_sq = 0.0
@@ -188,6 +201,7 @@ def run_fft_gen10(seed, train_questions, k0_questions, k0_answers, output_dir, b
         print(f"    Time: {elapsed:.0f}s")
         gen_results.append({"gen": gen, "retention": ret, "abs_drift": abs_drift, "rel_drift": rel_drift, "time": elapsed, "k0_results": k0_res})
         json.dump(gen_results, open(result_path, "w"), indent=2)
+        defrag()
 
     return gen_results
 
@@ -284,6 +298,7 @@ def run_qlora_gen10(seed, train_questions, k0_questions, k0_answers, output_dir,
         print(f"    Time: {elapsed:.0f}s")
         gen_results.append({"gen": gen, "retention": ret, "lora_ba_norm": lora_ba_norm, "time": elapsed, "k0_results": k0_res})
         json.dump(gen_results, open(result_path, "w"), indent=2)
+        defrag()
 
     return gen_results
 
