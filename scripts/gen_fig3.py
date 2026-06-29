@@ -43,7 +43,7 @@ regime_colors = {
     "degradative": "C3",
 }
 
-fig, ax = plt.subplots(figsize=(3.5, 2.8))
+fig, ax = plt.subplots(figsize=(3.3, 2.4))
 
 # Plot each backbone with different marker
 for er, ret, regime in qwen_data:

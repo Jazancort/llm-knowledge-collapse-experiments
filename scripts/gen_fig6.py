@@ -36,7 +36,7 @@ delta_err = ret_err  # same absolute error
 # Colors
 colors = ["C7", "C0", "C2", "C1", "C4"]
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(7.0, 2.8))
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(6.5, 2.5))
 
 x = np.arange(len(conditions))
 width = 0.6

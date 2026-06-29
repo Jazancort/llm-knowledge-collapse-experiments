@@ -30,7 +30,7 @@ ret_err = [0] * 6
 ret_err[1] = (max(ret_r16_seeds) - min(ret_r16_seeds)) / 2  # r=16
 ret_err[5] = (max(ret_r256_seeds) - min(ret_r256_seeds)) / 2  # r=256
 
-fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(3.5, 3.2), sharex=True)
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(3.3, 2.8), sharex=True)
 
 # Panel A: Retention vs Rank
 ax1.errorbar(ranks, retention, yerr=ret_err, fmt="o-", color="C0",
