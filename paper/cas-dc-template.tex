@@ -659,7 +659,22 @@ capacity results.
 % ============================================================
 \section{Results}\label{sec:results}
 
-% TODO: Write results
+The results are organized by experimental axis to examine how the principal
+components of effective training pressure relate to recursive stability and
+degradation. We begin with the central empirical result: a clear, monotonic
+regime transition as adapter rank increases on the Qwen backbone
+(\S\ref{sec:res_capacity}). We then evaluate whether the same behavior
+generalizes across different model families (\S\ref{sec:res_backbone}),
+investigate whether increasing perturbation magnitude through full fine-tuning
+reproduces the same qualitative pattern (\S\ref{sec:res_fft}), characterize the
+distributional signatures associated with above-threshold regimes
+(\S\ref{sec:res_distribution}), and present evidence that a marginal reduction
+in synthetic exposure restores near-homeostatic behavior at the regime boundary
+(\S\ref{sec:res_intervention}). Throughout this section, headline findings are
+supported by multi-seed experiments, whereas single-seed results are presented
+as supporting evidence. Consistent with the methodology, comparisons emphasize
+effect sizes and reproducible experimental patterns rather than formal
+inferential statistics.
 
 % ============================================================
 % 5. DISCUSSION
