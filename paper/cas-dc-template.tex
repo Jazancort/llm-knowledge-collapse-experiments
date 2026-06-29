@@ -720,7 +720,22 @@ $r=256$ & 34.9M & 10 & 78.0\% (N=3)     & 87.57 & Degradative \\
 \end{table}
 
 The longitudinal trajectories (Fig.~\ref{fig:trajectories}) reveal qualitatively
-different temporal dynamics across regimes. At $r=16$, retention stabilizes after
+different temporal dynamics across regimes.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=\linewidth]{figs/fig1_trajectories.png}\\[2pt]
+  \includegraphics[width=\linewidth]{figs/fig2_dose_response.png}
+  \caption{(Top) K0 retention trajectories over 10 recursive generations for
+  three representative ranks on Qwen~2.5~1.5B. Thin lines show individual seeds;
+  bold lines show the mean. (Bottom) Dose-response relationship: (a)~Gen10
+  retention versus nominal rank; (b)~mean effective rank versus nominal rank.
+  Retention declines monotonically with increasing effective update capacity; the
+  sharpest drop occurs between $r=128$ (bounded) and $r=256$
+  (degradative).}\label{fig:trajectories}
+\end{figure}
+
+At $r=16$, retention stabilizes after
 an initial one-generation adaptation cost and remains flat through Gen10 (mean
 94.9\%, range 94.9--97.4\% across three seeds). At $r=128$, retention settles at
 approximately 88--89\% by Gen3 and remains bounded through Gen10, neither
@@ -730,18 +745,8 @@ $r=256$, retention declines progressively at approximately 2 percentage points
 per generation on average, reaching 78.0\% (mean across three seeds) by Gen10
 with no sign of stabilization within the observed horizon.
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\linewidth]{figs/fig1_trajectories.png}
-  \caption{K0 retention trajectories over 10 recursive generations for three
-  representative ranks on Qwen~2.5~1.5B. Thin lines show individual seeds; bold
-  lines show the mean. The $r=16$ and $r=256$ conditions are each evaluated with
-  three seeds (15, 137, 256); $r=128$ is evaluated with a single
-  seed.}\label{fig:trajectories}
-\end{figure}
-
-Several features of the dose-response curve (Fig.~\ref{fig:dose_response}) merit
-attention. First, the
+The dose-response curve (Fig.~\ref{fig:trajectories}, bottom) reveals several
+additional features. First, the
 relationship between rank and retention is monotonically decreasing across all
 six values, spanning more than an order of magnitude in trainable parameters
 (545K to 34.9M). No rank reversal or non-monotonicity is observed. Second, the
@@ -751,17 +756,6 @@ configurations. Third, effective rank increases sub-linearly with nominal rank
 (3.34 at $r=4$ to 87.57 at $r=256$), indicating that higher-rank adapters do not
 fully utilize their nominal capacity while still producing substantially larger
 effective updates.
-
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=\linewidth]{figs/fig2_dose_response.png}
-  \caption{Dose-response relationship between nominal adapter rank and recursive
-  stability on Qwen~2.5~1.5B. Left panel: Gen10 K0 retention (\%) versus nominal
-  rank. Right panel: mean effective rank versus nominal rank. Retention declines
-  monotonically with increasing effective update capacity; the sharpest drop
-  occurs between $r=128$ (bounded, 88.6\%) and $r=256$ (degradative,
-  78.0\%).}\label{fig:dose_response}
-\end{figure}
 
 The multi-seed experiments at the rank-sweep endpoints confirm that the regime
 separation is reproducible. At $r=16$, per-seed Gen10 retention values are
