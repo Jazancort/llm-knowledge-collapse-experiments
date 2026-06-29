@@ -201,7 +201,44 @@ introduced separately in \S\ref{sec:intervention}.
 
 \subsection{K0 factual retention metric}\label{sec:k0}
 
-% TODO: Write K0 metric subsection
+Our primary evaluation metric is \textit{K0 retention}: the fraction of facts
+that the base model answered correctly at generation~0 that remain correctly
+answered at generation~$t$. This metric isolates knowledge \textit{loss} from
+knowledge \textit{absence}, avoiding penalization for facts the model never
+knew.
+
+At generation~0, the base model (without any adapter) is evaluated on a
+held-out set of 200 TriviaQA questions. Each question has multiple valid answer
+aliases provided by the dataset. A response is scored as correct if, after
+normalization, the predicted string contains any ground-truth alias or any
+ground-truth alias contains the predicted string (bidirectional substring
+match). Normalization consists of lowercasing, removing articles
+(\textit{the}, \textit{a}, \textit{an}), stripping punctuation, converting
+written number words to digits, and collapsing whitespace. The subset of
+questions answered correctly at generation~0 defines $K_0$, with
+$|K_0| = 78$ for Qwen~2.5~1.5B (39\% of 200 questions).
+
+At each subsequent generation~$t$, only the $K_0$ items are re-evaluated. The
+K0 retention score is:
+
+\begin{equation}\label{eq:k0}
+  \mathrm{Retention}(t) = \frac{|\{q \in K_0 : \text{correct at generation } t\}|}{|K_0|}
+\end{equation}
+
+This definition has two properties relevant to our study. First, a retention of
+100\% means the model has preserved all factual knowledge it originally
+possessed, regardless of whether it has acquired or lost other capabilities.
+Second, monitoring individual items across generations enables tracking of
+transitions: correct-to-wrong (C$\to$W, knowledge lost) and wrong-to-correct
+(W$\to$C, knowledge recovered). The net retention trajectory, together with
+item-level transition counts, provides a more informative signal than aggregate
+accuracy alone.
+
+We report K0 retention as a percentage (e.g., 73/78 = 93.6\%). For multi-seed
+experiments, we report the mean and range across seeds. The $K_0$ set is
+determined once per backbone (using seed~15 at generation~0) and held fixed
+across all experimental conditions for that backbone, ensuring comparability
+across rank, learning rate, and intervention conditions.
 
 \subsection{Models and hardware}\label{sec:models}
 
