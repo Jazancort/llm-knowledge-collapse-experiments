@@ -168,20 +168,62 @@ Gemma 3 r=16 (degradative): d1 drops 0.699→0.646, length inflates 2.2→3.9
 - Degradative: item-level stability DECREASES (30%→14%), model drifts faster each generation
 - The degradative regime does NOT freeze wrong answers; it loses anchoring
 
-#### D. Synthetic Drift Index (SDI)
+#### D. Synthetic Drift Index (SDI-3)
 
-SDI = log(length_ratio) + log(d1_gen0/d1_final)
+SDI-3 = log(length_ratio) + log(d1_gen0/d1_final) + instability_increase
 
-| Config | Regime | SDI |
+| Config | Regime | SDI-3 |
 |---|---|---|
 | Gemma r=4 | homeostatic | 0.038 |
-| Qwen r=16 | homeostatic | 0.142 |
-| Qwen r=64 | homeostatic | 0.284 |
-| Qwen r=256 | degradative | 0.387 |
-| Gemma r=16 | degradative | 0.623 |
-| Qwen r=128 | bounded (retention ok, drift severe) | **1.410** |
+| Qwen r=16 | homeostatic | 0.161 |
+| Qwen r=256 | degradative | 0.437 |
+| Gemma r=16 | degradative | 0.705 |
+| Qwen r=128 | **distributional drift (retention bounded)** | **1.530** |
 
-**Key finding:** r=128 has bounded retention (88.6%) but the HIGHEST SDI. Output-distribution drift can be severe even when factual retention appears stable. SDI may be a more sensitive early-warning metric than retention itself.
+#### E. Complete Metrics — New Findings (2026-06-29)
+
+**Factual Efficiency (retention / mean_length) — strongest new metric:**
+
+| Config | Gen0 | Gen10 | Interpretation |
+|---|---|---|---|
+| Qwen r=16 | 0.406 | 0.352 | Stable after initial cost |
+| Qwen r=256 | 0.406 | 0.219 | Progressive dilution |
+| Qwen r=128 | 0.406 | **0.127** | Severe dilution despite bounded retention |
+| Gemma r=4 | 0.448 | 0.402 | Perfectly stable |
+| Gemma r=16 | 0.448 | 0.179 (Gen5) | Rapid collapse |
+
+**Baseline Response Persistence (% same answer as Gen0):**
+
+| Config | Gen1 | Gen10 | Interpretation |
+|---|---|---|---|
+| Qwen r=16 | 35.7% | 36.1% | Stable anchoring |
+| Qwen r=256 | 32.6% | **3.8%** | Lost original behavior |
+| Qwen r=128 | 28.6% | **5.2%** | Lost anchoring despite retention |
+| Gemma r=4 | 46.4% | 46.1% | Perfectly anchored |
+| Gemma r=16 | 36.8% | 3.5% (Gen5) | Rapid loss |
+
+**Two Degradation Phenotypes:**
+
+| Phenotype | Example | Characteristics |
+|---|---|---|
+| **Filler/repetitive verbosity** | Qwen r=128 | stopwords 12%→25%, MTLD collapses (2673→745), length 2.5→7.0 |
+| **Elaborative/dispersive drift** | Qwen r=256 | stopwords 12%→9% (drops!), MTLD rises (2673→3804), length 2.5→3.6 |
+
+r=128 fills with stopwords and repetition; r=256 elaborates with varied vocabulary but loses factual anchoring. Different degradation mechanisms at different capacity levels.
+
+**Key insight: r=128 exposes a dissociation.**
+
+> "Qwen r=128 reveals that factual retention (88.6%) can remain bounded while distributional quality collapses: content efficiency drops to 0.127 (3× dilution), stopwords double, MTLD collapses, and baseline persistence falls to 5.2%. K0 retention alone underestimates the onset of degradation."
+
+#### F. Regime Taxonomy (updated)
+
+| Regime | Examples | Retention | Output Distribution |
+|---|---|---|---|
+| **Homeostatic** | Qwen r≤64, Gemma r≤4 | Stable (>90%) | Stable: length, diversity, persistence all constant |
+| **Distributionally degraded, factually bounded** | Qwen r=128 | Bounded (~88%) | Degraded: verbosity, filler, efficiency collapse |
+| **Factually degradative** | Qwen r=256, Gemma r≥16 | Progressive loss | Degraded: elaborative drift, persistence lost |
+
+This three-regime taxonomy is richer than the original two-regime (homeostatic/degradative) model.
 
 #### E. Cross-architecture normalization (negative result)
 
