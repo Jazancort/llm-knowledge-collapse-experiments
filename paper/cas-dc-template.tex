@@ -730,7 +730,7 @@ with no sign of stabilization within the observed horizon.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.95\linewidth]{figs/fig1_trajectories.pdf}
+  \includegraphics[width=0.95\linewidth]{figs/fig1_trajectories.png}
   \caption{K0 retention trajectories over 10 recursive generations for three
   representative ranks on Qwen~2.5~1.5B. Thin lines show individual seeds; bold
   lines show the mean. The $r=16$ and $r=256$ conditions are each evaluated with
@@ -752,7 +752,7 @@ effective updates.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.95\linewidth]{figs/fig2_dose_response.pdf}
+  \includegraphics[width=0.95\linewidth]{figs/fig2_dose_response.png}
   \caption{Dose-response relationship between nominal adapter rank and recursive
   stability on Qwen~2.5~1.5B. Left panel: Gen10 K0 retention (\%) versus nominal
   rank. Right panel: mean effective rank versus nominal rank. Retention declines
@@ -848,7 +848,7 @@ these thresholds in effective-rank space.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.95\linewidth]{figs/fig3_cross_backbone.pdf}
+  \includegraphics[width=0.95\linewidth]{figs/fig3_cross_backbone.png}
   \caption{K0 retention versus mean effective rank across three backbones.
   Marker shapes distinguish backbones (circle: Qwen, square: Gemma~3, triangle:
   Gemma~4); colors indicate regime membership (blue: homeostatic, orange:
@@ -910,7 +910,7 @@ nearly constant thereafter.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.95\linewidth]{figs/fig4_fft_vs_qlora.pdf}
+  \includegraphics[width=0.95\linewidth]{figs/fig4_fft_vs_qlora.png}
   \caption{K0 retention over 10 recursive generations for QLoRA $r=16$ and FFT
   at LR$\,=10^{-6}$ on Qwen~2.5~1.5B (three seeds each). The retention gap
   emerges at Gen1 and remains constant through Gen10; both methods exhibit
@@ -1020,7 +1020,7 @@ these three regimes.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=0.95\linewidth]{figs/fig5_distributional.pdf}
+  \includegraphics[width=0.95\linewidth]{figs/fig5_distributional.png}
   \caption{Distributional diagnostics over ten recursive generations for three
   representative Qwen configurations. (a)~Mean response length, (b)~baseline
   response persistence, (c)~content efficiency. All three metrics diverge for
@@ -1130,7 +1130,7 @@ comparison across conditions.
 
 \begin{figure*}[htbp]
   \centering
-  \includegraphics[width=0.9\textwidth]{figs/fig6_interventions.pdf}
+  \includegraphics[width=0.9\textwidth]{figs/fig6_interventions.png}
   \caption{Intervention comparison on Qwen $r=256$ at Gen5. (a)~K0 retention by
   condition. (b)~Retention improvement relative to C1 baseline. Error bars for
   C3 and C5 reflect the range across three seeds or
