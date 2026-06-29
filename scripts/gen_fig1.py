@@ -46,7 +46,7 @@ for seed in [15, 137, 256]:
     r256_seeds[seed] = load_g1_retention(f"g1_rank256_seed{seed}")
 
 # Plot
-fig, ax = plt.subplots(figsize=(3.3, 1.8))
+fig, ax = plt.subplots(figsize=(3.3, 2.4))
 
 # r=16 (blue) - thin per-seed, bold mean
 for seed, (g, r) in r16_seeds.items():

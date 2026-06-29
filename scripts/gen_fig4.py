@@ -22,7 +22,7 @@ def load(method, seed):
     ret = [100.0] + [r["retention"] / K0 * 100 for r in data]
     return gens, ret
 
-fig, ax = plt.subplots(figsize=(3.3, 1.8))
+fig, ax = plt.subplots(figsize=(3.3, 2.4))
 
 # QLoRA r=16 (blue)
 qlora_all = []
