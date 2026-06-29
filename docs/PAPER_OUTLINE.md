@@ -1,6 +1,10 @@
 # PAPER OUTLINE — Pressure-Gated Recursive Degradation
 
-**Working title:** "Effective Training Pressure Gates Recursive Knowledge Degradation Under Low-Rank Adaptation"
+**Target venue:** Engineering Applications of Artificial Intelligence (Elsevier, IF 7.8, A1 CAPES)
+**Framing:** Practical engineering contribution — effective training pressure as control principle for recursive synthetic fine-tuning pipelines
+**Backup 1:** Expert Systems with Applications
+**Backup 2:** Scientific Reports
+**Working title:** "Effective Training Pressure Gates Recursive Knowledge Degradation in LLMs: A Multi-Axis Dose-Response Study"
 **Status:** Final outline. All experiments complete. Ready to write.
 **Last updated:** 2026-06-29
 
