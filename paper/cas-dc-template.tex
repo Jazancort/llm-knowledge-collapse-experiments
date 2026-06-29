@@ -6,11 +6,23 @@
 \usepackage[authoryear,longnamesfirst]{natbib}
 \usepackage{booktabs}
 \usepackage{amsmath}
+\usepackage[section]{placeins}
+\makeatletter
+\AtBeginDocument{%
+  \expandafter\renewcommand\expandafter\subsection\expandafter
+    {\expandafter\@fb@secFB\subsection}%
+}
+\makeatother
 
 \begin{document}
 \let\WriteBookmarks\relax
-\def\floatpagepagefraction{1}
-\def\textpagefraction{.001}
+\def\floatpagefraction{.8}
+\def\textfraction{.1}
+\def\topfraction{.9}
+\def\bottomfraction{.9}
+\setcounter{topnumber}{4}
+\setcounter{bottomnumber}{4}
+\setcounter{totalnumber}{8}
 
 \shorttitle{Pressure-Gated Recursive Degradation in LLMs}
 \shortauthors{Azancort et~al.}
@@ -316,7 +328,7 @@ magnitude, module topology, and synthetic exposure) affect recursive stability.
 Table~\ref{tab:axes} summarizes the experimental axes, the manipulated variable,
 and the tested range.
 
-\begin{table}[width=.95\linewidth,cols=3,pos=h]
+\begin{table}[width=.95\linewidth,cols=3,pos=htbp]
 \caption{Experimental axes and their corresponding pressure components.}
 \label{tab:axes}
 \begin{tabular*}{\tblwidth}{@{} lll@{} }
@@ -679,7 +691,7 @@ parameters, and regime classification for each tested configuration. Across the
 evaluated range, Gen10 retention decreases from 94.9\% at $r=16$ to 78.0\% at
 $r=256$, a difference of 16.9 percentage points.
 
-\begin{table}[width=.95\linewidth,cols=6,pos=h]
+\begin{table}[width=.95\linewidth,cols=6,pos=htbp]
 \caption{QLoRA rank sweep on Qwen~2.5~1.5B-Instruct. Retention is reported at
 the last evaluated generation. Headline ranks ($r=16$ and $r=256$) are evaluated
 with three seeds; all others with a single seed. Configurations evaluated only
@@ -709,7 +721,7 @@ $r=256$, retention declines progressively at approximately 2 percentage points
 per generation on average, reaching 78.0\% (mean across three seeds) by Gen10
 with no sign of stabilization within the observed horizon.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figs/fig1_trajectories.pdf}
   \caption{K0 retention trajectories over 10 recursive generations for three
@@ -731,7 +743,7 @@ configurations. Third, effective rank increases sub-linearly with nominal rank
 fully utilize their nominal capacity while still producing substantially larger
 effective updates.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figs/fig2_dose_response.pdf}
   \caption{Dose-response relationship between nominal adapter rank and recursive
@@ -781,7 +793,7 @@ Gemma~3 enters the degradative regime across all three seeds (mean Gen5 retentio
 68.8\%, range 68.1--70.2\%). The ranges do not overlap, providing consistent
 empirical separation between the two regimes on this backbone.
 
-\begin{table}[width=.95\linewidth,cols=5,pos=h]
+\begin{table}[width=.95\linewidth,cols=5,pos=htbp]
 \caption{QLoRA rank sweep on Gemma~3~1B~IT. Boundary ranks ($r=4$ and $r=16$)
 are evaluated with three seeds; $r=2$ and $r=256$ are evaluated with a single
 seed. Retention is reported at Gen5 for comparability across ranks; the $r=4$
@@ -827,7 +839,7 @@ negative result and discuss it further in \S\ref{sec:limitations}.
 Figure~\ref{fig:cross_backbone} visualizes the backbone-specific placement of
 these thresholds in effective-rank space.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figs/fig3_cross_backbone.pdf}
   \caption{K0 retention versus mean effective rank across three backbones.
@@ -862,7 +874,7 @@ from 92.3\% to 84.6\% across this range. These results indicate that
 perturbation magnitude alone can drive the system toward degradation without any
 adapter or rank constraint.
 
-\begin{table}[width=.95\linewidth,cols=4,pos=h]
+\begin{table}[width=.95\linewidth,cols=4,pos=htbp]
 \caption{FFT learning-rate sweep on Qwen~2.5~1.5B (seed~15, Gen3). Perturbation
 proxy is the mean absolute weight drift relative to the original model for FFT,
 and $\|BA\|_F$ for QLoRA. These are operationally comparable but not
@@ -889,7 +901,7 @@ As illustrated in Figure~\ref{fig:fft_qlora}, the separation between the
 trajectories is established after the first recursive generation and remains
 nearly constant thereafter.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figs/fig4_fft_vs_qlora.pdf}
   \caption{K0 retention over 10 recursive generations for QLoRA $r=16$ and FFT
@@ -999,7 +1011,7 @@ rather than defining universally distinct categories.
 Figure~\ref{fig:distributional} illustrates the divergent trajectories across
 these three regimes.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figs/fig5_distributional.pdf}
   \caption{Distributional diagnostics over ten recursive generations for three
@@ -1047,7 +1059,7 @@ the boundary between the bounded and degradative regimes.
 Table~\ref{tab:interventions} summarizes K0 retention at Gen5 for each
 intervention condition relative to the unmodified C1 baseline.
 
-\begin{table}[width=.95\linewidth,cols=5,pos=h]
+\begin{table}[width=.95\linewidth,cols=5,pos=htbp]
 \caption{Synthetic-exposure interventions on Qwen $r=256$. C3 is evaluated with
 three training seeds (15, 137, 256); C5 is evaluated with three independent
 random downsampling masks. Token counts refer to the total synthetic training
@@ -1109,7 +1121,7 @@ recursive process.
 Figure~\ref{fig:interventions} visualizes the retention and effect-size
 comparison across conditions.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
   \centering
   \includegraphics[width=\linewidth]{figs/fig6_interventions.pdf}
   \caption{Intervention comparison on Qwen $r=256$ at Gen5. (a)~K0 retention by
