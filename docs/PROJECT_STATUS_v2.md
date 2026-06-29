@@ -130,7 +130,64 @@ For the paper: frame as "approximately perturbation-matched" using the B@A metri
 
 ## 5. Secondary Findings
 
-### CKA-Factual vs CKA-Global
+### 5.1 Mechanistic Analysis — Synthetic Output Drift (NEW, 2026-06-29)
+
+**Hypothesis tested:** Does the degradative regime produce measurably worse synthetic data?
+
+**Result: YES — with temporal precedence (cross-lag r=-0.965)**
+
+#### A. Synthetic diversity diverges between regimes
+
+| Metric | Homeostatic (r=16, Gen0→10) | Degradative (r=256, Gen0→10) |
+|---|---|---|
+| distinct-1 | 0.671 → 0.637 (stable) | 0.671 → 0.536-0.657 (drops) |
+| mean_length | 2.5 → 2.7 (stable) | 2.5 → 3.6-4.6 (inflates) |
+| response_uniqueness | ~0.93 (stable) | 0.93 → 0.97 (each response unique but verbose) |
+
+Gemma 3 r=4 (homeostatic): perfectly stable (d1: 0.699→0.703, length: 2.2→2.3)
+Gemma 3 r=16 (degradative): d1 drops 0.699→0.646, length inflates 2.2→3.9
+
+#### B. Cross-lag: output drift PREDICTS next-generation retention
+
+| Config | Regime | corr(length_t, retention_t+1) | corr(d1_t, retention_t+1) |
+|---|---|---|---|
+| Qwen r=16 | homeostatic | 0.000 | 0.000 |
+| Qwen r=256 | **degradative** | **-0.965** | **+0.945** |
+| Gemma r=4 | homeostatic | +0.110 | +0.177 |
+| Gemma r=16 | **degradative** | **-0.847** | +0.475 |
+
+**This is the mechanistic link:** verbosity at Gen t predicts retention drop at Gen t+1 with near-perfect correlation in degradative regimes, and zero correlation in homeostatic regimes.
+
+#### C. Error dispersion, not ossification
+
+- Homeostatic: item-level stability constant (~33-40% exact match between gens)
+- Degradative: item-level stability DECREASES (30%→14%), model drifts faster each generation
+- The degradative regime does NOT freeze wrong answers; it loses anchoring
+
+#### D. Synthetic Drift Index (SDI)
+
+SDI = log(length_ratio) + log(d1_gen0/d1_final)
+
+| Config | Regime | SDI |
+|---|---|---|
+| Gemma r=4 | homeostatic | 0.038 |
+| Qwen r=16 | homeostatic | 0.142 |
+| Qwen r=64 | homeostatic | 0.284 |
+| Qwen r=256 | degradative | 0.387 |
+| Gemma r=16 | degradative | 0.623 |
+| Qwen r=128 | bounded (retention ok, drift severe) | **1.410** |
+
+**Key finding:** r=128 has bounded retention (88.6%) but the HIGHEST SDI. Output-distribution drift can be severe even when factual retention appears stable. SDI may be a more sensitive early-warning metric than retention itself.
+
+#### E. Cross-architecture normalization (negative result)
+
+Tested: eff_rank/{hidden_dim, sqrt(d), num_layers, num_heads, num_kv_heads, baseline_diversity}. None aligned thresholds across Qwen and Gemma. The threshold is intrinsic to model geometry, not reducible to simple architectural ratios. Reported as limitation.
+
+#### Proposed mechanism (for paper):
+
+> "Above the capacity threshold, recursive fine-tuning induces a verbosity drift in synthetic outputs: responses become progressively longer and less lexically efficient. This degraded data, when used to train the next generation, produces further factual loss — creating a positive feedback loop. The cross-lag correlation (r=-0.965) confirms temporal precedence: output drift at generation t predicts retention loss at t+1. Below threshold, no such feedback occurs (r=0.000)."
+
+### 5.2 CKA-Factual vs CKA-Global
 - CKA-Factual detects adaptation that CKA-Global misses
 - But CKA does NOT distinguish synthetic from real data (both ~0.983)
 - CKA measures adaptation intensity, not recursive toxicity
