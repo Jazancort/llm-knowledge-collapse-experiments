@@ -1028,6 +1028,105 @@ The next section tests whether the third component of effective training
 pressure, synthetic data exposure, can shift the system back toward homeostasis
 at the regime boundary.
 
+\subsection{Synthetic exposure: pressure sensitivity at the
+boundary}\label{sec:res_intervention}
+
+The preceding sections established that update capacity and perturbation
+magnitude each govern the regime transition. This section tests the third
+component of effective training pressure: whether reducing synthetic data
+exposure can shift the system back from a degradative to a near-homeostatic
+configuration. All interventions are conducted on Qwen $r=256$, which sits at
+the boundary between the bounded and degradative regimes.
+
+\paragraph{Intervention results.}
+Table~\ref{tab:interventions} summarizes K0 retention at Gen5 for each
+intervention condition relative to the unmodified C1 baseline.
+
+\begin{table}[width=.95\linewidth,cols=5,pos=h]
+\caption{Synthetic-exposure interventions on Qwen $r=256$. C3 is evaluated with
+three training seeds (15, 137, 256); C5 is evaluated with three independent
+random downsampling masks. Token counts refer to the total synthetic training
+stream per generation. Means are reported for multi-seed or multi-mask
+conditions.}\label{tab:interventions}
+\begin{tabular*}{\tblwidth}{@{} lllll@{} }
+\toprule
+Condition & Gen5 Ret. & $\Delta$ vs C1 & Tokens & Seeds/Masks \\
+\midrule
+C1 Normal    & 83.3\% (65/78) &          & $\sim$57k & 1      \\
+C2 Short     & 91.0\% (71/78) & +7.7\,pp & $\sim$60k & 1      \\
+C3 Filtered  & 92.3\% (mean)  & +9.0\,pp & $\sim$54k & $N{=}3$ \\
+C4 Canonical & 88.5\% (69/78) & +5.1\,pp & $\sim$52k & 1      \\
+C5 Random    & 92.7\% (mean)  & +9.4\,pp & $\sim$54k & $N{=}3$ masks \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+All four interventions improve retention relative to the C1 baseline. The
+strongest effects are observed for C3 (length-filtered, +9.0\,pp) and C5
+(C3-matched random downsampling, +9.4\,pp), both of which shift the system from
+the degradative range (83.3\%) to near-homeostatic levels (92--93\%).
+
+\paragraph{C3 versus C5: exposure sensitivity, not quality selection.}
+The critical comparison is between C3 and C5. C3 removes examples with long
+responses (those exceeding 5 words), while C5 removes a random subset of
+examples to approximately match C3's token budget. Despite removing largely
+disjoint sets of examples (Jaccard overlap between removed sets: 0.015), both
+produce nearly identical improvements. Per-seed C3 Gen5 retention values are
+73/78, 71/78, and 72/78 (mean 72.0/78, 92.3\%); per-mask C5 values are 72/78,
+73/78, and 72/78 (mean 72.3/78, 92.7\%). The consistency across three
+independent random masks confirms that the stabilization effect does not depend
+on which specific examples are removed.
+
+These results suggest that in the Qwen $r=256$ boundary configuration, the
+system is sensitive to marginal changes in synthetic exposure volume rather than
+to the particular quality characteristics of the removed examples. Removing
+approximately 5\% of the training stream under either evaluated selection
+strategy shifts the configuration toward near-homeostatic retention.
+
+\paragraph{Token-budget controls.}
+C2 (short-answer constrained) provides an important additional control. It
+retains all 2{,}000 training examples and uses slightly more total tokens than
+C1 (${\sim}$60k vs ${\sim}$57k), yet still improves retention by 7.7 percentage
+points. This is inconsistent with a simple token-budget explanation in which
+fewer training tokens mechanically reduce overfitting: the improvement persists
+even when total token count increases. The token difference between C1 and C3/C5
+is only approximately 5\% (57k vs 54k), further indicating that the effect
+operates near a sharp boundary rather than through gradual token reduction.
+Token count alone therefore cannot explain the observed recovery.
+
+\paragraph{Item-level analysis.}
+At the item level, the C1 baseline loses about eight $K_0$ facts between Gen0
+and Gen5. C3 loses only one additional fact beyond the initial Gen1 adaptation;
+C5 shows a similar pattern. The interventions therefore do not merely delay
+degradation; they substantially reduce the number of facts displaced during the
+recursive process.
+
+\paragraph{Scope and interpretation.}
+Figure~\ref{fig:interventions} visualizes the retention and effect-size
+comparison across conditions.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figs/fig6_interventions.pdf}
+  \caption{Intervention comparison on Qwen $r=256$ at Gen5. (a)~K0 retention by
+  condition. (b)~Retention improvement relative to C1 baseline. Error bars for
+  C3 and C5 reflect the range across three seeds or
+  masks.}\label{fig:interventions}
+\end{figure}
+
+These results demonstrate that the Qwen $r=256$ configuration lies near a sharp
+regime boundary: a reduction of approximately 5\% in synthetic exposure volume
+is sufficient to restore near-homeostatic retention in this boundary case. This
+sensitivity is tested only at the $r=256$ boundary on Qwen and should not be
+interpreted as a universal property of recursive fine-tuning. Whether comparable
+boundary sensitivity exists at other ranks, on other backbones, or with
+different datasets remains untested.
+
+Taken together, the intervention experiments show that the degradative regime is
+reversible under the evaluated conditions. Adjusting synthetic exposure restores
+near-homeostatic behavior in the boundary configuration, complementing the
+capacity and perturbation results presented in the preceding sections.
+
 % ============================================================
 % 5. DISCUSSION
 % ============================================================
