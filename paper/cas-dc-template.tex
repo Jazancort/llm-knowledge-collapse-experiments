@@ -719,7 +719,8 @@ with no sign of stabilization within the observed horizon.
   seed.}\label{fig:trajectories}
 \end{figure}
 
-Several features of the dose-response curve merit attention. First, the
+Several features of the dose-response curve (Fig.~\ref{fig:dose_response}) merit
+attention. First, the
 relationship between rank and retention is monotonically decreasing across all
 six values, spanning more than an order of magnitude in trainable parameters
 (545K to 34.9M). No rank reversal or non-monotonicity is observed. Second, the
@@ -729,6 +730,17 @@ configurations. Third, effective rank increases sub-linearly with nominal rank
 (3.34 at $r=4$ to 87.57 at $r=256$), indicating that higher-rank adapters do not
 fully utilize their nominal capacity while still producing substantially larger
 effective updates.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figs/fig2_dose_response.pdf}
+  \caption{Dose-response relationship between nominal adapter rank and recursive
+  stability on Qwen~2.5~1.5B. Left panel: Gen10 K0 retention (\%) versus nominal
+  rank. Right panel: mean effective rank versus nominal rank. Retention declines
+  monotonically with increasing effective update capacity; the sharpest drop
+  occurs between $r=128$ (bounded, 88.6\%) and $r=256$ (degradative,
+  78.0\%).}\label{fig:dose_response}
+\end{figure}
 
 The multi-seed experiments at the rank-sweep endpoints confirm that the regime
 separation is reproducible. At $r=16$, per-seed Gen10 retention values are
