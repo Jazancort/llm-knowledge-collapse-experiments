@@ -383,7 +383,73 @@ in \S\ref{sec:intervention}.
 
 \subsection{Effective training pressure}\label{sec:pressure}
 
-% TODO: Write pressure concept subsection
+We use \textit{effective training pressure} as a conceptual framework for
+interpreting recursive fine-tuning stability, rather than as a single fitted
+equation. The term refers to the effective perturbation imposed on the model and
+the synthetic training stream at each recursive generation. In our experiments,
+this pressure arises from three jointly contributing factors:
+
+\begin{enumerate}
+    \item \textbf{Update capacity}: the dimensionality of the trainable update
+    subspace, controlled by QLoRA rank and measured through effective rank.
+
+    \item \textbf{Perturbation magnitude}: the size of the parameter update
+    induced by one generation of training, controlled by learning rate in FFT and
+    approximated by the norm of the composed LoRA update in QLoRA.
+
+    \item \textbf{Synthetic exposure}: the amount and composition of
+    model-generated training data fed back into the next generation, manipulated
+    through filtering or downsampling of the synthetic stream.
+\end{enumerate}
+
+We do not assume a known functional form combining these components. Instead,
+our experiments manipulate each component separately and show that changes along
+any of the three axes can move the system between bounded and degradative
+regimes. The framework is therefore empirically motivated: it summarizes a set
+of observed control knobs rather than proposing a closed-form theory of
+recursive collapse.
+
+\paragraph{Effective rank as a within-backbone capacity measure.}
+To quantify update capacity beyond nominal rank, we compute the effective rank
+of the composed LoRA update matrices $BA$ after training at each generation.
+Following \citet{roy2007}, the effective rank is defined as
+\begin{equation}\label{eq:erank}
+    \mathrm{erank}(BA) =
+    \exp\!\left(-\sum_i \hat{\sigma}_i \log \hat{\sigma}_i\right),
+\end{equation}
+where $\hat{\sigma}_i = \sigma_i / \sum_j \sigma_j$ are the normalized singular
+values of $BA$. This measure captures how many singular directions carry
+substantial weight in the adapter update. A rank-$r$ adapter with uniformly
+distributed singular values reaches $\mathrm{erank}=r$, whereas an update
+dominated by a single singular direction has $\mathrm{erank}\approx 1$ regardless
+of nominal rank.
+
+Unless otherwise stated, we report the mean effective rank across adapted
+matrices in a model. For comparisons across module-targeting schemes, we also
+consider aggregate effective rank, defined as the sum of effective ranks across
+adapted matrices. In our within-backbone rank sweeps, effective rank generally
+increases with nominal rank and organizes the observed transition between
+homeostatic and degradative regimes better than nominal rank alone. However,
+raw effective-rank thresholds are not portable across architectures: Qwen
+remains bounded at substantially higher effective ranks than Gemma~3. We
+therefore treat effective rank as a within-backbone capacity measure and discuss
+cross-architecture normalization as a limitation in \S\ref{sec:limitations}.
+
+\paragraph{Perturbation magnitude for full fine-tuning.}
+For full fine-tuning, we measure perturbation magnitude as the mean absolute
+parameter change relative to the original model weights:
+\begin{equation}\label{eq:drift}
+    \mathrm{drift}(t) =
+    \frac{1}{|\theta|}\sum_i |\theta^{(t)}_i - \theta^{(0)}_i|.
+\end{equation}
+Here $\theta^{(0)}$ denotes the original model parameters and $\theta^{(t)}$
+the parameters after one generation of fine-tuning. This scalar summarizes the
+average displacement of the model in weight space under FFT. For QLoRA, the
+closest available perturbation proxy is the Frobenius norm of the composed
+adapter update, $\|BA\|_F$. These two quantities are not geometrically identical:
+one measures displacement of the full model weights, while the other measures
+the magnitude of a low-rank update. We therefore use them only as approximate
+perturbation proxies when selecting the FFT/QLoRA comparison in Axis~3.
 
 \subsection{Output-distribution diagnostics}\label{sec:metrics}
 
