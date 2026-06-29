@@ -161,26 +161,38 @@ For the paper: frame as "approximately perturbation-matched" using the B@A metri
 
 ## 7. Relationship to Literature
 
-| Paper | Their claim | Our finding |
-|---|---|---|
-| Shumailov 2024 (Nature) | Recursive → irreversible collapse | Not under PEFT r≤128. Consistent at r=256. |
-| Dohmatob 2025 (ICLR) | Any k>0 → linear error growth | PEFT alters effective hypothesis class. r=256 is consistent. |
-| Keisha 2025 | Three-stage collapse (Gemma 3 1B, FFT) | Stage B not observed under QLoRA. Different regime. |
-| Biderman 2024 (TMLR) | LoRA learns less, forgets less | Consistent. We extend with dose-response. |
-| Adapala 2025 | Anti-Ouroboros (cumulative LoRA) | Different protocol. We use replace-without-filter. |
-| Gerstgrasser 2024 | Accumulation prevents collapse | Low-rank PEFT also bounds it under replace protocol. |
+| Paper | Their claim | Our finding | Positioning |
+|---|---|---|---|
+| Shumailov 2024 (Nature) | Recursive → irreversible collapse | Bounded under low perturbation; consistent at high perturbation | We identify the capacity regime where their predictions hold |
+| Dohmatob 2025 (ICLR) | E[L_T] ≥ E[L_0] + αkT | r=256 qualitatively consistent; r≤128 falls outside their assumptions | Low-rank changes the effective hypothesis class |
+| Keisha 2025 | Three-stage collapse (Gemma 3 1B, FFT) | QLoRA r=4 homeostatic on same backbone, different protocol | Suggestive context (confounded by dataset/eval format), not controlled replication |
+| Biderman 2024 (TMLR) | LoRA learns less, forgets less | Confirmed and extended to dose-response + threshold | We map WHEN "forgets less" holds vs fails |
+| Adapala 2025 | Anti-Ouroboros (cumulative + filter) | Replace-without-filter also bounds degradation at low rank | Harsher protocol, complementary finding |
+| Gerstgrasser 2024 | Accumulation prevents collapse | Low-rank also bounds under replace protocol | Orthogonal: data-axis vs update-axis |
+| Xu 2025 | P(improvement) < 1/2 | Low-drift = stagnation (no improvement, no collapse) | Consistent: small random-walk steps = bounded drift |
+| Zibakhsh 2024 | TCE loss delays collapse 2.3× | Low-rank bounds collapse indefinitely (10 gens) at low rank | Orthogonal: loss-signal vs update-subspace |
+
+### Positioning statement:
+
+> "We do not refute model-collapse results; we identify the capacity and perturbation regimes under which collapse-like degradation emerges or remains bounded. The collapse literature documents degradation under high-capacity recursive training; the PEFT literature shows LoRA regularizes. We bridge them: perturbation magnitude — set by rank under PEFT or LR under FFT — is the dominant variable. QLoRA additionally incurs a smaller one-time factual cost. Thresholds are backbone-dependent; cross-architecture normalization and update-subspace geometry remain future work."
 
 ### What the paper CAN claim:
 - First systematic dose-response curve (r=4→256, 10 gens, 3 seeds)
 - First capacity-dependent regime transition identification
 - Module topology invariance (attention vs full-linear)
 - Multi-backbone confirmation of regime structure
-- Mechanistic: effective rank as predictor, not just "LoRA helps"
+- Effective rank as primary predictor within a backbone
+- Dual dose-response (QLoRA rank + FFT LR) confirming magnitude dominance
+- Deterministic fragile-fact floor under FFT (Jaccard=1.0 cross-seed)
 
 ### What the paper CANNOT claim:
 - First to use PEFT for recursive training (Biderman, Adapala exist)
 - Novel observation that LoRA prevents collapse (Biderman showed this)
-- Causal mechanism of protection (without drift-matched FFT)
+- Controlled contradiction of Keisha (different dataset/eval format)
+- "Contradicts" Shumailov or Dohmatob (we locate regime boundaries, not refute)
+- Different update subspace directions (fact-overlap is output-level, not weight-geometry)
+- Precise threshold location (between two rank values)
+- Generalization beyond 1-2B scale
 
 ---
 
