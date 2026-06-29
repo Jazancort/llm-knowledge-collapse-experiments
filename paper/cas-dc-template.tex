@@ -453,7 +453,79 @@ perturbation proxies when selecting the FFT/QLoRA comparison in Axis~3.
 
 \subsection{Output-distribution diagnostics}\label{sec:metrics}
 
-% TODO: Write metrics subsection
+Beyond factual retention, we track output-distribution diagnostics designed to
+measure how the synthetic training stream changes across recursive generations.
+These metrics serve two purposes. First, they detect distributional degradation
+that may not be captured by K0 retention alone. Second, they provide monitorable
+signals that could be used to audit recursive fine-tuning pipelines. We treat
+these diagnostics as descriptive indicators of output drift, not as standalone
+causal explanations for factual loss.
+
+\paragraph{Content efficiency.}
+We define content efficiency as factual retention normalized by mean response
+length:
+\begin{equation}\label{eq:efficiency}
+    \mathrm{ContentEff}(t) =
+    \frac{\mathrm{Retention}(t)}{\mathrm{MeanLength}(t)}.
+\end{equation}
+Here, $\mathrm{MeanLength}(t)$ is measured in words over the generated synthetic
+responses at generation~$t$. This composite metric captures whether factual
+retention is being maintained with increasingly verbose outputs. Declining
+content efficiency indicates that the model is producing more tokens per
+retained fact, whereas stable content efficiency indicates that retention and
+response length remain proportionally stable.
+
+\paragraph{Baseline response persistence.}
+For each $K_0$ item, we compare the model's normalized response at generation~$t$
+with its normalized response at generation~0. The strict persistence score is
+\begin{equation}\label{eq:persistence}
+    \mathrm{Persistence}(t) =
+    \frac{|\{q \in K_0 : \mathrm{answer}_t(q) = \mathrm{answer}_0(q)\}|}{|K_0|}.
+\end{equation}
+High persistence indicates that responses remain anchored to the model's
+generation-0 outputs. Declining persistence indicates response drift relative to
+the initial model behavior, even when aggregate factual retention remains
+bounded. Because exact matching can be sensitive to minor wording changes, we
+also compute fuzzy item-level stability using token-overlap similarity as a
+robustness check.
+
+\paragraph{Lexical diversity and verbosity.}
+We measure lexical diversity of the synthetic training stream using several
+corpus-level metrics. Distinct-$n$~\citep{li2016} computes the ratio of unique
+$n$-grams to total $n$-grams in the generated corpus; we report Distinct-1 and
+Distinct-2. Because Distinct-$n$ is sensitive to response length, we also compute
+the Measure of Textual Lexical Diversity (MTLD;~\citealp{mccarthy2010}), a
+length-robust estimate of lexical diversity. In addition, we track mean response
+length and stopword ratio, which help distinguish verbosity increase from changes
+in content-word diversity.
+
+\paragraph{Synthetic Drift Index (SDI-3).}
+To summarize output-distribution change, we define a three-term synthetic drift
+index:
+\begin{equation}\label{eq:sdi}
+    \mathrm{SDI}\text{-}3 =
+    \log\!\left(\frac{\mathrm{MeanLength}_T}{\mathrm{MeanLength}_0}\right)
+    +
+    \log\!\left(\frac{\mathrm{Distinct1}_0}{\mathrm{Distinct1}_T}\right)
+    +
+    \Delta\mathrm{Instability},
+\end{equation}
+where $\Delta\mathrm{Instability} = \mathrm{Instability}(T) -
+\mathrm{Instability}(1)$ and $\mathrm{Instability}(t)$ denotes the fraction of
+training items whose normalized response differs between generation~$t{-}1$ and
+generation~$t$. The three terms correspond to verbosity increase, unigram
+diversity decrease, and loss of item-level response stability. SDI-3 is not
+proposed as a theoretical measure of collapse; it is an empirical summary
+statistic used to compare output drift across experimental conditions.
+
+\paragraph{Role of these metrics.}
+These diagnostics complement K0 retention by measuring distributional properties
+of the synthetic stream. K0 retention measures preservation of initially known
+facts, whereas the output diagnostics measure whether the generated training
+data remain short, lexically efficient, and anchored to the model's initial
+responses. Throughout the paper, we interpret these metrics as signatures of
+distributional drift. Causal claims are reserved for explicit interventions on
+the synthetic training stream in \S\ref{sec:intervention}.
 
 \subsection{Synthetic-exposure interventions}\label{sec:intervention}
 
