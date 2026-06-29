@@ -1120,15 +1120,110 @@ recursive training systems, and outlines the limitations of the present study.
 % ============================================================
 \section{Discussion}\label{sec:discussion}
 
-% TODO: Write discussion opening paragraph
+The preceding results identify consistent patterns in how recursive synthetic
+fine-tuning responds to changes in update capacity, perturbation magnitude, and
+synthetic exposure. This section interprets these findings in the context of
+prior work, examines what they imply for the understanding and management of
+recursive training systems, and discusses the limitations of the present study.
+The discussion is organized around four themes: the interpretation of effective
+training pressure as an organizing framework
+(Section~\ref{sec:disc_pressure}), the relationship between the present findings
+and the model-collapse literature (Section~\ref{sec:disc_literature}), the
+diagnostic role of output-distribution changes (Section~\ref{sec:disc_drift}),
+and the practical implications for the design and monitoring of recursive
+training pipelines (Section~\ref{sec:disc_practical}).
 
 \subsection{Effective training pressure as an organizing framework}\label{sec:disc_pressure}
 
-% TODO
+The results presented in Section~\ref{sec:results} converge on a consistent
+empirical pattern: recursive factual degradation is not observed uniformly
+across recursive synthetic fine-tuning, but instead emerges only when the
+training process operates above a backbone-dependent pressure threshold. Three
+independently manipulated variables, adapter rank, learning rate, and synthetic
+exposure, each shift the system between homeostatic and degradative behavior.
+The convergence of these independent manipulations is the primary empirical
+motivation for treating them as manifestations of a common organizing principle.
+
+The framework is empirical rather than theoretical. We do not propose a
+closed-form expression that combines rank, learning rate, and exposure into a
+single scalar predictor. Instead, we observe that each variable independently
+controls the same qualitative transition, and that the transition is sharp:
+approximately 5\% reduction in synthetic exposure at the $r=256$ boundary
+configuration is sufficient to shift the system from degradative to bounded
+behavior. This sharpness suggests that the underlying phenomenon operates near
+an abrupt regime boundary rather than degrading gradually as any single
+parameter increases.
+
+Two features of this framework merit emphasis. First, the threshold is
+backbone-dependent: Gemma~3 transitions at effective rank 3--9, while Qwen
+remains bounded at effective rank 50. No simple normalization by architectural
+parameters (hidden dimension, depth, head count) aligned these thresholds. This
+likely reflects properties of the pretrained backbone not captured by simple
+architectural dimensions. Second, the framework does not assume that the three
+pressure components are interchangeable or commensurable. Rank and learning rate
+operate through different mechanisms (subspace dimensionality versus step size),
+and synthetic exposure operates on the data stream rather than the update
+itself. Their shared effect on the regime transition is the empirical
+observation that motivates the framework, not a theoretical prediction.
+
+We therefore interpret effective training pressure not as a physical quantity
+with defined units, but as a conceptual framework for organizing the observed
+control structure of recursive fine-tuning. Its practical value lies in
+identifying multiple independent knobs that practitioners can adjust to maintain
+stability, rather than in providing a single formula for predicting collapse.
 
 \subsection{Relation to recursive-training literature}\label{sec:disc_literature}
 
-% TODO
+The model-collapse literature has established that recursive training on
+synthetic data can produce irreversible degradation under full fine-tuning
+\citep{shumailov2024} and that expected loss increases linearly with any
+nonzero fraction of synthetic data \citep{dohmatob2025}. Our results do not
+contradict these findings. Rather, they help localize the experimental
+conditions under which qualitatively similar degradation emerges in our
+recursive fine-tuning setting: the degradative configurations ($r=256$ on Qwen,
+$r \geq 16$ on Gemma~3, FFT at high learning rates) are qualitatively
+consistent with the collapse dynamics these works describe.
+
+The contribution of the present work is locating where, in the space of
+practical PEFT configurations, the transition between bounded and degradative
+behavior occurs. \citet{biderman2024} observed that LoRA ``learns less and
+forgets less'' relative to full fine-tuning. Our dose-response results refine
+this observation: low-rank adaptation remains bounded not because LoRA prevents
+degradation in general, but because, in the evaluated configurations, low rank
+limits effective training pressure below the observed regime boundary. When rank
+is increased sufficiently ($r=256$ on Qwen, $r=16$ on Gemma~3), degradation
+emerges despite using the same PEFT method. The present results therefore
+provide an empirical boundary for the qualitative observation reported by
+\citet{biderman2024}, showing not only that low-rank adaptation forgets less,
+but also where this advantage ceases to hold.
+
+The cross-backbone results add a dimension absent from prior work. Both
+\citet{shumailov2024} and \citet{dohmatob2025} treat collapse as a property of
+the recursive process itself, without examining its dependence on model
+architecture. Our finding that the threshold differs by approximately an order
+of magnitude between Qwen and Gemma~3 indicates that the pretrained backbone
+appears to contribute substantially to determining where the boundary lies. This
+is consistent with the observation by \citet{keisha2025} that Gemma~3~1B
+exhibits three-stage degradation under full fine-tuning, a finding compatible
+with our result that Gemma~3 has a lower pressure threshold than Qwen. However,
+because \citet{keisha2025} used a different dataset, evaluation format, and
+training protocol, we treat this as suggestive context rather than a controlled
+comparison.
+
+The synthetic-exposure interventions connect to the data-axis mitigation
+literature. \citet{gerstgrasser2024} showed that accumulating real data across
+generations prevents collapse, operating on the data-composition axis. Our
+C3/C5 results operate on a complementary axis: rather than adding real data, we
+reduce synthetic exposure by a marginal amount and observe recovery in a
+boundary configuration. Both approaches reduce recursive degradation through
+different intervention points in the training pipeline. They are orthogonal and
+potentially combinable, though their interaction has not been tested.
+
+The present work complements rather than challenges the collapse literature by
+identifying the practical conditions under which bounded and degradative
+recursive behavior are observed in parameter-efficient fine-tuning, how the
+operating regime varies across backbones, and how it can be manipulated through
+multiple independent control axes.
 
 \subsection{Distributional degradation as a diagnostic signal}\label{sec:disc_drift}
 
