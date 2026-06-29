@@ -967,7 +967,12 @@ These observations motivate a descriptive three-regime taxonomy:
 \end{enumerate}
 
 This taxonomy summarizes the observed behavior of the evaluated configurations
-rather than defining universally distinct categories.
+rather than defining universally distinct categories. The degradative regime
+($r=256$) is qualitatively consistent with the Stage~B ``knowledge collapse''
+described by \citet{keisha2025}, where fluency persists while factual accuracy
+deteriorates. The distributionally degraded regime ($r=128$), however, represents
+a condition not captured by that framework: factual retention remains bounded
+while output-distribution quality degrades substantially.
 Figure~\ref{fig:distributional} illustrates the divergent trajectories across
 these three regimes.
 
@@ -1098,7 +1103,11 @@ different datasets remains untested.
 Taken together, the intervention experiments show that the degradative regime is
 reversible under the evaluated conditions. Adjusting synthetic exposure restores
 near-homeostatic behavior in the boundary configuration, complementing the
-capacity and perturbation results presented in the preceding sections.
+capacity and perturbation results presented in the preceding sections. We note
+that verification-based approaches \citep{yi2025} represent an orthogonal
+mitigation axis (filtering by quality rather than quantity); our exposure
+reduction experiments test boundary sensitivity rather than proposing a
+competing mitigation pipeline.
 
 The five subsections above establish a coherent empirical picture of recursive
 fine-tuning under synthetic data. Increasing adapter rank produces a monotonic
