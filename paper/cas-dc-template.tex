@@ -658,7 +658,7 @@ evaluated range, Gen10 retention decreases from 94.9\% at $r=16$ to 78.0\% at
 $r=256$, a difference of 16.9 percentage points.
 
 \begin{table}[width=.95\linewidth,cols=6,pos=htbp]
-\captionof{figure}{QLoRA rank sweep on Qwen~2.5~1.5B-Instruct. Retention is reported at
+\caption{QLoRA rank sweep on Qwen~2.5~1.5B-Instruct. Retention is reported at
 the last evaluated generation. Headline ranks ($r=16$ and $r=256$) are evaluated
 with three seeds; all others with a single seed. Configurations evaluated only
 to Gen5 correspond to intermediate dose-response points.}\label{tab:rank_sweep}
@@ -755,7 +755,7 @@ Gemma~3 enters the degradative regime across all three seeds (mean Gen5 retentio
 empirical separation between the two regimes on this backbone.
 
 \begin{table}[width=.95\linewidth,cols=5,pos=htbp]
-\captionof{figure}{QLoRA rank sweep on Gemma~3~1B~IT. Boundary ranks ($r=4$ and $r=16$)
+\caption{QLoRA rank sweep on Gemma~3~1B~IT. Boundary ranks ($r=4$ and $r=16$)
 are evaluated with three seeds; $r=2$ and $r=256$ are evaluated with a single
 seed. Retention is reported at Gen5 for comparability across ranks; the $r=4$
 condition was additionally extended to Gen10 (seed~15:
@@ -836,7 +836,7 @@ perturbation magnitude alone can drive the system toward degradation without any
 adapter or rank constraint.
 
 \begin{table}[width=.95\linewidth,cols=4,pos=htbp]
-\captionof{figure}{FFT learning-rate sweep on Qwen~2.5~1.5B (seed~15, Gen3). Perturbation
+\caption{FFT learning-rate sweep on Qwen~2.5~1.5B (seed~15, Gen3). Perturbation
 proxy is the mean absolute weight drift relative to the original model for FFT,
 and $\|BA\|_F$ for QLoRA. These are operationally comparable but not
 geometrically identical measures. QLoRA~$r=16$ is included as a reference
@@ -1019,7 +1019,7 @@ Table~\ref{tab:interventions} summarizes K0 retention at Gen5 for each
 intervention condition relative to the unmodified C1 baseline.
 
 \begin{table}[width=.95\linewidth,cols=5,pos=htbp]
-\captionof{figure}{Synthetic-exposure interventions on Qwen $r=256$. C3 is evaluated with
+\caption{Synthetic-exposure interventions on Qwen $r=256$. C3 is evaluated with
 three training seeds (15, 137, 256); C5 is evaluated with three independent
 random downsampling masks. Token counts refer to the total synthetic training
 stream per generation. Means are reported for multi-seed or multi-mask
