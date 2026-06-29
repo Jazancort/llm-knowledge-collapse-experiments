@@ -1127,6 +1127,21 @@ reversible under the evaluated conditions. Adjusting synthetic exposure restores
 near-homeostatic behavior in the boundary configuration, complementing the
 capacity and perturbation results presented in the preceding sections.
 
+The five subsections above establish a coherent empirical picture of recursive
+fine-tuning under synthetic data. Increasing adapter rank produces a monotonic
+transition from homeostatic to degradative behavior on Qwen, while experiments
+on Gemma~3 show that the same qualitative regime structure generalizes across
+backbones despite architecture-dependent thresholds. Full fine-tuning
+learning-rate sweeps reproduce the same dose-response relationship, indicating
+that the transition is not specific to low-rank adaptation. Above-threshold
+configurations exhibit characteristic distributional signatures, including a
+dissociation between factual retention and output quality at intermediate
+capacity. Finally, synthetic-exposure interventions demonstrate that boundary
+configurations can be shifted back toward near-homeostatic behavior through
+modest reductions in recursive exposure. The following section interprets these
+findings in the context of prior work, discusses their implications for
+recursive training systems, and outlines the limitations of the present study.
+
 % ============================================================
 % 5. DISCUSSION
 % ============================================================
