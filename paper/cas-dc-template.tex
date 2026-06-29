@@ -588,7 +588,57 @@ explained by reduced training volume alone.
 
 \subsection{Seeds, statistics, and reporting}\label{sec:statistics}
 
-% TODO: Write statistics subsection
+Recursive fine-tuning experiments are computationally expensive because each
+condition requires multiple generations of training and data regeneration. We
+therefore use a small but explicit seed policy, distinguishing between
+multi-seed headline comparisons and single-seed supporting ablations.
+
+\paragraph{Seed policy.}
+Headline comparisons are evaluated with three seeds (15, 137, 256). These
+include the Qwen rank-sweep endpoints ($r=16$ and $r=256$), the Gemma~3 boundary
+ranks ($r=4$ and $r=16$), the QLoRA--FFT comparison, and the C3/C5 synthetic
+exposure interventions. Intermediate dose-response points and supporting
+ablations, including module-topology comparisons, Gemma~4 robustness checks, and
+single-rank FFT learning-rate sweeps, are evaluated with a single seed and
+labeled as such. We do not pool single-seed and multi-seed results when making
+headline claims.
+
+\paragraph{Reporting format.}
+For three-seed conditions, we report per-seed values together with the mean and
+observed range. Because $N=3$ provides imprecise estimates of sampling
+variability, we use these summaries descriptively rather than as estimates of
+population-level uncertainty. When the observed ranges of two conditions do not
+overlap across all three seeds, we treat this as consistent empirical separation
+under the present experimental protocol, not as a formal hypothesis test.
+
+\paragraph{Statistical approach.}
+We avoid formal hypothesis testing. With only three seeds per condition,
+classical tests such as the Wilcoxon signed-rank test have very limited
+statistical power. We therefore emphasize effect sizes, monotonic dose-response
+behavior, and per-seed consistency. Our primary evidential pattern is ordinal
+and mechanistic: retention changes systematically as update capacity,
+perturbation magnitude, or synthetic exposure is varied. In particular, the
+QLoRA rank sweep and FFT learning-rate sweep are interpreted as dose-response
+curves across six and four levels respectively, where the ordinal consistency of
+the entire sweep provides stronger evidence than any single pairwise comparison.
+
+\paragraph{Effect sizes.}
+We report absolute differences in factual retention as percentage-point gaps.
+Effect sizes are emphasized because they remain directly interpretable
+regardless of sample size. For QLoRA--FFT comparisons, gaps are reported per seed
+and as a mean. For synthetic-exposure interventions, we report the improvement
+over the unmodified C1 baseline at the same generation. Where relevant, we also
+report item-level transition counts and the number of $K_0$ facts lost or
+regained.
+
+\paragraph{Scope of inference.}
+We do not claim precise threshold locations, such as a universal effective-rank
+value at which degradation begins. Instead, we identify the interval between
+adjacent tested settings where the observed regime transition occurs. We also do
+not claim generalization beyond the tested model scale, dataset, recursive
+horizon, or intervention family. Single-seed observations are used as
+exploratory or supportive evidence and are not used as standalone support for
+headline conclusions.
 
 % ============================================================
 % 4. RESULTS
