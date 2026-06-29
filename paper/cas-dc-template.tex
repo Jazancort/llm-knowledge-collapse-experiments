@@ -927,6 +927,107 @@ transition therefore cannot be attributed to adapter rank alone. The next sectio
 examines how these regimes manifest in the distributional properties of the
 synthetic outputs.
 
+\subsection{Distributional signatures of degradation}\label{sec:res_distribution}
+
+The previous sections identified regime transitions through factual retention
+alone. This section asks how these regimes manifest in the distributional
+properties of the synthetic outputs. We apply the output-distribution diagnostics
+defined in \S\ref{sec:metrics} to three representative Qwen configurations:
+$r=16$ (homeostatic), $r=128$ (bounded retention), and $r=256$ (degradative).
+
+\paragraph{Homeostatic regime ($r=16$).}
+In the homeostatic regime, all distributional metrics remain stable across ten
+generations. Mean response length increases only slightly (2.47 to 2.70 words),
+Distinct-1 remains above 0.63, MTLD stays above 2000, stopword ratio remains
+near 0.16, and baseline response persistence holds steady at approximately 36\%.
+Content efficiency declines modestly from 0.41 to 0.35, reflecting the initial
+one-generation adaptation cost but no progressive drift.
+
+\paragraph{Bounded regime ($r=128$): a retention/distribution dissociation.}
+The $r=128$ configuration reveals a dissociation between factual retention and
+output-distribution quality. While K0 retention remains bounded at 88.6\% through
+Gen10, the output distribution degrades substantially: mean response length
+inflates from 2.47 to 7.0 words, content efficiency collapses from 0.41 to 0.13
+(a threefold dilution), stopwords double from 12\% to 25\%, MTLD collapses from
+2673 to 745, and baseline persistence falls to 5.2\%. We refer to this as a
+\textit{filler verbosity} phenotype: the model pads responses with repetitive
+function words while retaining enough factual content to maintain bounded
+retention.
+
+This dissociation has a practical implication: K0 retention alone does not fully
+capture the onset of distributional degradation. A system monitored solely by
+factual accuracy would classify $r=128$ as stable, while its generated outputs
+have already degraded substantially in efficiency, diversity, and response
+anchoring.
+
+\paragraph{Degradative regime ($r=256$).}
+At $r=256$, nearly all metrics diverge from their baseline values. Mean response
+length increases from 2.47 to 3.6 words, content efficiency declines from 0.41
+to 0.22, and baseline response persistence collapses from 33\% to 3.8\% by
+Gen10. Notably, MTLD \textit{increases} (2673 to 3804) and stopword ratio
+\textit{decreases} (12\% to 9\%), indicating that the model generates more
+varied vocabulary while losing factual anchoring. We refer to this as an
+\textit{elaborative drift} phenotype: the model produces longer, lexically
+diverse, but factually unanchored responses.
+
+The two above-threshold configurations therefore exhibit distinct distributional
+failure modes despite both departing from homeostatic behavior: $r=128$ degrades
+through filler accumulation, while $r=256$ degrades through elaborative
+dispersion.
+
+\paragraph{Three-regime taxonomy.}
+These observations motivate a descriptive three-regime taxonomy:
+
+\begin{enumerate}
+    \item \textbf{Homeostatic} ($r \leq 64$ on Qwen, retention above
+    approximately 90\%): factual retention and output-distribution metrics are
+    both stable.
+    \item \textbf{Distributionally degraded, factually bounded} ($r=128$ on
+    Qwen): factual retention remains bounded while output-distribution metrics
+    degrade substantially.
+    \item \textbf{Factually degradative} ($r=256$ on Qwen): factual retention
+    declines progressively and output distribution drifts.
+\end{enumerate}
+
+This taxonomy summarizes the observed behavior of the evaluated configurations
+rather than defining universally distinct categories.
+Figure~\ref{fig:distributional} illustrates the divergent trajectories across
+these three regimes.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figs/fig5_distributional.pdf}
+  \caption{Distributional diagnostics over ten recursive generations for three
+  representative Qwen configurations. (a)~Mean response length, (b)~baseline
+  response persistence, (c)~content efficiency. All three metrics diverge for
+  $r=128$ and $r=256$ while remaining stable for $r=16$; the $r=128$
+  configuration is notable for strong distributional drift despite bounded
+  factual retention.}\label{fig:distributional}
+\end{figure}
+
+\paragraph{Temporal relationship between output drift and retention.}
+To examine whether output drift precedes factual loss, we computed cross-lag
+correlations between mean response length at generation~$t$ and retention at
+generation~$t{+}1$. The raw Pearson correlation in the degradative regime is
+strong ($\rho = -0.965$), but robustness analyses substantially attenuate this
+association. After conditioning on shared temporal trend (partial correlation),
+the coefficient drops to $-0.22$. First-difference analysis yields $-0.43$, and
+the reverse-lag correlation is of comparable magnitude, indicating a
+bidirectional association rather than clear temporal precedence.
+
+We therefore interpret output drift as a co-symptom of the same underlying
+high-pressure process, rather than a demonstrated causal antecedent of factual
+loss. Output drift remains valuable as a diagnostic signature: it is
+consistently present in degradative and distributionally degraded configurations,
+consistently absent in homeostatic ones, and can appear even when factual
+retention remains bounded, as illustrated by the $r=128$ configuration.
+Determining the causal relationship between output-distribution changes and
+factual degradation remains an open question.
+
+The next section tests whether the third component of effective training
+pressure, synthetic data exposure, can shift the system back toward homeostasis
+at the regime boundary.
+
 % ============================================================
 % 5. DISCUSSION
 % ============================================================
