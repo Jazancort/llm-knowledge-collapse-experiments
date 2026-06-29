@@ -640,6 +640,20 @@ horizon, or intervention family. Single-seed observations are used as
 exploratory or supportive evidence and are not used as standalone support for
 headline conclusions.
 
+Together, the subsections above define a methodology structured around five
+complementary experimental axes, a factual retention metric that isolates
+knowledge loss from knowledge absence, a suite of distributional diagnostics for
+detecting output-distribution drift beyond retention, and a set of controlled
+synthetic-exposure interventions for testing boundary sensitivity. The results
+section is organized to mirror this design: we first establish the
+capacity-gated regime transition through the Qwen rank sweep and Gemma~3
+cross-backbone validation (Axes~1--2), then compare QLoRA and full fine-tuning
+at approximately matched perturbation (Axis~3), characterize distributional
+signatures accompanying degradation, and finally show that marginal exposure
+reduction restores near-homeostatic retention at the boundary (Axis~5). Module
+topology ablations (Axis~4) are presented as supporting evidence alongside the
+capacity results.
+
 % ============================================================
 % 4. RESULTS
 % ============================================================
