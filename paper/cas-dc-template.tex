@@ -1375,7 +1375,47 @@ predictor exists remains an open question.
 % ============================================================
 \section{Conclusion}\label{sec:conclusion}
 
-% TODO: Write conclusion
+This work investigated how recursive synthetic fine-tuning affects factual
+retention in large language models, focusing on the conditions under which
+degradation emerges or remains bounded. Through systematic dose-response
+experiments across three backbones, a controlled comparison between QLoRA and
+full fine-tuning, output-distribution diagnostics, and synthetic-exposure
+interventions, we identified effective training pressure as an organizing
+framework for recursive stability under parameter-efficient fine-tuning.
+
+The experimental results consistently show that recursive stability depends on
+three controllable dimensions of the training process: update capacity,
+perturbation magnitude, and synthetic exposure. Across the evaluated backbones,
+increasing pressure along any of these dimensions moves the system from
+homeostatic to degradative behavior, while modest reductions near the regime
+boundary restore bounded or near-homeostatic performance. The regime transition
+is sharp, backbone-dependent, and reproducible across seeds. Complementary
+distributional diagnostics further reveal that output quality can degrade
+substantially before severe factual loss becomes apparent, providing additional
+signals for monitoring recursive training beyond accuracy alone.
+
+The central implication is that recursive degradation under parameter-efficient
+fine-tuning need not be an inevitable consequence of training on synthetic data.
+Rather, it is a pressure-gated phenomenon: the boundary between stability and
+degradation can be controlled through multiple independent axes. This suggests
+that recursive synthetic training can be governed as an engineering challenge,
+provided that effective training pressure is monitored and maintained below the
+relevant backbone-dependent threshold.
+
+Several directions for future work emerge from these findings. Scaling the
+present experiments to 7B and larger models would establish whether the regime
+structure persists at production-relevant scales. Extending the evaluation to
+diverse datasets (long-form generation, code, multi-turn dialogue) would test
+whether the pressure framework applies beyond factoid recall. Weight-level
+analysis of adapter update subspace geometry could illuminate the mechanistic
+basis of the observed transition. Combining multiple pressure-reduction
+strategies (lower rank, reduced exposure, and loss-signal shaping) within a
+single pipeline could reveal whether their effects are additive or interact.
+More broadly, developing a principled theoretical account that unifies the
+observed pressure components into a quantitative predictor of regime transitions
+remains an open challenge that, if addressed, may enable recursive training
+systems that are not only more robust, but also more predictable across models,
+datasets, and deployment conditions.
 
 % ============================================================
 % CREDIT
