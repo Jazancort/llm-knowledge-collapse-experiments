@@ -1227,11 +1227,89 @@ multiple independent control axes.
 
 \subsection{Distributional degradation as a diagnostic signal}\label{sec:disc_drift}
 
-% TODO
+The distributional analysis in Section~\ref{sec:res_distribution} reveals that
+factual retention alone provides an incomplete picture of recursive degradation.
+The $r=128$ configuration on Qwen retains 88.6\% of $K_0$ facts through Gen10,
+a level that could reasonably be interpreted as stable under a retention-only
+monitoring strategy. Yet its output distribution degrades substantially: content
+efficiency collapses to 0.13, baseline persistence falls to 5.2\%, and MTLD
+drops from 2673 to 745. This dissociation between factual retention and
+distributional quality provides the principal motivation for using
+output-distribution diagnostics as complementary monitoring signals.
+
+Two distinct degradation phenotypes emerge above the pressure threshold. At
+intermediate capacity ($r=128$), the model accumulates filler words and
+repetitive function tokens while preserving enough factual content to maintain
+bounded retention. At high capacity ($r=256$), the model instead generates
+lexically diverse but factually unanchored responses. These patterns appear to
+represent distinct modes of distributional deterioration rather than different
+degrees of the same phenomenon: they differ in which metrics degrade (MTLD
+collapses in the first case, increases in the second) and in their relationship
+to factual loss (bounded in the first, progressive in the second).
+
+The practical implication is that monitoring recursive training systems solely
+through factual accuracy or loss metrics risks missing the onset of
+distributional drift. Content efficiency, baseline persistence, and response
+length provide richer signals of regime departure. In the $r=128$ case, these
+metrics showed substantial degradation across generations during which retention
+remained bounded, suggesting that they could serve as earlier indicators of
+regime departure than retention alone.
+
+We emphasize that this diagnostic value does not rest on a causal claim. The
+cross-lag analysis showed that after controlling for shared temporal trend, the
+association between output drift and subsequent retention loss weakens
+substantially (partial $\rho = -0.22$). We interpret output drift as a
+co-symptom of the same high-pressure process rather than a demonstrated causal
+driver. Its value lies in being observable, measurable, and consistently present
+in above-threshold and distributionally degraded configurations, while remaining
+low in homeostatic ones, regardless of whether it contributes to, or simply
+accompanies, factual degradation.
 
 \subsection{Practical implications for recursive training systems}\label{sec:disc_practical}
 
-% TODO
+The results and interpretations above translate into actionable considerations
+for practitioners designing or monitoring recursive synthetic fine-tuning
+pipelines. We organize these around three operational concerns: configuration
+selection, runtime monitoring, and intervention design.
+
+Regarding configuration selection, the dose-response results indicate that
+adapter rank is a directly controllable parameter with predictable effects on
+recursive stability. For applications where recursive synthetic data reuse is
+anticipated, selecting a rank that places the system well below the observed
+pressure threshold is a practical strategy for maintaining recursive stability.
+On Qwen~2.5~1.5B, ranks at or below 64 (effective rank $\leq 30$) remained
+homeostatic through ten recursive generations with no sign of drift. Although
+the numerical threshold is backbone-dependent, the underlying principle appears
+consistent across the evaluated models: lower effective training pressure is
+associated with greater recursive stability in the tested configurations. When
+full fine-tuning is required, lower learning rates reduce recursive degradation
+in the evaluated setting.
+
+Regarding runtime monitoring, the $r=128$ dissociation demonstrates that factual
+accuracy alone is insufficient for detecting distributional drift. Based on the
+observed patterns, tracking at minimum mean response length, content efficiency
+(retention normalized by length), and baseline response persistence can help
+detect regime departure earlier than factual accuracy alone. Rising response
+length or declining content efficiency signals that the system may be departing
+from its homeostatic operating regime, even if factual retention metrics appear
+stable. These signals are computationally inexpensive and require no additional
+evaluation infrastructure beyond what is already needed for generation-level
+quality assessment.
+
+Regarding intervention design, the C3/C5 results demonstrate that boundary
+configurations are sensitive to marginal changes in synthetic exposure. When
+monitoring signals indicate regime departure, reducing the volume of the
+synthetic training stream through filtering, downsampling, or constraining
+response format may provide a lightweight mitigation strategy under conditions
+similar to those evaluated here. Under the evaluated conditions, random
+downsampling performed comparably to targeted filtering, suggesting that
+identifying specific problematic examples may not always be necessary.
+
+These considerations are derived from experiments on 1--2B parameter models with
+factoid QA data. Their applicability to larger models, different domains, or
+longer recursive horizons remains to be established. They should therefore be
+viewed as empirically grounded design considerations rather than universal
+governance rules.
 
 % ============================================================
 % 6. LIMITATIONS
