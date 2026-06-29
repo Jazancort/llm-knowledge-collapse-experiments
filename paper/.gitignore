@@ -1,11 +1,11 @@
 # LaTeX build files
-paper/*.aux
-paper/*.log
-paper/*.bbl
-paper/*.blg
-paper/*.out
-paper/*.synctex.gz
-paper/*.abs
-paper/*.pdf
-paper/*.fls
-paper/*.fdb_latexmk
+*.aux
+*.log
+*.bbl
+*.blg
+*.out
+*.synctex.gz
+*.abs
+*.fls
+*.fdb_latexmk
+*.pdf
