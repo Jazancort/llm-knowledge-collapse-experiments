@@ -7,6 +7,8 @@
 \usepackage{booktabs}
 \usepackage{amsmath}
 \usepackage{caption}
+\usepackage{microtype}
+\usepackage{adjustbox}
 
 \begin{document}
 \let\WriteBookmarks\relax
@@ -242,9 +244,7 @@ At each subsequent generation~$t$, only the corresponding $K_0$ items are used
 to compute retention:
 \begin{equation}\label{eq:k0}
   \mathrm{Retention}(t) =
-  \frac{
-    |\{q \in K_0 : q \text{ is answered correctly at generation } t\}|
-  }{|K_0|}.
+  \frac{|\{q \in K_0 : q \text{ correct at gen.\ } t\}|}{|K_0|}.
 \end{equation}
 
 Thus, a retention score of 100\% means that the model preserved all factual
@@ -332,17 +332,17 @@ Table~\ref{tab:axes} summarizes the experimental axes, the manipulated variable,
 and the tested range.
 
 \begin{table}[width=.95\linewidth,cols=3,pos=htbp]
-\captionof{figure}{Experimental axes and their corresponding pressure components.}
-\label{tab:axes}
-\begin{tabular*}{\tblwidth}{@{} lll@{} }
+\caption{Experimental axes and their corresponding pressure
+components.}\label{tab:axes}
+\begin{tabular*}{\tblwidth}{@{} lp{2.2cm}p{3.8cm}@{} }
 \toprule
-Axis & Manipulated variable & Range \\
+Axis & Variable & Range \\
 \midrule
-1. Update capacity & QLoRA rank & $r \in \{4,16,32,64,128,256\}$ \\
-2. Perturbation magnitude & FFT learning rate & $\{10^{-6},5{\times}10^{-6},10^{-5},2{\times}10^{-5}\}$ \\
-3. Method comparison & QLoRA vs FFT & Approx. perturbation-matched, $N{=}3$, Gen10 \\
-4. Module topology & Target modules & Attention-only vs full-linear \\
-5. Synthetic exposure & Training examples & 100\% vs ${\sim}95\%$ filtered/downsampled \\
+1. Capacity & QLoRA rank & $r \in \{4,16,32,64,128,256\}$ \\
+2. Magnitude & FFT learning rate & $10^{-6}$ to $2{\times}10^{-5}$ \\
+3. Method & QLoRA vs FFT & Matched pert., $N{=}3$, Gen10 \\
+4. Topology & Target modules & Attention vs full-linear \\
+5. Exposure & Training examples & 100\% vs ${\sim}$95\% \\
 \bottomrule
 \end{tabular*}
 \end{table}
@@ -476,8 +476,8 @@ that retention and response length remain proportionally stable.
 \textit{Baseline response persistence} compares the model's normalized response
 at generation~$t$ with its response at generation~0:
 \begin{equation}\label{eq:persistence}
-    \mathrm{Persistence}(t) =
-    \frac{|\{q \in K_0 : \mathrm{answer}_t(q) = \mathrm{answer}_0(q)\}|}{|K_0|}.
+    \mathrm{Persist}(t) =
+    \frac{|\{q \in K_0 : a_t(q) = a_0(q)\}|}{|K_0|}.
 \end{equation}
 High persistence indicates responses remain anchored to generation-0 outputs.
 Declining persistence indicates response drift even when aggregate retention
@@ -493,14 +493,12 @@ from content-word diversity changes.
 
 Finally, we define the \textit{Synthetic Drift Index} (SDI-3) to summarize
 output-distribution change:
-\begin{equation}\label{eq:sdi}
+\begin{multline}\label{eq:sdi}
     \mathrm{SDI}\text{-}3 =
-    \log\!\left(\frac{\mathrm{MeanLength}_T}{\mathrm{MeanLength}_0}\right)
-    +
-    \log\!\left(\frac{\mathrm{Distinct1}_0}{\mathrm{Distinct1}_T}\right)
-    +
-    \Delta\mathrm{Instability},
-\end{equation}
+    \log\!\left(\frac{\mathrm{MeanLen}_T}{\mathrm{MeanLen}_0}\right)
+    + \log\!\left(\frac{\mathrm{D1}_0}{\mathrm{D1}_T}\right) \\
+    + \Delta\mathrm{Instability},
+\end{multline}
 where $\Delta\mathrm{Instability} = \mathrm{Instability}(T) -
 \mathrm{Instability}(1)$ and $\mathrm{Instability}(t)$ denotes the fraction of
 training items whose normalized response differs between generation~$t{-}1$ and
@@ -664,16 +662,16 @@ $r=256$, a difference of 16.9 percentage points.
 the last evaluated generation. Headline ranks ($r=16$ and $r=256$) are evaluated
 with three seeds; all others with a single seed. Configurations evaluated only
 to Gen5 correspond to intermediate dose-response points.}\label{tab:rank_sweep}
-\begin{tabular*}{\tblwidth}{@{} llllll@{} }
+\begin{tabular*}{\tblwidth}{@{}l@{\hskip 4pt}l@{\hskip 4pt}l@{\hskip 4pt}l@{\hskip 4pt}l@{\hskip 4pt}l@{}}
 \toprule
-Rank & Params & Gen & Retention & Eff.\ Rank & Regime \\
+Rank & Params & Gen & Ret. & Eff.\ Rk & Regime \\
 \midrule
-$r=4$   & 545K  & 5  & 96.2\%           & 3.34  & Homeostatic \\
-$r=16$  & 2.2M  & 10 & 94.9\% (N=3)     & 11.08 & Homeostatic \\
-$r=32$  & 4.4M  & 5  & 94.9\%           & 17.85 & Homeostatic \\
-$r=64$  & 8.7M  & 10 & 91.1\%           & 29.52 & Homeostatic \\
+$r=4$   & 545K  & 5  & 96.2\%           & 3.34  & Homeo. \\
+$r=16$  & 2.2M  & 10 & 94.9\% (N=3)     & 11.08 & Homeo. \\
+$r=32$  & 4.4M  & 5  & 94.9\%           & 17.85 & Homeo. \\
+$r=64$  & 8.7M  & 10 & 91.1\%           & 29.52 & Homeo. \\
 $r=128$ & 17.4M & 10 & 88.6\%           & 50.16 & Bounded \\
-$r=256$ & 34.9M & 10 & 78.0\% (N=3)     & 87.57 & Degradative \\
+$r=256$ & 34.9M & 10 & 78.0\% (N=3)     & 87.57 & Degrad. \\
 \bottomrule
 \end{tabular*}
 \end{table}
@@ -1028,13 +1026,13 @@ stream per generation. Means are reported for multi-seed or multi-mask
 conditions.}\label{tab:interventions}
 \begin{tabular*}{\tblwidth}{@{} lllll@{} }
 \toprule
-Condition & Gen5 Ret. & $\Delta$ vs C1 & Tokens & Seeds/Masks \\
+Condition & Gen5 Ret. & $\Delta$ & Tokens & $N$ \\
 \midrule
-C1 Normal    & 83.3\% (65/78) &          & $\sim$57k & 1      \\
-C2 Short     & 91.0\% (71/78) & +7.7\,pp & $\sim$60k & 1      \\
-C3 Filtered  & 92.3\% (mean)  & +9.0\,pp & $\sim$54k & $N{=}3$ \\
-C4 Canonical & 88.5\% (69/78) & +5.1\,pp & $\sim$52k & 1      \\
-C5 Random    & 92.7\% (mean)  & +9.4\,pp & $\sim$54k & $N{=}3$ masks \\
+C1 Normal    & 83.3\% (65/78) &          & ${\sim}$57k & 1      \\
+C2 Short     & 91.0\% (71/78) & +7.7\,pp & ${\sim}$60k & 1      \\
+C3 Filtered  & 92.3\% (mean)  & +9.0\,pp & ${\sim}$54k & 3 \\
+C4 Canonical & 88.5\% (69/78) & +5.1\,pp & ${\sim}$52k & 1      \\
+C5 Random    & 92.7\% (mean)  & +9.4\,pp & ${\sim}$54k & 3 masks \\
 \bottomrule
 \end{tabular*}
 \end{table}
