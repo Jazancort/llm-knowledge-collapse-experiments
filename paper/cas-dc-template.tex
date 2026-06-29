@@ -334,7 +334,7 @@ and the tested range.
 \begin{table}[width=.95\linewidth,cols=3,pos=htbp]
 \caption{Experimental axes and their corresponding pressure
 components.}\label{tab:axes}
-\begin{tabular*}{\tblwidth}{@{} lp{2.2cm}p{3.8cm}@{} }
+\begin{tabular*}{\tblwidth}{@{} lp{1.8cm}p{3.4cm}@{} }
 \toprule
 Axis & Variable & Range \\
 \midrule
@@ -1024,15 +1024,15 @@ three training seeds (15, 137, 256); C5 is evaluated with three independent
 random downsampling masks. Token counts refer to the total synthetic training
 stream per generation. Means are reported for multi-seed or multi-mask
 conditions.}\label{tab:interventions}
-\begin{tabular*}{\tblwidth}{@{} lllll@{} }
+\begin{tabular*}{\tblwidth}{@{} llrrl@{} }
 \toprule
-Condition & Gen5 Ret. & $\Delta$ & Tokens & $N$ \\
+Condition & Ret.\ (Gen5) & $\Delta$ & Tok. & $N$ \\
 \midrule
-C1 Normal    & 83.3\% (65/78) &          & ${\sim}$57k & 1      \\
-C2 Short     & 91.0\% (71/78) & +7.7\,pp & ${\sim}$60k & 1      \\
-C3 Filtered  & 92.3\% (mean)  & +9.0\,pp & ${\sim}$54k & 3 \\
-C4 Canonical & 88.5\% (69/78) & +5.1\,pp & ${\sim}$52k & 1      \\
-C5 Random    & 92.7\% (mean)  & +9.4\,pp & ${\sim}$54k & 3 masks \\
+C1 Normal    & 83.3\% (65/78) &          & 57k & 1      \\
+C2 Short     & 91.0\% (71/78) & +7.7\,pp & 60k & 1      \\
+C3 Filtered  & 92.3\% (mean)  & +9.0\,pp & 54k & 3 \\
+C4 Canonical & 88.5\% (69/78) & +5.1\,pp & 52k & 1      \\
+C5 Random    & 92.7\% (mean)  & +9.4\,pp & 54k & 3 \\
 \bottomrule
 \end{tabular*}
 \end{table}
