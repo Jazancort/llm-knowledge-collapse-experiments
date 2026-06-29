@@ -201,44 +201,59 @@ introduced separately in \S\ref{sec:intervention}.
 
 \subsection{K0 factual retention metric}\label{sec:k0}
 
-Our primary evaluation metric is \textit{K0 retention}: the fraction of facts
-that the base model answered correctly at generation~0 that remain correctly
-answered at generation~$t$. This metric isolates knowledge \textit{loss} from
-knowledge \textit{absence}, avoiding penalization for facts the model never
-knew.
+Our primary evaluation metric is \textit{K0 retention}: the fraction of
+facts that the base model answers correctly at generation~0 and continues to
+answer correctly at generation~$t$. This metric isolates factual
+\textit{loss} from factual \textit{absence}: models are evaluated only on
+facts they demonstrably possessed at the start of the recursive process.
 
-At generation~0, the base model (without any adapter) is evaluated on a
-held-out set of 200 TriviaQA questions. Each question has multiple valid answer
-aliases provided by the dataset. A response is scored as correct if, after
-normalization, the predicted string contains any ground-truth alias or any
-ground-truth alias contains the predicted string (bidirectional substring
-match). Normalization consists of lowercasing, removing articles
+At generation~0, the base model without any adapter is evaluated on a held-out
+set of 200 TriviaQA questions. Each question includes multiple valid answer
+aliases. A response is scored as correct if, after normalization, the predicted
+string contains any ground-truth alias or any ground-truth alias contains the
+predicted string. This bidirectional substring criterion is intended to handle
+short-answer variation and aliasing in TriviaQA-style factoid responses.
+Normalization consists of lowercasing, removing articles
 (\textit{the}, \textit{a}, \textit{an}), stripping punctuation, converting
-written number words to digits, and collapsing whitespace. The subset of
-questions answered correctly at generation~0 defines $K_0$, with
-$|K_0| = 78$ for Qwen~2.5~1.5B (39\% of 200 questions).
+written number words to digits, and collapsing whitespace.
 
-At each subsequent generation~$t$, only the $K_0$ items are re-evaluated. The
-K0 retention score is:
+The subset of held-out questions answered correctly at generation~0 defines
+$K_0$. For example, for Qwen~2.5~1.5B, $|K_0|=78$ out of 200 held-out
+questions. Other backbones have their own fixed $K_0$ sets, determined once at
+generation~0 and held constant across all experimental conditions for that
+backbone.
 
+At each subsequent generation~$t$, only the corresponding $K_0$ items are used
+to compute retention:
 \begin{equation}\label{eq:k0}
-  \mathrm{Retention}(t) = \frac{|\{q \in K_0 : \text{correct at generation } t\}|}{|K_0|}
+  \mathrm{Retention}(t) =
+  \frac{
+    |\{q \in K_0 : q \text{ is answered correctly at generation } t\}|
+  }{|K_0|}.
 \end{equation}
 
-This definition has two properties relevant to our study. First, a retention of
-100\% means the model has preserved all factual knowledge it originally
-possessed, regardless of whether it has acquired or lost other capabilities.
-Second, monitoring individual items across generations enables tracking of
-transitions: correct-to-wrong (C$\to$W, knowledge lost) and wrong-to-correct
-(W$\to$C, knowledge recovered). The net retention trajectory, together with
-item-level transition counts, provides a more informative signal than aggregate
-accuracy alone.
+Thus, a retention score of 100\% means that the model preserved all factual
+items it answered correctly at generation~0. The metric does not measure global
+factual accuracy, nor does it reward acquisition of facts outside $K_0$; it is
+designed specifically to measure preservation of initially demonstrated
+knowledge under recursive training.
 
-We report K0 retention as a percentage (e.g., 73/78 = 93.6\%). For multi-seed
-experiments, we report the mean and range across seeds. The $K_0$ set is
-determined once per backbone (using seed~15 at generation~0) and held fixed
-across all experimental conditions for that backbone, ensuring comparability
-across rank, learning rate, and intervention conditions.
+We additionally track item-level transitions within $K_0$. A
+correct-to-wrong transition (C$\to$W) indicates that an initially retained fact
+was lost at a later generation. A wrong-to-correct transition (W$\to$C)
+indicates that a previously lost $K_0$ item became correct again in a later
+generation. These transition counts help distinguish monotonic forgetting,
+temporary instability, and bounded oscillation even when aggregate retention is
+similar.
+
+Because the same normalization and alias-matching procedure is applied at every
+generation and to every condition within a backbone, our analysis emphasizes
+relative retention dynamics rather than absolute TriviaQA benchmark performance.
+We report K0 retention as both a fraction and a percentage (e.g.,
+73/78 = 93.6\%). For multi-seed experiments, we report per-seed values and
+summaries across seeds. Unless otherwise stated, $K_0$ is defined separately
+for each backbone and then reused unchanged across rank, learning-rate, module
+targeting, and intervention conditions.
 
 \subsection{Models and hardware}\label{sec:models}
 
