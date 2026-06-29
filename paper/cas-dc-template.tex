@@ -347,54 +347,40 @@ Axis & Manipulated variable & Range \\
 \end{tabular*}
 \end{table}
 
-\paragraph{Axis 1: Adapter rank (update capacity).}
-We vary QLoRA rank across six values ($r=4,16,32,64,128,256$) on the
-Qwen backbone, producing adapters ranging from 545K to 34.9M trainable
-parameters. All other QLoRA hyperparameters are held fixed. This axis tests
-whether increasing the dimensionality of the per-generation update shifts the
-system from homeostatic to degradative behavior. The headline ranks ($r=16$ and
-$r=256$) are evaluated with three seeds; intermediate ranks are evaluated with a
-single seed and used to trace the dose-response curve. On Gemma~3, we test
-$r \in \{2,4,16,256\}$, with three seeds at the boundary ranks ($r=4$ and
-$r=16$).
+The experimental design manipulates effective training pressure along five axes:
 
-\paragraph{Axis 2: Learning rate (perturbation magnitude).}
-For full fine-tuning, we sweep the learning rate across four values
-($10^{-6}$, $5{\times}10^{-6}$, $10^{-5}$, $2{\times}10^{-5}$) on Qwen while
-keeping the recursive data protocol fixed. This produces per-generation weight
-drifts ranging from 0.39 to 3.48, measured as the mean absolute parameter
-change. This axis tests whether perturbation magnitude can drive the
-homeostatic-to-degradative transition independently of adapter rank.
+\begin{enumerate}
+\item \textbf{Adapter rank (update capacity).} We vary QLoRA rank across six
+values ($r=4,16,32,64,128,256$) on Qwen, producing adapters from 545K to 34.9M
+trainable parameters. The headline ranks ($r=16$ and $r=256$) are evaluated with
+three seeds; intermediate ranks trace the dose-response curve with a single
+seed. On Gemma~3, we test $r \in \{2,4,16,256\}$ with three seeds at the
+boundary ranks ($r=4$ and $r=16$).
 
-\paragraph{Axis 3: Method comparison (QLoRA vs FFT).}
-We compare QLoRA $r=16$ against FFT at $\mathrm{LR}=10^{-6}$. This FFT learning
-rate was selected because it produces the closest available perturbation proxy
-to the QLoRA adapter update: the effective LoRA update norm
-$\|BA\|_F \approx 0.42$ and the FFT weight drift is approximately 0.39. Because
-these quantities are not identical geometric objects, we describe this as an
-\textit{approximately perturbation-matched} comparison. Both methods are run for
-10 generations with three seeds, enabling comparison of one-time adaptation cost
-and long-term stability under low-perturbation recursive training.
+\item \textbf{Learning rate (perturbation magnitude).} For full fine-tuning, we
+sweep the learning rate across four values ($10^{-6}$, $5{\times}10^{-6}$,
+$10^{-5}$, $2{\times}10^{-5}$) on Qwen, producing per-generation weight drifts
+from 0.39 to 3.48. This axis tests whether perturbation magnitude drives the
+regime transition independently of adapter rank.
 
-\paragraph{Axis 4: Module topology (supportive ablation).}
-On Qwen, we compare updating attention modules only
-(\texttt{q\_proj}, \texttt{v\_proj}) with updating all linear modules
-(\texttt{q\_proj}, \texttt{k\_proj}, \texttt{v\_proj}, \texttt{o\_proj},
-\texttt{gate\_proj}, \texttt{up\_proj}, \texttt{down\_proj}). This ablation
-tests whether recursive stability is primarily explained by where the adapter is
-placed or by the effective capacity of the update. Because these
-module-targeting runs are evaluated with a single seed, they serve as supportive
-evidence rather than headline claims.
+\item \textbf{Method comparison (QLoRA vs FFT).} We compare QLoRA $r=16$
+against FFT at $\mathrm{LR}=10^{-6}$, selected because it produces the closest
+available perturbation proxy ($\|BA\|_F \approx 0.42$ vs FFT drift $\approx
+0.39$). Because these are not identical geometric objects, we describe this as
+an \textit{approximately perturbation-matched} comparison. Both are run for 10
+generations with three seeds.
 
-\paragraph{Axis 5: Synthetic exposure (intervention).}
-We manipulate the synthetic training stream in the high-capacity Qwen $r=256$
-boundary regime to test whether reducing effective synthetic exposure can shift
-the system back toward homeostasis. Interventions include length filtering
-(removing responses longer than 5 words), random downsampling with three
-independent masks removing approximately 5\% of examples, and short-answer
-prompt constraining. These interventions test exposure sensitivity rather than
-serving as a general data-filtering recipe. The intervention design is detailed
-in \S\ref{sec:intervention}.
+\item \textbf{Module topology (supportive ablation).} On Qwen, we compare
+attention-only modules (\texttt{q\_proj}, \texttt{v\_proj}) with all linear
+modules. This tests whether stability depends on module location or effective
+update capacity. Single-seed; supportive evidence only.
+
+\item \textbf{Synthetic exposure (intervention).} We manipulate the synthetic
+training stream in the Qwen $r=256$ boundary regime. Interventions include
+length filtering, random downsampling (three independent masks, ${\sim}5\%$
+removal), and short-answer constraining. Design detailed in
+\S\ref{sec:intervention}.
+\end{enumerate}
 
 \subsection{Effective training pressure}\label{sec:pressure}
 
@@ -424,7 +410,7 @@ regimes. The framework is therefore empirically motivated: it summarizes a set
 of observed control knobs rather than proposing a closed-form theory of
 recursive collapse.
 
-\paragraph{Effective rank as a within-backbone capacity measure.}
+\subsubsection{Effective rank}\label{sec:erank}
 To quantify update capacity beyond nominal rank, we compute the effective rank
 of the composed LoRA update matrices $BA$ after training at each generation.
 Following \citet{roy2007}, the effective rank is defined as
@@ -450,7 +436,7 @@ remains bounded at substantially higher effective ranks than Gemma~3. We
 therefore treat effective rank as a within-backbone capacity measure and discuss
 cross-architecture normalization as a limitation in \S\ref{sec:limitations}.
 
-\paragraph{Perturbation magnitude for full fine-tuning.}
+\subsubsection{Perturbation magnitude}\label{sec:pertmag}
 For full fine-tuning, we measure perturbation magnitude as the mean absolute
 parameter change relative to the original model weights:
 \begin{equation}\label{eq:drift}
@@ -474,49 +460,39 @@ These metrics serve two purposes. First, they detect distributional degradation
 that may not be captured by K0 retention alone. Second, they provide monitorable
 signals that could be used to audit recursive fine-tuning pipelines. We treat
 these diagnostics as descriptive indicators of output drift, not as standalone
-causal explanations for factual loss.
+causal explanations for factual loss. We compute four complementary diagnostics.
 
-\paragraph{Content efficiency.}
-We define content efficiency as factual retention normalized by mean response
-length:
+\textit{Content efficiency} is defined as factual retention normalized by mean
+response length:
 \begin{equation}\label{eq:efficiency}
     \mathrm{ContentEff}(t) =
     \frac{\mathrm{Retention}(t)}{\mathrm{MeanLength}(t)}.
 \end{equation}
 Here, $\mathrm{MeanLength}(t)$ is measured in words over the generated synthetic
-responses at generation~$t$. This composite metric captures whether factual
-retention is being maintained with increasingly verbose outputs. Declining
-content efficiency indicates that the model is producing more tokens per
-retained fact, whereas stable content efficiency indicates that retention and
-response length remain proportionally stable.
+responses at generation~$t$. Declining content efficiency indicates that the
+model produces more tokens per retained fact; stable content efficiency indicates
+that retention and response length remain proportionally stable.
 
-\paragraph{Baseline response persistence.}
-For each $K_0$ item, we compare the model's normalized response at generation~$t$
-with its normalized response at generation~0. The strict persistence score is
+\textit{Baseline response persistence} compares the model's normalized response
+at generation~$t$ with its response at generation~0:
 \begin{equation}\label{eq:persistence}
     \mathrm{Persistence}(t) =
     \frac{|\{q \in K_0 : \mathrm{answer}_t(q) = \mathrm{answer}_0(q)\}|}{|K_0|}.
 \end{equation}
-High persistence indicates that responses remain anchored to the model's
-generation-0 outputs. Declining persistence indicates response drift relative to
-the initial model behavior, even when aggregate factual retention remains
-bounded. Because exact matching can be sensitive to minor wording changes, we
-also compute fuzzy item-level stability using token-overlap similarity as a
-robustness check.
+High persistence indicates responses remain anchored to generation-0 outputs.
+Declining persistence indicates response drift even when aggregate retention
+remains bounded.
 
-\paragraph{Lexical diversity and verbosity.}
-We measure lexical diversity of the synthetic training stream using several
-corpus-level metrics. Distinct-$n$~\citep{li2016} computes the ratio of unique
-$n$-grams to total $n$-grams in the generated corpus; we report Distinct-1 and
-Distinct-2. Because Distinct-$n$ is sensitive to response length, we also compute
-the Measure of Textual Lexical Diversity (MTLD;~\citealp{mccarthy2010}), a
-length-robust estimate of lexical diversity. In addition, we track mean response
-length and stopword ratio, which help distinguish verbosity increase from changes
-in content-word diversity.
+\textit{Lexical diversity and verbosity} are measured using several corpus-level
+metrics. Distinct-$n$~\citep{li2016} computes the ratio of unique $n$-grams to
+total $n$-grams; we report Distinct-1 and Distinct-2. Because Distinct-$n$ is
+sensitive to response length, we also compute
+MTLD~\citep{mccarthy2010}, a length-robust diversity estimate. We additionally
+track mean response length and stopword ratio to distinguish verbosity increase
+from content-word diversity changes.
 
-\paragraph{Synthetic Drift Index (SDI-3).}
-To summarize output-distribution change, we define a three-term synthetic drift
-index:
+Finally, we define the \textit{Synthetic Drift Index} (SDI-3) to summarize
+output-distribution change:
 \begin{equation}\label{eq:sdi}
     \mathrm{SDI}\text{-}3 =
     \log\!\left(\frac{\mathrm{MeanLength}_T}{\mathrm{MeanLength}_0}\right)
@@ -530,8 +506,8 @@ where $\Delta\mathrm{Instability} = \mathrm{Instability}(T) -
 training items whose normalized response differs between generation~$t{-}1$ and
 generation~$t$. The three terms correspond to verbosity increase, unigram
 diversity decrease, and loss of item-level response stability. SDI-3 is not
-proposed as a theoretical measure of collapse; it is an empirical summary
-statistic used to compare output drift across experimental conditions.
+proposed as a theoretical measure; it is an empirical summary statistic used to
+compare output drift across experimental conditions.
 
 These diagnostics complement K0 retention by measuring distributional properties
 of the synthetic stream. K0 retention measures preservation of initially known
@@ -607,17 +583,13 @@ condition requires multiple generations of training and data regeneration. We
 therefore use a small but explicit seed policy, distinguishing between
 multi-seed headline comparisons and single-seed supporting ablations.
 
-\paragraph{Seed policy.}
 Headline comparisons are evaluated with three seeds (15, 137, 256). These
 include the Qwen rank-sweep endpoints ($r=16$ and $r=256$), the Gemma~3 boundary
 ranks ($r=4$ and $r=16$), the QLoRA--FFT comparison, and the C3/C5 synthetic
 exposure interventions. Intermediate dose-response points and supporting
-ablations, including module-topology comparisons, Gemma~4 robustness checks, and
-single-rank FFT learning-rate sweeps, are evaluated with a single seed and
-labeled as such. We do not pool single-seed and multi-seed results when making
-headline claims.
+ablations are evaluated with a single seed and labeled as such. We do not pool
+single-seed and multi-seed results when making headline claims.
 
-\paragraph{Reporting format.}
 For three-seed conditions, we report per-seed values together with the mean and
 observed range. Because $N=3$ provides imprecise estimates of sampling
 variability, we use these summaries descriptively rather than as estimates of
@@ -625,29 +597,22 @@ population-level uncertainty. When the observed ranges of two conditions do not
 overlap across all three seeds, we treat this as consistent empirical separation
 under the present experimental protocol, not as a formal hypothesis test.
 
-\paragraph{Statistical approach.}
 We avoid formal hypothesis testing. With only three seeds per condition,
-classical tests such as the Wilcoxon signed-rank test have very limited
-statistical power. We therefore emphasize effect sizes, monotonic dose-response
-behavior, and per-seed consistency. Our primary evidential pattern is ordinal
-and mechanistic: retention changes systematically as update capacity,
-perturbation magnitude, or synthetic exposure is varied. In particular, the
+classical tests have very limited statistical power. We therefore emphasize
+effect sizes, monotonic dose-response behavior, and per-seed consistency. The
 QLoRA rank sweep and FFT learning-rate sweep are interpreted as dose-response
 curves across six and four levels respectively, where the ordinal consistency of
 the entire sweep provides stronger evidence than any single pairwise comparison.
 
-\paragraph{Effect sizes.}
-We report absolute differences in factual retention as percentage-point gaps.
-Effect sizes are emphasized because they remain directly interpretable
-regardless of sample size. For QLoRA--FFT comparisons, gaps are reported per seed
-and as a mean. For synthetic-exposure interventions, we report the improvement
-over the unmodified C1 baseline at the same generation. Where relevant, we also
-report item-level transition counts and the number of $K_0$ facts lost or
-regained. We do not claim precise threshold locations or a universal
-effective-rank value at which degradation begins; instead, we identify the
-interval between adjacent tested settings where the observed regime transition
-occurs. Single-seed observations are used as exploratory or supportive evidence
-and are not used as standalone support for headline conclusions.
+Effect sizes are reported as absolute percentage-point gaps in factual retention.
+For QLoRA--FFT comparisons, gaps are reported per seed and as a mean. For
+synthetic-exposure interventions, we report the improvement over the unmodified
+C1 baseline at the same generation. We do not claim precise threshold locations
+or a universal effective-rank value at which degradation begins; instead, we
+identify the interval between adjacent tested settings where the regime
+transition occurs. Single-seed observations are used as exploratory or
+supportive evidence and are not used as standalone support for headline
+conclusions.
 
 Together, the subsections above define a methodology structured around five
 complementary experimental axes, a factual retention metric that isolates
@@ -864,7 +829,6 @@ rank shifts the system from homeostatic to degradative regimes. This section ask
 whether increasing perturbation magnitude through full fine-tuning, without
 varying adapter rank, reproduces the same qualitative pattern.
 
-\paragraph{FFT dose-response.}
 We swept learning rate across four values on Qwen~2.5~1.5B under the same
 recursive replace-only protocol. Table~\ref{tab:fft_sweep} shows that retention
 at Gen3 decreases monotonically as learning rate and weight drift increase. Drift
@@ -892,7 +856,7 @@ FFT          & $2{\times}10^{-5}$ & 3.48               & 84.6\% \\
 \end{tabular*}
 \end{table}
 
-\paragraph{QLoRA versus FFT at approximately matched perturbation.}
+\subsubsection{QLoRA versus FFT at approximately matched perturbation}
 To compare the two update mechanisms at similar perturbation, we selected FFT at
 LR$\,=10^{-6}$ (drift 0.39) as the closest available match to QLoRA $r=16$
 ($\|BA\|_F \approx 0.42$). Both were run for 10 generations with three seeds.
@@ -922,7 +886,6 @@ trajectories once adapted.
 Per-seed Gen10 values for QLoRA are 97.4\%, 97.4\%, and 97.4\%; for FFT they are
 92.3\%, 91.0\%, and 92.3\%. The ranges do not overlap across any seed pairing.
 
-\paragraph{Fragile-fact floor analysis.}
 Item-level analysis reveals an asymmetry between the two methods. Under FFT, the
 same six $K_0$ items are lost across all three seeds (cross-seed Jaccard
 similarity 1.0), indicating a deterministic fragile-fact floor: these facts are
@@ -952,7 +915,7 @@ properties of the synthetic outputs. We apply the output-distribution diagnostic
 defined in \S\ref{sec:metrics} to three representative Qwen configurations:
 $r=16$ (homeostatic), $r=128$ (bounded retention), and $r=256$ (degradative).
 
-\paragraph{Homeostatic regime ($r=16$).}
+\subsubsection{Homeostatic regime ($r=16$)}
 In the homeostatic regime, all distributional metrics remain stable across ten
 generations. Mean response length increases only slightly (2.47 to 2.70 words),
 Distinct-1 remains above 0.63, MTLD stays above 2000, stopword ratio remains
@@ -960,7 +923,7 @@ near 0.16, and baseline response persistence holds steady at approximately 36\%.
 Content efficiency declines modestly from 0.41 to 0.35, reflecting the initial
 one-generation adaptation cost but no progressive drift.
 
-\paragraph{Bounded regime ($r=128$): a retention/distribution dissociation.}
+\subsubsection{Bounded regime ($r=128$): a retention/distribution dissociation}
 The $r=128$ configuration reveals a dissociation between factual retention and
 output-distribution quality. While K0 retention remains bounded at 88.6\% through
 Gen10, the output distribution degrades substantially: mean response length
@@ -977,7 +940,7 @@ factual accuracy would classify $r=128$ as stable, while its generated outputs
 have already degraded substantially in efficiency, diversity, and response
 anchoring.
 
-\paragraph{Degradative regime ($r=256$).}
+\subsubsection{Degradative regime ($r=256$)}
 At $r=256$, nearly all metrics diverge from their baseline values. Mean response
 length increases from 2.47 to 3.6 words, content efficiency declines from 0.41
 to 0.22, and baseline response persistence collapses from 33\% to 3.8\% by
@@ -992,7 +955,6 @@ failure modes despite both departing from homeostatic behavior: $r=128$ degrades
 through filler accumulation, while $r=256$ degrades through elaborative
 dispersion.
 
-\paragraph{Three-regime taxonomy.}
 These observations motivate a descriptive three-regime taxonomy:
 
 \begin{enumerate}
@@ -1023,7 +985,6 @@ these three regimes.
 \end{center}
 \vspace{6pt}
 
-\paragraph{Temporal relationship between output drift and retention.}
 To examine whether output drift precedes factual loss, we computed cross-lag
 correlations between mean response length at generation~$t$ and retention at
 generation~$t{+}1$. The raw Pearson correlation in the degradative regime is
@@ -1056,7 +1017,6 @@ exposure can shift the system back from a degradative to a near-homeostatic
 configuration. All interventions are conducted on Qwen $r=256$, which sits at
 the boundary between the bounded and degradative regimes.
 
-\paragraph{Intervention results.}
 Table~\ref{tab:interventions} summarizes K0 retention at Gen5 for each
 intervention condition relative to the unmodified C1 baseline.
 
@@ -1084,7 +1044,6 @@ strongest effects are observed for C3 (length-filtered, +9.0\,pp) and C5
 (C3-matched random downsampling, +9.4\,pp), both of which shift the system from
 the degradative range (83.3\%) to near-homeostatic levels (92--93\%).
 
-\paragraph{C3 versus C5: exposure sensitivity, not quality selection.}
 The critical comparison is between C3 and C5. C3 removes examples with long
 responses (those exceeding 5 words), while C5 removes a random subset of
 examples to approximately match C3's token budget. Despite removing largely
@@ -1101,7 +1060,6 @@ to the particular quality characteristics of the removed examples. Removing
 approximately 5\% of the training stream under either evaluated selection
 strategy shifts the configuration toward near-homeostatic retention.
 
-\paragraph{Token-budget controls.}
 C2 (short-answer constrained) provides an important additional control. It
 retains all 2{,}000 training examples and uses slightly more total tokens than
 C1 (${\sim}$60k vs ${\sim}$57k), yet still improves retention by 7.7 percentage
@@ -1112,7 +1070,6 @@ is only approximately 5\% (57k vs 54k), further indicating that the effect
 operates near a sharp boundary rather than through gradual token reduction.
 Token count alone therefore cannot explain the observed recovery.
 
-\paragraph{Item-level analysis.}
 At the item level, the C1 baseline loses about eight $K_0$ facts between Gen0
 and Gen5. C3 loses only one additional fact beyond the initial Gen1 adaptation;
 C5 shows a similar pattern. The interventions therefore do not merely delay
