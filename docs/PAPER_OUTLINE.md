@@ -27,7 +27,7 @@ Recursive training on synthetic data causes model collapse — but the transitio
 - PEFT/LoRA is dominant fine-tuning method — recursive PEFT understudied
 - Biderman (2024): LoRA "forgets less" — but how much is too much? When does it break?
 - **Gap:** No systematic mapping of what controls the stability/degradation transition
-- **Contribution:** We identify effective training pressure as the governing variable, map the regime transition, characterize its diagnostic signatures, and demonstrate that marginal pressure reduction restores stability
+- **Contribution:** To our knowledge, this is the first systematic mapping of effective training pressure as the governing variable for recursive stability. We map the regime transition, characterize its diagnostic signatures, and demonstrate that marginal pressure reduction restores stability
 
 ---
 
@@ -96,7 +96,7 @@ Recursive training on synthetic data causes model collapse — but the transitio
 ### 4.1 Capacity-Gated Regime Transition (QLoRA)
 - 5-point dose-response: r=4 (96.2%) → r=256 (78.0% ± 2.6% at Gen10)
 - Threshold between r=128 (bounded) and r=256 (degradative)
-- Module targeting invariance: same eff rank = same regime
+- Module targeting: retention tracks effective rank better than module location (supportive, n=1)
 - **Figure 1:** Longitudinal retention trajectories (r=16, r=128, r=256)
 - **Figure 2:** Dose-response curve (retention + eff rank vs nominal rank)
 
@@ -111,6 +111,7 @@ Recursive training on synthetic data causes model collapse — but the transitio
 - FFT LR sweep: dose-response confirms magnitude dominance
 - Drift-matched (N=3, Gen10): QLoRA 97.4% vs FFT 91.9% (+5.6pp)
 - Gap is one-time adaptation cost, not differential rate (both flat Gen1-10)
+- FFT and QLoRA evaluated through Gen10 across three seeds; both homeostatic post-Gen1
 - FFT: deterministic fragile-fact floor (Jaccard=1.0, same 6 facts across seeds)
 - QLoRA: different facts lost (Jaccard=0.0 vs FFT)
 - **Figure 4:** FFT vs QLoRA Gen10 trajectories
@@ -127,9 +128,9 @@ Recursive training on synthetic data causes model collapse — but the transitio
 - C3 length-filtered: +10pp (Gen5 73/78 vs baseline 65/78), N=3 seeds
 - C2 short-constrained: +7.7pp despite MORE training tokens
 - C5 random downsampling: +9pp with DIFFERENT examples removed (Jaccard=0.015 vs C3)
-- C5 replicated across 3 independent masks: all give 72-73/78
+- C5 replicated across 3 independent masks: all give 72-73/78 (in Qwen r=256)
 - Token budget comparable (54k vs 57k, 5% difference)
-- **Conclusion:** regime is pressure-gated at a sharp boundary; ~5% exposure reduction by any method restores stability
+- **Conclusion:** in this boundary case, ~5% exposure reduction by any method restores stability
 - **Figure 6:** Intervention comparison (retention trajectories + token budget)
 
 ### 4.6 Cross-Lag and Temporal Analysis
@@ -154,10 +155,11 @@ Recursive training on synthetic data causes model collapse — but the transitio
 - Biderman: we extend "forgets less" to a pressure-dependent regime map
 - Gerstgrasser: orthogonal axis (data accumulation vs update pressure)
 
-### 5.3 Output Drift: Signature, Not Proven Cause
+### 5.3 Output Drift: Diagnostic Signature, Not Proven Cause
 - Strong diagnostic marker (present only above threshold)
-- But C5 shows removal of ANY examples stabilizes — not specific to long outputs
-- Honest position: drift is pressure-symptom; causal decomposition remains open
+- Can appear before severe factual collapse (r=128 case: retention bounded, drift severe)
+- C5 shows removal of ANY examples stabilizes — not specific to long outputs
+- Honest position: drift marks distributional degradation; causal decomposition remains open
 
 ### 5.4 Practical Implications
 - Adapter rank as monitorable governance parameter
@@ -170,7 +172,7 @@ Recursive training on synthetic data causes model collapse — but the transitio
 
 - Single dataset (TriviaQA factoid QA)
 - Small models (1-2B range)
-- N=3 for headline claims, N=1 for ablation points
+- N=3 for headline claims, N=1 for ablation points (module topology, Gemma 4)
 - Cross-architecture normalization unsolved
 - Causal decomposition (quality vs quantity vs magnitude) not fully isolated
 - Gen10 max depth (unknown behavior at Gen100+)
@@ -184,6 +186,7 @@ Recursive training on synthetic data causes model collapse — but the transitio
 
 - Recursive factual degradation is pressure-gated, not inevitably rank-determined
 - The system sits near a sharp boundary that can be crossed or uncrossed by small adjustments
+- Low-rank QLoRA remains bounded over the observed 10-generation horizon
 - QLoRA rank is one practical control knob; synthetic exposure is another
 - Output drift serves as a diagnostic signature for monitoring
 - Adapter rank and synthetic-stream management are governable safety parameters for recursive training pipelines

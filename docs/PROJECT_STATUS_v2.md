@@ -1,4 +1,4 @@
-# PROJECT STATUS v2 — Capacity-Gated Recursive Fine-Tuning
+# PROJECT STATUS v2 — Pressure-Gated Recursive Fine-Tuning
 
 **Last updated:** 2026-06-29
 **Status:** EXPERIMENTS CLOSED. All checks resolved. Writing phase.
@@ -15,7 +15,7 @@ Recursive synthetic fine-tuning is governed by **effective training pressure** �
 The threshold can be crossed — or uncrossed — by adjusting any pressure component:
 - **Rank/effective rank** (QLoRA dose-response)
 - **LR/weight drift** (FFT sweep)
-- **Synthetic exposure** (~5% example reduction shifts r=256 from degradative to homeostatic, replicated across 3 independent random masks)
+- **Synthetic exposure** (in the Qwen r=256 boundary case, ~5% example reduction shifts from degradative to homeostatic, replicated across 3 independent random masks)
 
 Output drift (verbosity, efficiency collapse, persistence loss) is a **diagnostic signature** of above-threshold regimes, not the sole causal driver. Length filtering and random downsampling both mitigate equally, confirming pressure-sensitivity over quality-specificity.
 
