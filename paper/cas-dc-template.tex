@@ -760,6 +760,86 @@ degradative recursive fine-tuning on the Qwen backbone. The following sections
 examine whether this transition generalizes across architectures and update
 mechanisms.
 
+\subsection{Cross-backbone thresholds}\label{sec:res_backbone}
+
+To test whether the regime transition observed on Qwen is architecture-specific,
+we evaluated corresponding rank configurations on two additional backbones:
+Gemma~3~1B~IT, with three seeds at the boundary ranks, and Gemma~4~E2B~IT, with
+a single seed as a robustness check.
+
+On Gemma~3, the same qualitative structure emerges, but at a substantially lower
+effective rank. Table~\ref{tab:gemma3} summarizes the results. At $r=4$ (mean
+effective rank 3.07), Gemma~3 remains homeostatic across three seeds (mean Gen5
+retention 92.9\%, range 91.5--93.6\%). At $r=16$ (mean effective rank 9.17),
+Gemma~3 enters the degradative regime across all three seeds (mean Gen5 retention
+68.8\%, range 68.1--70.2\%). The ranges do not overlap, providing consistent
+empirical separation between the two regimes on this backbone.
+
+\begin{table}[width=.95\linewidth,cols=5,pos=h]
+\caption{QLoRA rank sweep on Gemma~3~1B~IT. Boundary ranks ($r=4$ and $r=16$)
+are evaluated with three seeds; $r=2$ and $r=256$ are evaluated with a single
+seed. Retention is reported at Gen5 for comparability across ranks; the $r=4$
+condition was additionally extended to Gen10 (seed~15:
+93.6\%).}\label{tab:gemma3}
+\begin{tabular*}{\tblwidth}{@{} lllll@{} }
+\toprule
+Rank & Gen & Retention & Eff.\ Rank & Regime \\
+\midrule
+$r=2$   & 5 & 97.9\%       & 1.75  & Homeostatic \\
+$r=4$   & 5 & 92.9\% (N=3) & 3.07  & Homeostatic \\
+$r=16$  & 5 & 68.8\% (N=3) & 9.17  & Degradative \\
+$r=256$ & 5 & 70.2\%       & 71.47 & Degradative \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+Two additional observations are noteworthy. First, the Gemma~3 threshold lies
+between effective ranks 3 and 9, substantially below the Qwen threshold (between
+effective ranks 50 and 88). These results indicate that raw effective-rank values
+are not directly portable across architectures. Second, Gemma~3 exhibits a
+post-threshold plateau: $r=16$ and $r=256$ reach comparable retention floors
+(68.8\% vs 70.2\%), indicating that additional capacity beyond the threshold does
+not worsen degradation further within the observed horizon. This plateau behavior
+is observed on Gemma~3; whether the same saturation occurs on other backbones or
+at different generation depths remains an open question.
+
+On Gemma~4~E2B~IT, both tested ranks ($r=4$, effective rank 2.13; $r=16$,
+effective rank 5.64) remain homeostatic at Gen5 (96.1\% and 97.4\%,
+respectively). Both configurations fall below the effective-rank threshold
+observed on Gemma~3, and both remain homeostatic, consistent with the pattern
+established on Qwen and Gemma~3. We treat this as a robustness confirmation that
+low-effective-rank adapters can remain stable across multiple backbone
+architectures, not as an estimate of the Gemma~4 degradation threshold.
+
+We attempted to normalize effective-rank thresholds across architectures by
+dividing by hidden dimension, number of layers, number of attention heads, and
+baseline diversity. None of these normalizations reduced the discrepancy to a
+common threshold. The threshold is therefore likely influenced by architectural
+properties not captured by simple model-dimension ratios. We report this as a
+negative result and discuss it further in \S\ref{sec:limitations}.
+
+Figure~\ref{fig:cross_backbone} visualizes the backbone-specific placement of
+these thresholds in effective-rank space.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figs/fig3_cross_backbone.pdf}
+  \caption{K0 retention versus mean effective rank across three backbones.
+  Marker shapes distinguish backbones (circle: Qwen, square: Gemma~3, triangle:
+  Gemma~4); colors indicate regime membership (blue: homeostatic, orange:
+  transition zone, red: degradative). The regime transition occurs at
+  substantially different effective-rank values across
+  architectures.}\label{fig:cross_backbone}
+\end{figure}
+
+The homeostatic-to-degradative regime transition appears general across the
+evaluated backbones: it is observed on both Qwen and Gemma~3, with the same
+qualitative structure (bounded below threshold, degradative above). However, its
+location in effective-rank space is backbone-dependent. Having established that
+the regime structure generalizes across architectures, we next examine whether
+the same transition occurs when perturbation magnitude is varied independently
+of adapter capacity.
+
 % ============================================================
 % 5. DISCUSSION
 % ============================================================
