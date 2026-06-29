@@ -147,16 +147,20 @@ For the paper: frame as "approximately perturbation-matched" using the B@A metri
 Gemma 3 r=4 (homeostatic): perfectly stable (d1: 0.699→0.703, length: 2.2→2.3)
 Gemma 3 r=16 (degradative): d1 drops 0.699→0.646, length inflates 2.2→3.9
 
-#### B. Cross-lag: output drift PREDICTS next-generation retention
+#### B. Cross-lag: output drift accompanies retention loss
 
-| Config | Regime | corr(length_t, retention_t+1) | corr(d1_t, retention_t+1) |
-|---|---|---|---|
-| Qwen r=16 | homeostatic | 0.000 | 0.000 |
-| Qwen r=256 | **degradative** | **-0.965** | **+0.945** |
-| Gemma r=4 | homeostatic | +0.110 | +0.177 |
-| Gemma r=16 | **degradative** | **-0.847** | +0.475 |
+| Config | Regime | raw corr(len_t, ret_t+1) | partial (|gen) | first-diff | reverse |
+|---|---|---|---|---|---|
+| Qwen r=16 | homeostatic | 0.000 | 0.000 | 0.000 | -0.251 |
+| Qwen r=256 | **degradative** | -0.965 | **-0.220** | **-0.433** | -0.986 |
+| Gemma r=4 | homeostatic | +0.110 | +0.030 | +0.334 | -0.381 |
+| Gemma r=16 | degradative | -0.847 | +0.995* | +0.990* | -0.952 |
 
-**This is the mechanistic link:** verbosity at Gen t predicts retention drop at Gen t+1 with near-perfect correlation in degradative regimes, and zero correlation in homeostatic regimes.
+*Gemma r=16 has only 4-5 data points — statistically unreliable.
+
+**Robustness checks reveal:** The raw r=-0.965 is largely inflated by shared monotonic trend. After controlling for generation (partial r=-0.220), the association weakens substantially. Reverse-lag is equally strong. First-difference (r=-0.433) shows modest incremental coupling.
+
+**Honest interpretation:** Synthetic-output drift **accompanies** factual degradation as a co-symptom of the same underlying process, rather than demonstrably preceding it. Both are driven by the same high-perturbation regime. The first-difference correlation (-0.433) suggests some incremental coupling beyond pure trend, but is not strong enough to claim temporal causation.
 
 #### C. Error dispersion, not ossification
 
@@ -183,9 +187,9 @@ SDI = log(length_ratio) + log(d1_gen0/d1_final)
 
 Tested: eff_rank/{hidden_dim, sqrt(d), num_layers, num_heads, num_kv_heads, baseline_diversity}. None aligned thresholds across Qwen and Gemma. The threshold is intrinsic to model geometry, not reducible to simple architectural ratios. Reported as limitation.
 
-#### Proposed mechanism (for paper):
+#### Proposed mechanism (for paper, calibrated):
 
-> "Above the capacity threshold, recursive fine-tuning induces a verbosity drift in synthetic outputs: responses become progressively longer and less lexically efficient. This degraded data, when used to train the next generation, produces further factual loss — creating a positive feedback loop. The cross-lag correlation (r=-0.965) confirms temporal precedence: output drift at generation t predicts retention loss at t+1. Below threshold, no such feedback occurs (r=0.000)."
+> "Above the capacity threshold, recursive fine-tuning induces simultaneous factual degradation and synthetic-output drift (verbosity increase, lexical efficiency decrease). These co-occur as symptoms of the same high-perturbation regime. First-difference analysis (r=-0.43) suggests modest incremental coupling between output drift and subsequent retention loss, but controlling for shared temporal trend reduces the association substantially (partial r=-0.22). We characterize output drift as a measurable co-symptom and potential monitoring signal, not as a demonstrated causal driver of factual loss."
 
 ### 5.2 CKA-Factual vs CKA-Global
 - CKA-Factual detects adaptation that CKA-Global misses
