@@ -7,13 +7,13 @@
 
 ## 1. Current Thesis
 
-Recursive synthetic fine-tuning under low-rank adaptation exhibits a **capacity-gated regime transition** between bounded retention (homeostatic) and progressive knowledge degradation. The transition threshold is architecture-general in structure but backbone-dependent in its raw effective-rank value.
+Recursive synthetic fine-tuning is governed by a **perturbation-induced feedback loop**:
 
-**Central mechanism (confirmed):**
+1. High-capacity updates induce drift in the synthetic output distribution (longer, less efficient responses)
+2. These degraded synthetic outputs feed back into subsequent training and amplify factual loss
+3. Low-rank PEFT reduces the initial perturbation; when output drift is additionally controlled (filtering/short constraints), even high-rank regimes recover near-homeostatic retention
 
-Perturbation magnitude is the dominant factor governing recursive factual stability. At approximately comparable perturbation, QLoRA incurs a lower one-time factual adaptation cost than FFT (~5pp, N=3 seeds), after which both methods are equally stable. PEFT makes perturbation magnitude controllable via rank selection — this is why the dose-response curve works as a governance tool.
-
-**Mechanistic nuance:** QLoRA and FFT lose *different* facts (zero item overlap, seed 15). FFT deterministically loses the same 6 facts across all seeds (Jaccard=1.0), indicating a stable fragile-fact floor. QLoRA loses fewer facts (2 in 2/3 seeds, 3 in one), and these do not overlap with FFT's. The low-rank constraint reduces the number of facts lost and shifts which facts are vulnerable. Whether this reflects a genuinely different update subspace remains an open question for future work.
+The regime transition is capacity-gated and backbone-dependent. Update magnitude opens the vulnerability; synthetic-output drift amplifies it.
 
 ---
 
