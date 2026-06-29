@@ -24,6 +24,13 @@
 \setcounter{bottomnumber}{4}
 \setcounter{totalnumber}{8}
 
+% Reduce spacing around floats
+\setlength{\textfloatsep}{6pt plus 2pt minus 2pt}
+\setlength{\floatsep}{6pt plus 2pt minus 2pt}
+\setlength{\intextsep}{6pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{3pt}
+\setlength{\belowcaptionskip}{0pt}
+
 \shorttitle{Pressure-Gated Recursive Degradation in LLMs}
 \shortauthors{Azancort et~al.}
 
@@ -723,7 +730,7 @@ with no sign of stabilization within the observed horizon.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\linewidth]{figs/fig1_trajectories.pdf}
+  \includegraphics[width=0.95\linewidth]{figs/fig1_trajectories.pdf}
   \caption{K0 retention trajectories over 10 recursive generations for three
   representative ranks on Qwen~2.5~1.5B. Thin lines show individual seeds; bold
   lines show the mean. The $r=16$ and $r=256$ conditions are each evaluated with
@@ -745,7 +752,7 @@ effective updates.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\linewidth]{figs/fig2_dose_response.pdf}
+  \includegraphics[width=0.95\linewidth]{figs/fig2_dose_response.pdf}
   \caption{Dose-response relationship between nominal adapter rank and recursive
   stability on Qwen~2.5~1.5B. Left panel: Gen10 K0 retention (\%) versus nominal
   rank. Right panel: mean effective rank versus nominal rank. Retention declines
@@ -841,7 +848,7 @@ these thresholds in effective-rank space.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\linewidth]{figs/fig3_cross_backbone.pdf}
+  \includegraphics[width=0.95\linewidth]{figs/fig3_cross_backbone.pdf}
   \caption{K0 retention versus mean effective rank across three backbones.
   Marker shapes distinguish backbones (circle: Qwen, square: Gemma~3, triangle:
   Gemma~4); colors indicate regime membership (blue: homeostatic, orange:
@@ -903,7 +910,7 @@ nearly constant thereafter.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\linewidth]{figs/fig4_fft_vs_qlora.pdf}
+  \includegraphics[width=0.95\linewidth]{figs/fig4_fft_vs_qlora.pdf}
   \caption{K0 retention over 10 recursive generations for QLoRA $r=16$ and FFT
   at LR$\,=10^{-6}$ on Qwen~2.5~1.5B (three seeds each). The retention gap
   emerges at Gen1 and remains constant through Gen10; both methods exhibit
@@ -1013,7 +1020,7 @@ these three regimes.
 
 \begin{figure}[htbp]
   \centering
-  \includegraphics[width=\linewidth]{figs/fig5_distributional.pdf}
+  \includegraphics[width=0.95\linewidth]{figs/fig5_distributional.pdf}
   \caption{Distributional diagnostics over ten recursive generations for three
   representative Qwen configurations. (a)~Mean response length, (b)~baseline
   response persistence, (c)~content efficiency. All three metrics diverge for
@@ -1121,14 +1128,14 @@ recursive process.
 Figure~\ref{fig:interventions} visualizes the retention and effect-size
 comparison across conditions.
 
-\begin{figure}[htbp]
+\begin{figure*}[htbp]
   \centering
-  \includegraphics[width=\linewidth]{figs/fig6_interventions.pdf}
+  \includegraphics[width=0.9\textwidth]{figs/fig6_interventions.pdf}
   \caption{Intervention comparison on Qwen $r=256$ at Gen5. (a)~K0 retention by
   condition. (b)~Retention improvement relative to C1 baseline. Error bars for
   C3 and C5 reflect the range across three seeds or
   masks.}\label{fig:interventions}
-\end{figure}
+\end{figure*}
 
 These results demonstrate that the Qwen $r=256$ configuration lies near a sharp
 regime boundary: a reduction of approximately 5\% in synthetic exposure volume

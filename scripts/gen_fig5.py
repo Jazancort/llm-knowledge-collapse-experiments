@@ -41,7 +41,7 @@ for cfg, (label, color, ls) in configs_map.items():
     }
 
 # Plot: 3 vertical panels
-fig, axes = plt.subplots(3, 1, figsize=(3.5, 5.5), sharex=True)
+fig, axes = plt.subplots(3, 1, figsize=(3.5, 4.2), sharex=True)
 
 # Panel A: Mean Response Length
 ax = axes[0]
