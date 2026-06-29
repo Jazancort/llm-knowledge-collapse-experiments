@@ -43,7 +43,7 @@ regime_colors = {
     "degradative": "C3",
 }
 
-fig, ax = plt.subplots(figsize=(3.3, 2.4))
+fig, ax = plt.subplots(figsize=(3.3, 2.8))
 
 # Plot each backbone with different marker
 for er, ret, regime in qwen_data:
@@ -68,33 +68,29 @@ gemma3_ret = [d[1] for d in gemma3_data]
 ax.plot(gemma3_er, gemma3_ret, color="gray", alpha=0.4, linewidth=0.8,
         linestyle="--", zorder=2)
 
-# Legend: backbone shapes
+# Single combined legend below the plot
 from matplotlib.lines import Line2D
-legend_backbone = [
+legend_handles = [
     Line2D([0], [0], marker="o", color="w", markerfacecolor="gray",
-           markersize=7, markeredgecolor="black", markeredgewidth=0.5,
-           label="Qwen 2.5 1.5B"),
+           markersize=6, markeredgecolor="black", markeredgewidth=0.5,
+           label="Qwen"),
     Line2D([0], [0], marker="s", color="w", markerfacecolor="gray",
-           markersize=7, markeredgecolor="black", markeredgewidth=0.5,
-           label="Gemma 3 1B"),
+           markersize=6, markeredgecolor="black", markeredgewidth=0.5,
+           label="Gemma 3"),
     Line2D([0], [0], marker="^", color="w", markerfacecolor="gray",
-           markersize=7, markeredgecolor="black", markeredgewidth=0.5,
-           label="Gemma 4 E2B"),
-]
-legend_regime = [
+           markersize=6, markeredgecolor="black", markeredgewidth=0.5,
+           label="Gemma 4"),
     Line2D([0], [0], marker="o", color="w", markerfacecolor="C0",
-           markersize=7, label="Homeostatic"),
+           markersize=6, label="Homeo."),
     Line2D([0], [0], marker="o", color="w", markerfacecolor="C1",
-           markersize=7, label="Transition"),
+           markersize=6, label="Trans."),
     Line2D([0], [0], marker="o", color="w", markerfacecolor="C3",
-           markersize=7, label="Degradative"),
+           markersize=6, label="Degrad."),
 ]
 
-leg1 = ax.legend(handles=legend_backbone, loc="upper right", fontsize=6,
-                 title="Backbone", title_fontsize=6, framealpha=0.9)
-ax.add_artist(leg1)
-ax.legend(handles=legend_regime, loc="lower left", fontsize=6,
-          title="Regime", title_fontsize=6, framealpha=0.9)
+ax.legend(handles=legend_handles, loc="lower center",
+          bbox_to_anchor=(0.5, -0.32), ncol=3, fontsize=6,
+          columnspacing=0.8, handletextpad=0.3, frameon=False)
 
 # Formatting
 ax.set_xlabel("Mean Effective Rank")
