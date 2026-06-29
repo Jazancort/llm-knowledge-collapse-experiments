@@ -840,6 +840,93 @@ the regime structure generalizes across architectures, we next examine whether
 the same transition occurs when perturbation magnitude is varied independently
 of adapter capacity.
 
+\subsection{Perturbation magnitude: FFT learning-rate sweep}\label{sec:res_fft}
+
+The previous sections established that increasing update capacity through adapter
+rank shifts the system from homeostatic to degradative regimes. This section asks
+whether increasing perturbation magnitude through full fine-tuning, without
+varying adapter rank, reproduces the same qualitative pattern.
+
+\paragraph{FFT dose-response.}
+We swept learning rate across four values on Qwen~2.5~1.5B under the same
+recursive replace-only protocol. Table~\ref{tab:fft_sweep} shows that retention
+at Gen3 decreases monotonically as learning rate and weight drift increase. Drift
+values span nearly an order of magnitude (0.39 to 3.48), and retention decreases
+from 92.3\% to 84.6\% across this range. These results indicate that
+perturbation magnitude alone can drive the system toward degradation without any
+adapter or rank constraint.
+
+\begin{table}[width=.95\linewidth,cols=4,pos=h]
+\caption{FFT learning-rate sweep on Qwen~2.5~1.5B (seed~15, Gen3). Perturbation
+proxy is the mean absolute weight drift relative to the original model for FFT,
+and $\|BA\|_F$ for QLoRA. These are operationally comparable but not
+geometrically identical measures. QLoRA~$r=16$ is included as a reference
+point.}\label{tab:fft_sweep}
+\begin{tabular*}{\tblwidth}{@{} llll@{} }
+\toprule
+Method & LR & Pert.\ proxy & Gen3 Retention \\
+\midrule
+QLoRA $r=16$ & $10^{-5}$          & 0.42\,($\|BA\|_F$) & 96.2\% \\
+FFT          & $10^{-6}$          & 0.39               & 92.3\% \\
+FFT          & $5{\times}10^{-6}$ & 1.56               & 91.0\% \\
+FFT          & $10^{-5}$          & 1.95               & 89.7\% \\
+FFT          & $2{\times}10^{-5}$ & 3.48               & 84.6\% \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\paragraph{QLoRA versus FFT at approximately matched perturbation.}
+To compare the two update mechanisms at similar perturbation, we selected FFT at
+LR$\,=10^{-6}$ (drift 0.39) as the closest available match to QLoRA $r=16$
+($\|BA\|_F \approx 0.42$). Both were run for 10 generations with three seeds.
+As illustrated in Figure~\ref{fig:fft_qlora}, the separation between the
+trajectories is established after the first recursive generation and remains
+nearly constant thereafter.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=\linewidth]{figs/fig4_fft_vs_qlora.pdf}
+  \caption{K0 retention over 10 recursive generations for QLoRA $r=16$ and FFT
+  at LR$\,=10^{-6}$ on Qwen~2.5~1.5B (three seeds each). The retention gap
+  emerges at Gen1 and remains constant through Gen10; both methods exhibit
+  similarly stable post-adaptation trajectories.}\label{fig:fft_qlora}
+\end{figure}
+
+Both methods are stable from Gen1 through Gen10, with no progressive degradation
+within the observed horizon. QLoRA retains a consistent advantage of
+approximately 5.6 percentage points (mean Gen10: QLoRA 97.4\% vs FFT 91.9\%).
+This gap emerges entirely at Gen1 and does not widen over subsequent generations.
+We therefore interpret it as a difference in one-time adaptation cost rather than
+a differential degradation rate: FFT incurs a larger initial factual cost when
+adapting to the synthetic stream, while both methods exhibit similarly stable
+trajectories once adapted.
+
+Per-seed Gen10 values for QLoRA are 97.4\%, 97.4\%, and 97.4\%; for FFT they are
+92.3\%, 91.0\%, and 92.3\%. The ranges do not overlap across any seed pairing.
+
+\paragraph{Fragile-fact floor analysis.}
+Item-level analysis reveals an asymmetry between the two methods. Under FFT, the
+same six $K_0$ items are lost across all three seeds (cross-seed Jaccard
+similarity 1.0), indicating a deterministic fragile-fact floor: these facts are
+consistently displaced by full-parameter updates regardless of seed. Under
+QLoRA, only two to three facts are lost per seed, and the overlap between facts
+lost by QLoRA and facts lost by FFT is zero across all seed pairs (Jaccard 0.0).
+In this low-perturbation regime, low-rank adaptation loses fewer facts and loses
+different facts than full fine-tuning at comparable perturbation magnitude.
+
+We refer to this pattern as a stable fragile-fact floor under FFT: certain facts
+are reliably displaced by full-parameter updates, whereas low-rank updates
+preserve those same facts while occasionally losing others. Whether this reflects
+different optimization trajectories or structural differences in the update
+subspace remains an open question for future work.
+
+\paragraph{Synthesis.}
+Both update capacity (Axis~1) and perturbation magnitude (Axis~2) each produce
+monotonic dose-response relationships with factual retention. The regime
+transition therefore cannot be attributed to adapter rank alone. The next section
+examines how these regimes manifest in the distributional properties of the
+synthetic outputs.
+
 % ============================================================
 % 5. DISCUSSION
 % ============================================================
