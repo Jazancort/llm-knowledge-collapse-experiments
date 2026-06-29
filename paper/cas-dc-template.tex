@@ -257,7 +257,53 @@ targeting, and intervention conditions.
 
 \subsection{Models and hardware}\label{sec:models}
 
-% TODO: Write models subsection
+We conduct experiments on three small instruction-tuned transformer backbones in
+the 1--2B parameter range, spanning two model families. Each backbone serves a
+different evidential role: Qwen2.5-1.5B is the primary model for detailed
+dose-response analysis, Gemma 3 1B is used for cross-architecture threshold
+validation, and Gemma 4 E2B is included as an additional single-seed robustness
+check. Architectural metadata are taken from the released model configurations
+unless otherwise stated.
+
+\begin{itemize}
+    \item \textbf{Qwen2.5-1.5B-Instruct}~\citep{qwen2024} is the primary
+    backbone used for the QLoRA rank sweep, full fine-tuning comparison,
+    distributional-output analysis, and synthetic-exposure interventions. The
+    model has 1.54B parameters, 28 transformer layers, hidden size 1536, and
+    grouped-query attention with 12 attention heads and 2 key-value heads.
+
+    \item \textbf{Gemma 3 1B IT}~\citep{gemma2025} is the secondary backbone
+    used for testing whether the regime transition generalizes outside the Qwen
+    family. The released model configuration specifies 26 layers, hidden size
+    1152, and grouped-query attention with 4 attention heads and 1 key-value
+    head. We evaluate the boundary between homeostatic and degradative regimes
+    with three seeds at the relevant ranks ($r=4$ and $r=16$).
+
+    \item \textbf{Gemma 4 E2B IT}\footnote{Available at
+    \url{https://huggingface.co/google/gemma-4-e2b-it}. No formal technical
+    report has been published at time of writing.} is used as an additional
+    single-seed robustness check. We use it to test whether low-effective-rank
+    recursive fine-tuning remains stable in a third backbone, but we do not use
+    it to estimate a degradation threshold.
+\end{itemize}
+
+Unless otherwise stated, QLoRA experiments load the base model in 4-bit
+NormalFloat (NF4) quantization with double quantization and bfloat16 compute
+dtype, following the QLoRA protocol~\citep{dettmers2023}. Full fine-tuning
+experiments train the model weights in bfloat16 without 4-bit weight
+quantization; memory usage is reduced through gradient checkpointing and an
+8-bit paged optimizer rather than model quantization.
+
+Experiments were run on a single NVIDIA RTX 4000 Ada GPU with 20\,GB of VRAM.
+In our implementation, a single QLoRA generation on Qwen2.5-1.5B completes in a
+few minutes at low ranks and approximately 12 minutes at $r=256$; full
+fine-tuning generations require approximately 25 minutes with gradient
+checkpointing. A complete 10-generation QLoRA recursive run at $r=16$ completes
+in under one hour. These timings are reported to document that the full protocol
+is reproducible on a single workstation-class GPU.
+
+All code, configuration files, and experimental outputs are publicly available
+at \url{https://github.com/Jazancort/llm-knowledge-collapse}.
 
 \subsection{Experimental axes}\label{sec:axes}
 
