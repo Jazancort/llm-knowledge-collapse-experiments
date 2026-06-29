@@ -7,13 +7,17 @@
 
 ## 1. Current Thesis
 
-Recursive synthetic fine-tuning is governed by a **perturbation-induced feedback loop**:
+Recursive synthetic fine-tuning is governed by **effective training pressure** — a composite of adapter capacity, update magnitude, and synthetic exposure. The system has a sharp threshold:
 
-1. High-capacity updates induce drift in the synthetic output distribution (longer, less efficient responses)
-2. These degraded synthetic outputs feed back into subsequent training and amplify factual loss
-3. Low-rank PEFT reduces the initial perturbation; when output drift is additionally controlled (filtering/short constraints), even high-rank regimes recover near-homeostatic retention
+- **Below threshold:** homeostatic (retention stable, output distribution stable)
+- **Above threshold:** degradative (factual loss + output drift as diagnostic signature)
 
-The regime transition is capacity-gated and backbone-dependent. Update magnitude opens the vulnerability; synthetic-output drift amplifies it.
+The threshold can be crossed — or uncrossed — by adjusting any pressure component:
+- **Rank/effective rank** (QLoRA dose-response)
+- **LR/weight drift** (FFT sweep)
+- **Synthetic exposure** (~5% example reduction shifts r=256 from degradative to homeostatic, replicated across 3 independent random masks)
+
+Output drift (verbosity, efficiency collapse, persistence loss) is a **diagnostic signature** of above-threshold regimes, not the sole causal driver. Length filtering and random downsampling both mitigate equally, confirming pressure-sensitivity over quality-specificity.
 
 ---
 
