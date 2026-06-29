@@ -1316,7 +1316,59 @@ governance rules.
 % ============================================================
 \section{Limitations}\label{sec:limitations}
 
-% TODO: Write limitations
+The interpretation of the present results is subject to several limitations.
+
+All experiments use models in the 1--2B parameter range (Qwen~2.5~1.5B,
+Gemma~3~1B, Gemma~4~E2B). Whether these findings generalize to 7B, 70B, or
+larger models has not been established in this work. Larger models may exhibit
+different pressure thresholds for reasons not evaluated in the present study.
+
+The evaluation uses a single dataset (TriviaQA) comprising short factoid
+question-answer pairs. The findings may not extend to long-form generation,
+open-ended dialogue, code synthesis, or other domains where output structure and
+evaluation criteria differ substantially from factoid recall.
+
+The recursive horizon extends to ten generations. The long-term dynamics beyond
+Gen10 are unknown: configurations classified as homeostatic over this horizon
+may eventually degrade given sufficient generations, and configurations
+classified as bounded may stabilize or worsen.
+
+Multi-seed evaluation is used for headline comparisons (three seeds), while
+supporting ablations are evaluated with a single seed. This provides consistent
+descriptive patterns but limited statistical power for formal inference. The
+observed consistency across seeds supports consistency under the evaluated
+conditions but does not substitute for larger-scale replication.
+
+Cross-architecture threshold normalization was attempted using several
+architectural ratios (hidden dimension, depth, head count), and none aligned the
+thresholds between Qwen and Gemma~3. The raw effective-rank threshold is
+therefore not portable across backbones without empirical calibration, limiting
+its predictive utility for new architectures.
+
+The perturbation-matching comparison between QLoRA and FFT relies on approximate
+proxies ($\|BA\|_F$ for QLoRA versus mean absolute weight drift for FFT). These
+quantities are operationally comparable but not geometrically identical,
+introducing residual confounding in the method comparison.
+
+The synthetic-exposure interventions (C3/C5) are tested only at the $r=256$
+boundary on Qwen. Whether comparable sensitivity exists at other ranks, on other
+backbones, or with different datasets has not been established.
+
+All mechanistic analysis operates at the output level (retention counts, response
+properties, cross-lag correlations). No weight-level analysis of adapter update
+subspaces, gradient geometry, or representational drift was conducted. The causal
+mechanisms by which effective training pressure produces regime transitions
+remain outside the scope of the present study.
+
+The output-distribution diagnostics (content efficiency, persistence, SDI-3) are
+evaluated only under the present experimental conditions. Their effectiveness as
+monitoring signals in production settings, including reliability across domains
+and deployment conditions, has not been assessed.
+
+Finally, effective training pressure is proposed as an empirical organizing
+framework rather than a predictive mathematical model. Whether a quantitative
+formulation combining the three pressure components into a single scalar
+predictor exists remains an open question.
 
 % ============================================================
 % 7. CONCLUSION
