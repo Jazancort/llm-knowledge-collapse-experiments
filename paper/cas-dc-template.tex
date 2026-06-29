@@ -529,7 +529,62 @@ the synthetic training stream in \S\ref{sec:intervention}.
 
 \subsection{Synthetic-exposure interventions}\label{sec:intervention}
 
-% TODO: Write intervention subsection
+The interventions in Axis~5 test whether the degradative regime observed in the
+high-capacity Qwen $r=256$ condition can be shifted back toward homeostasis by
+modifying the synthetic training stream. All interventions use the same backbone,
+rank, dataset, and recursive protocol as the Qwen $r=256$ baseline. The initial
+intervention comparison is conducted with seed~15 for 5 generations; the
+strongest intervention is then replicated across additional seeds or random
+masks, as described below.
+
+We define five conditions:
+
+\begin{itemize}
+    \item \textbf{C1 (Normal)}: the unmodified baseline. Synthetic responses are
+    generated and used for training without filtering, downsampling, or
+    post-processing. This is the same replace-only protocol used in the rank
+    sweep.
+
+    \item \textbf{C2 (Short-answer constrained)}: the generation prompt is
+    modified to request a brief factual answer, and the maximum generation length
+    is reduced to 10 tokens. This constrains output verbosity at generation time
+    while retaining all training examples.
+
+    \item \textbf{C3 (Length-filtered)}: synthetic responses are generated with
+    the normal prompt, then examples whose responses exceed 5 words are removed
+    from the next-generation training set. The remaining examples are used
+    without duplication.
+
+    \item \textbf{C4 (Canonical extraction)}: synthetic responses are generated
+    normally, then a heuristic extracts a short factoid span from each response
+    and replaces the original response with this canonicalized answer.
+
+    \item \textbf{C5 (C3-matched random downsampling)}: synthetic responses are
+    generated normally, then a random subset of examples is selected so that the
+    resulting training stream approximately matches the token budget of C3. The
+    subset is chosen by a random permutation seeded independently of the training
+    seed.
+\end{itemize}
+
+The key comparison is between C3 and C5. C3 reduces exposure by removing long
+responses, whereas C5 reduces exposure by removing a random subset of examples
+until the training stream matches C3's approximate token budget. Thus, if both
+conditions produce similar stabilization, the effect cannot be attributed solely
+to removing long responses; it instead suggests sensitivity to marginal
+synthetic exposure in this boundary regime.
+
+To test robustness, C3 is evaluated with three training seeds (15, 137, 256).
+C5 is evaluated with three independent random downsampling masks (15, 42, 99).
+We compute Jaccard overlap between the examples removed by C3 and by each C5
+mask to verify that the interventions remove largely distinct subsets of the
+training stream.
+
+C2 and C4 provide additional controls on output format. C2 changes the generation
+instruction and length limit while retaining all examples; C4 canonicalizes
+responses after generation. These conditions help distinguish exposure reduction
+from response-format control. We report token counts, example counts, and
+retention for all intervention conditions to assess whether improvements can be
+explained by reduced training volume alone.
 
 \subsection{Seeds, statistics, and reporting}\label{sec:statistics}
 
