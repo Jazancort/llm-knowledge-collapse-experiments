@@ -148,12 +148,12 @@ matrices $BA$, following the entropy-based definition of
 \citet{roy2007}.
 
 The remainder of this section is organized as follows: the recursive protocol
-(\S\ref{sec:protocol}), factual retention benchmark (\S\ref{sec:k0}), model
-backbones (\S\ref{sec:models}), experimental axes (\S\ref{sec:axes}),
-effective-rank and perturbation metrics (\S\ref{sec:pressure}),
-output-distribution diagnostics (\S\ref{sec:metrics}), synthetic-exposure
-interventions (\S\ref{sec:intervention}), and statistical conventions
-(\S\ref{sec:statistics}).
+(Section~\ref{sec:protocol}), factual retention benchmark (Section~\ref{sec:k0}), model
+backbones (Section~\ref{sec:models}), experimental axes (Section~\ref{sec:axes}),
+effective-rank and perturbation metrics (Section~\ref{sec:pressure}),
+output-distribution diagnostics (Section~\ref{sec:metrics}), synthetic-exposure
+interventions (Section~\ref{sec:intervention}), and statistical conventions
+(Section~\ref{sec:statistics}).
 
 \subsection{Recursive replace-only protocol}\label{sec:protocol}
 
@@ -180,7 +180,7 @@ $t \in \{1,\ldots,T\}$, the protocol proceeds as follows:
     standard causal language modeling loss over the formatted prompt-response
     sequences.
     \item The resulting model is evaluated on a held-out factual retention set
-    described in \S\ref{sec:k0}.
+    described in Section~\ref{sec:k0}.
     \item The fine-tuned model generates a new synthetic dataset
     $\mathcal{S}_t$ by answering the same training questions
     $\mathcal{Q}_{\mathrm{train}}$ using stochastic decoding.
@@ -205,7 +205,7 @@ precision, LoRA scaling $\alpha=2r$, dropout 0.05, and maximum sequence length
 256 tokens. Unless otherwise noted, no warmup, weight decay, or learning-rate
 scheduling is applied. FFT runs use the same recursive data protocol and
 evaluation procedure, but update the full model weights; FFT-specific optimizer
-and learning-rate settings are described in \S\ref{sec:axes}.
+and learning-rate settings are described in Section~\ref{sec:axes}.
 
 The protocol is intentionally replace-only: previous real or synthetic datasets
 are not accumulated, and no replay buffer is used. This contrasts with
@@ -214,7 +214,7 @@ loss-level interventions such as truncated cross-entropy
 losses~\citep{zibakhsh2024}. We use this strict setting to expose how recursive
 stability changes as a function of effective training pressure. Controlled
 interventions on synthetic exposure, including filtering and downsampling, are
-introduced separately in \S\ref{sec:intervention}.
+introduced separately in Section~\ref{sec:intervention}.
 
 \subsection{K0 factual retention metric}\label{sec:k0}
 
@@ -379,7 +379,7 @@ update capacity. Single-seed; supportive evidence only.
 training stream in the Qwen $r=256$ boundary regime. Interventions include
 length filtering, random downsampling (three independent masks, ${\sim}5\%$
 removal), and short-answer constraining. Design detailed in
-\S\ref{sec:intervention}.
+Section~\ref{sec:intervention}.
 \end{enumerate}
 
 \subsection{Effective training pressure}\label{sec:pressure}
@@ -434,7 +434,7 @@ homeostatic and degradative regimes better than nominal rank alone. However,
 raw effective-rank thresholds are not portable across architectures: Qwen
 remains bounded at substantially higher effective ranks than Gemma~3. We
 therefore treat effective rank as a within-backbone capacity measure and discuss
-cross-architecture normalization as a limitation in \S\ref{sec:limitations}.
+cross-architecture normalization as a limitation in Section~\ref{sec:limitations}.
 
 \subsubsection{Perturbation magnitude}\label{sec:pertmag}
 For full fine-tuning, we measure perturbation magnitude as the mean absolute
@@ -513,7 +513,7 @@ facts, whereas the output diagnostics measure whether the generated training
 data remain short, lexically efficient, and anchored to the model's initial
 responses. Throughout the paper, we interpret these metrics as signatures of
 distributional drift. Causal claims are reserved for explicit interventions on
-the synthetic training stream in \S\ref{sec:intervention}.
+the synthetic training stream in Section~\ref{sec:intervention}.
 
 \subsection{Synthetic-exposure interventions}\label{sec:intervention}
 
@@ -635,14 +635,14 @@ The results are organized by experimental axis to examine how the principal
 components of effective training pressure relate to recursive stability and
 degradation. We begin with the central empirical result: a clear, monotonic
 regime transition as adapter rank increases on the Qwen backbone
-(\S\ref{sec:res_capacity}). We then evaluate whether the same behavior
-generalizes across different model families (\S\ref{sec:res_backbone}),
+(Section~\ref{sec:res_capacity}). We then evaluate whether the same behavior
+generalizes across different model families (Section~\ref{sec:res_backbone}),
 investigate whether increasing perturbation magnitude through full fine-tuning
-reproduces the same qualitative pattern (\S\ref{sec:res_fft}), characterize the
+reproduces the same qualitative pattern (Section~\ref{sec:res_fft}), characterize the
 distributional signatures associated with above-threshold regimes
-(\S\ref{sec:res_distribution}), and present evidence that a marginal reduction
+(Section~\ref{sec:res_distribution}), and present evidence that a marginal reduction
 in synthetic exposure restores near-homeostatic behavior at the regime boundary
-(\S\ref{sec:res_intervention}). Throughout this section, headline findings are
+(Section~\ref{sec:res_intervention}). Throughout this section, headline findings are
 supported by multi-seed experiments, whereas single-seed results are presented
 as supporting evidence. Consistent with the methodology, comparisons emphasize
 effect sizes and reproducible experimental patterns rather than formal
@@ -795,7 +795,7 @@ dividing by hidden dimension, number of layers, number of attention heads, and
 baseline diversity. None of these normalizations reduced the discrepancy to a
 common threshold. The threshold is therefore likely influenced by architectural
 properties not captured by simple model-dimension ratios. We report this as a
-negative result and discuss it further in \S\ref{sec:limitations}.
+negative result and discuss it further in Section~\ref{sec:limitations}.
 
 Figure~\ref{fig:cross_backbone} visualizes the backbone-specific placement of
 these thresholds in effective-rank space.
@@ -910,7 +910,7 @@ synthetic outputs.
 The previous sections identified regime transitions through factual retention
 alone. This section asks how these regimes manifest in the distributional
 properties of the synthetic outputs. We apply the output-distribution diagnostics
-defined in \S\ref{sec:metrics} to three representative Qwen configurations:
+defined in Section~\ref{sec:metrics} to three representative Qwen configurations:
 $r=16$ (homeostatic), $r=128$ (bounded retention), and $r=256$ (degradative).
 
 \subsubsection{Homeostatic regime ($r=16$)}
