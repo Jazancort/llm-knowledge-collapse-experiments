@@ -518,7 +518,6 @@ diversity decrease, and loss of item-level response stability. SDI-3 is not
 proposed as a theoretical measure of collapse; it is an empirical summary
 statistic used to compare output drift across experimental conditions.
 
-\paragraph{Role of these metrics.}
 These diagnostics complement K0 retention by measuring distributional properties
 of the synthetic stream. K0 retention measures preservation of initially known
 facts, whereas the output diagnostics measure whether the generated training
@@ -629,16 +628,11 @@ regardless of sample size. For QLoRA--FFT comparisons, gaps are reported per see
 and as a mean. For synthetic-exposure interventions, we report the improvement
 over the unmodified C1 baseline at the same generation. Where relevant, we also
 report item-level transition counts and the number of $K_0$ facts lost or
-regained.
-
-\paragraph{Scope of inference.}
-We do not claim precise threshold locations, such as a universal effective-rank
-value at which degradation begins. Instead, we identify the interval between
-adjacent tested settings where the observed regime transition occurs. We also do
-not claim generalization beyond the tested model scale, dataset, recursive
-horizon, or intervention family. Single-seed observations are used as
-exploratory or supportive evidence and are not used as standalone support for
-headline conclusions.
+regained. We do not claim precise threshold locations or a universal
+effective-rank value at which degradation begins; instead, we identify the
+interval between adjacent tested settings where the observed regime transition
+occurs. Single-seed observations are used as exploratory or supportive evidence
+and are not used as standalone support for headline conclusions.
 
 Together, the subsections above define a methodology structured around five
 complementary experimental axes, a factual retention metric that isolates
@@ -920,7 +914,6 @@ preserve those same facts while occasionally losing others. Whether this reflect
 different optimization trajectories or structural differences in the update
 subspace remains an open question for future work.
 
-\paragraph{Synthesis.}
 Both update capacity (Axis~1) and perturbation magnitude (Axis~2) each produce
 monotonic dose-response relationships with factual retention. The regime
 transition therefore cannot be attributed to adapter rank alone. The next section
@@ -1101,7 +1094,6 @@ C5 shows a similar pattern. The interventions therefore do not merely delay
 degradation; they substantially reduce the number of facts displaced during the
 recursive process.
 
-\paragraph{Scope and interpretation.}
 Figure~\ref{fig:interventions} visualizes the retention and effect-size
 comparison across conditions.
 
