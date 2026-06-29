@@ -1,7 +1,7 @@
 # PROJECT STATUS v2 — Capacity-Gated Recursive Fine-Tuning
 
-**Last updated:** 2026-06-28
-**Status:** Experiments complete. Statistics + writing phase.
+**Last updated:** 2026-06-29
+**Status:** EXPERIMENTS CLOSED. All checks resolved. Writing phase.
 
 ---
 
@@ -13,7 +13,7 @@ Recursive synthetic fine-tuning under low-rank adaptation exhibits a **capacity-
 
 Perturbation magnitude is the dominant factor governing recursive factual stability. At approximately comparable perturbation, QLoRA incurs a lower one-time factual adaptation cost than FFT (~5pp, N=3 seeds), after which both methods are equally stable. PEFT makes perturbation magnitude controllable via rank selection — this is why the dose-response curve works as a governance tool.
 
-**Mechanistic nuance:** QLoRA and FFT lose *different* facts (zero overlap in seed 15). The low-rank constraint perturbs along directions that damage fewer facts, rather than protecting the same facts that FFT damages.
+**Mechanistic nuance:** QLoRA and FFT lose *different* facts (zero item overlap, seed 15). FFT deterministically loses the same 6 facts across all seeds (Jaccard=1.0), indicating a stable fragile-fact floor. QLoRA loses fewer facts (2 in 2/3 seeds, 3 in one), and these do not overlap with FFT's. The low-rank constraint reduces the number of facts lost and shifts which facts are vulnerable. Whether this reflects a genuinely different update subspace remains an open question for future work.
 
 ---
 
@@ -103,11 +103,11 @@ Both methods are stable Gen3→Gen5 (no further degradation). Gap is consistent 
 
 **Low-rank reduces one-time adaptation cost** (~4.7pp at approximately matched perturbation, replicated N=3). The gap emerges entirely at Gen1 and remains constant — both methods are equally stable post-Gen1. This is NOT differential degradation rate; it is a one-time cost difference.
 
-**Fact-overlap analysis (seed 15):** FFT loses facts [24,46,48,56,74]; QLoRA loses [11,12]. Zero overlap. Both ossify completely after Gen1 (same facts lost in Gen1 and Gen5). The low-rank constraint perturbs along directions that damage fewer facts, not the same facts.
+**Fact-overlap analysis (3 seeds, Gen10 data):** FFT deterministically loses the same 6 facts [24,46,48,56,69,74] across all seeds (Jaccard=1.0 cross-seed), indicating a stable fragile-fact floor. QLoRA loses [11,12] in seeds 15/256 and [11,12,57] in seed 137 (2-3 facts, not perfectly deterministic). FFT vs QLoRA: Jaccard=0.0 in all seeds — no overlap. Low-rank reduces the count of lost facts AND shifts which facts are vulnerable. Whether this reflects a genuinely different update subspace remains future work.
 
-**Paper claim (final, corrected):**
+**Paper claim (final):**
 
-> "At approximately matched perturbation magnitude, QLoRA incurs a lower one-time factual adaptation cost than FFT (~5pp, consistent across 3 seeds: 97.0% vs 92.3%). After the initial adaptation, both methods are equally stable through Gen5. The dominant factor governing stability is perturbation magnitude: FFT at drift 0.4 retains 92.3%, while FFT at drift 3.5 retains 84.6%. The methods damage different facts (zero item overlap), suggesting low-rank adaptation perturbs along subspace directions that affect fewer factual associations."
+> "Factual stability under recursive synthetic fine-tuning is primarily governed by per-generation perturbation magnitude. At approximately matched perturbation, QLoRA incurs a smaller one-time factual adaptation cost than FFT (~5pp, 2-3 facts vs 6, consistent across 3 seeds through Gen10). After the initial adaptation, both methods are equally stable. FFT deterministically hits a fixed fragile-fact floor (Jaccard=1.0 cross-seed); QLoRA loses fewer and different facts (Jaccard=0.0). The dual dose-response (QLoRA rank + FFT LR) confirms magnitude as the dominant variable, with low-rank providing a modest additional benefit."
 
 ### 4.4 Norm metric audit
 
