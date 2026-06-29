@@ -140,7 +140,64 @@ interventions (\S\ref{sec:intervention}), and statistical conventions
 
 \subsection{Recursive replace-only protocol}\label{sec:protocol}
 
-% TODO: Write protocol subsection
+Our main recursion protocol is \textit{data-recursive} rather than
+\textit{weight-recursive}. At each generation, the training data are replaced by
+synthetic outputs produced by the previous generation, but model updates are not
+accumulated across generations. In the QLoRA experiments, the base model remains
+frozen and a fresh adapter is initialized at each generation. In the full
+fine-tuning (FFT) experiments, the same replace-only data recursion is used, but
+the full model weights are updated instead of a low-rank adapter. This design
+separates degradation in the synthetic data stream from artifacts caused by
+adapter stacking, LoRA merging, or cumulative checkpoint continuation.
+
+Let $\mathcal{Q}_{\mathrm{train}}$ denote the set of training questions used to
+generate synthetic data. At generation~0, the base model answers
+$\mathcal{Q}_{\mathrm{train}}$ to produce the initial synthetic dataset
+$\mathcal{S}_0$. For each subsequent generation
+$t \in \{1,\ldots,T\}$, the protocol proceeds as follows:
+
+\begin{enumerate}
+    \item A new trainable update mechanism is initialized: a fresh QLoRA adapter
+    for PEFT experiments, or a fresh full fine-tuning run for FFT experiments.
+    \item The model is fine-tuned for 2 epochs on $\mathcal{S}_{t-1}$, using
+    standard causal language modeling loss over the formatted prompt-response
+    sequences.
+    \item The resulting model is evaluated on a held-out factual retention set
+    described in \S\ref{sec:k0}.
+    \item The fine-tuned model generates a new synthetic dataset
+    $\mathcal{S}_t$ by answering the same training questions
+    $\mathcal{Q}_{\mathrm{train}}$ using stochastic decoding.
+    \item The trained update and optimizer state are not carried forward. Only
+    the newly generated dataset $\mathcal{S}_t$ is used to train the next
+    generation.
+\end{enumerate}
+
+Unless otherwise stated, the synthetic training stream consists of 2{,}000
+questions sampled from the TriviaQA rc.nocontext split~\citep{joshi2017},
+shuffled with fixed seed~15. A disjoint set of 200 questions is held out for
+factual retention evaluation. The held-out set is never used for synthetic-data
+generation or training. Synthetic responses are generated in batches of 8 using
+the model-specific chat template, with stochastic decoding
+(temperature~0.7, top-$p=0.9$, maximum 30 new tokens). The resulting
+prompt-response sequences are stored and used as the training corpus for the
+next generation.
+
+For QLoRA runs, adapters are trained with learning rate $10^{-5}$, effective
+batch size 16 (micro-batch size 2 with 8 gradient-accumulation steps), bf16
+precision, LoRA scaling $\alpha=2r$, dropout 0.05, and maximum sequence length
+256 tokens. Unless otherwise noted, no warmup, weight decay, or learning-rate
+scheduling is applied. FFT runs use the same recursive data protocol and
+evaluation procedure, but update the full model weights; FFT-specific optimizer
+and learning-rate settings are described in \S\ref{sec:axes}.
+
+The protocol is intentionally replace-only: previous real or synthetic datasets
+are not accumulated, and no replay buffer is used. This contrasts with
+accumulation-based mitigation strategies~\citep{gerstgrasser2024} and with
+loss-level interventions such as truncated cross-entropy
+losses~\citep{zibakhsh2024}. We use this strict setting to expose how recursive
+stability changes as a function of effective training pressure. Controlled
+interventions on synthetic exposure, including filtering and downsampling, are
+introduced separately in \S\ref{sec:intervention}.
 
 \subsection{K0 factual retention metric}\label{sec:k0}
 
