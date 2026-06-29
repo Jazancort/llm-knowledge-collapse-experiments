@@ -307,7 +307,79 @@ at \url{https://github.com/Jazancort/llm-knowledge-collapse}.
 
 \subsection{Experimental axes}\label{sec:axes}
 
-% TODO: Write axes subsection
+Our dose-response design manipulates effective training pressure along five
+experimental axes. Each axis targets a different component of pressure while
+keeping the recursive protocol, dataset, and evaluation procedure fixed. The
+axes are not intended to define a single scalar pressure value; rather, they
+isolate how different sources of pressure (update capacity, perturbation
+magnitude, module topology, and synthetic exposure) affect recursive stability.
+Table~\ref{tab:axes} summarizes the experimental axes, the manipulated variable,
+and the tested range.
+
+\begin{table}[width=.95\linewidth,cols=3,pos=h]
+\caption{Experimental axes and their corresponding pressure components.}
+\label{tab:axes}
+\begin{tabular*}{\tblwidth}{@{} lll@{} }
+\toprule
+Axis & Manipulated variable & Range \\
+\midrule
+1. Update capacity & QLoRA rank & $r \in \{4,16,32,64,128,256\}$ \\
+2. Perturbation magnitude & FFT learning rate & $\{10^{-6},5{\times}10^{-6},10^{-5},2{\times}10^{-5}\}$ \\
+3. Method comparison & QLoRA vs FFT & Approx. perturbation-matched, $N{=}3$, Gen10 \\
+4. Module topology & Target modules & Attention-only vs full-linear \\
+5. Synthetic exposure & Training examples & 100\% vs ${\sim}95\%$ filtered/downsampled \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+\paragraph{Axis 1: Adapter rank (update capacity).}
+We vary QLoRA rank across six values ($r=4,16,32,64,128,256$) on the
+Qwen backbone, producing adapters ranging from 545K to 34.9M trainable
+parameters. All other QLoRA hyperparameters are held fixed. This axis tests
+whether increasing the dimensionality of the per-generation update shifts the
+system from homeostatic to degradative behavior. The headline ranks ($r=16$ and
+$r=256$) are evaluated with three seeds; intermediate ranks are evaluated with a
+single seed and used to trace the dose-response curve. On Gemma~3, we test
+$r \in \{2,4,16,256\}$, with three seeds at the boundary ranks ($r=4$ and
+$r=16$).
+
+\paragraph{Axis 2: Learning rate (perturbation magnitude).}
+For full fine-tuning, we sweep the learning rate across four values
+($10^{-6}$, $5{\times}10^{-6}$, $10^{-5}$, $2{\times}10^{-5}$) on Qwen while
+keeping the recursive data protocol fixed. This produces per-generation weight
+drifts ranging from 0.39 to 3.48, measured as the mean absolute parameter
+change. This axis tests whether perturbation magnitude can drive the
+homeostatic-to-degradative transition independently of adapter rank.
+
+\paragraph{Axis 3: Method comparison (QLoRA vs FFT).}
+We compare QLoRA $r=16$ against FFT at $\mathrm{LR}=10^{-6}$. This FFT learning
+rate was selected because it produces the closest available perturbation proxy
+to the QLoRA adapter update: the effective LoRA update norm
+$\|BA\|_F \approx 0.42$ and the FFT weight drift is approximately 0.39. Because
+these quantities are not identical geometric objects, we describe this as an
+\textit{approximately perturbation-matched} comparison. Both methods are run for
+10 generations with three seeds, enabling comparison of one-time adaptation cost
+and long-term stability under low-perturbation recursive training.
+
+\paragraph{Axis 4: Module topology (supportive ablation).}
+On Qwen, we compare updating attention modules only
+(\texttt{q\_proj}, \texttt{v\_proj}) with updating all linear modules
+(\texttt{q\_proj}, \texttt{k\_proj}, \texttt{v\_proj}, \texttt{o\_proj},
+\texttt{gate\_proj}, \texttt{up\_proj}, \texttt{down\_proj}). This ablation
+tests whether recursive stability is primarily explained by where the adapter is
+placed or by the effective capacity of the update. Because these
+module-targeting runs are evaluated with a single seed, they serve as supportive
+evidence rather than headline claims.
+
+\paragraph{Axis 5: Synthetic exposure (intervention).}
+We manipulate the synthetic training stream in the high-capacity Qwen $r=256$
+boundary regime to test whether reducing effective synthetic exposure can shift
+the system back toward homeostasis. Interventions include length filtering
+(removing responses longer than 5 words), random downsampling with three
+independent masks removing approximately 5\% of examples, and short-answer
+prompt constraining. These interventions test exposure sensitivity rather than
+serving as a general data-filtering recipe. The intervention design is detailed
+in \S\ref{sec:intervention}.
 
 \subsection{Effective training pressure}\label{sec:pressure}
 
