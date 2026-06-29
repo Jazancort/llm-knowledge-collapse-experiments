@@ -106,6 +106,24 @@ At end of paper: `\printcredits`
 
 ---
 
+## EAAI-Specific Requirements (from Guide for Authors)
+
+**Scope requirement:** "Submitted papers should report some novel aspects of AI used for a real world engineering application and also validated using some public data sets for easy replicability of the research results."
+
+**Our compliance:**
+- Novel aspect: effective training pressure framework for recursive PEFT stability
+- Engineering application: governance of synthetic fine-tuning pipelines
+- Public dataset: TriviaQA (mandarjoshi/trivia_qa on HuggingFace)
+- Replicability: all code on GitHub, all configs documented, seeds specified
+
+**Abstract:** ~150-250 words, one paragraph, no equations, no references
+**Highlights:** 3-5 short bullet points (mandatory)
+**Keywords:** 4-6
+**Article type:** Original Research Article (no formal word limit; typical 3000-8000 words with 3-8 figures)
+**References:** 30-60 typical; BibTeX with DOIs
+
+---
+
 ## Practical Notes for Our Paper
 
 - **Max length:** EAAI typically accepts 15-25 pages (double-column). No strict limit but concise preferred.
