@@ -82,11 +82,11 @@ for monitoring and governing recursive training pipelines.
 % HIGHLIGHTS
 % ============================================================
 \begin{highlights}
-\item Recursive degradation is governed by effective training pressure, not adapter rank alone
-\item A sharp backbone-dependent boundary separates homeostatic and degradative regimes
-\item Reducing synthetic exposure by approximately 5\% restores near-homeostatic stability across three independent random masks
-\item Low-rank QLoRA reduces one-time adaptation cost versus full fine-tuning by approximately 5 percentage points
-\item Output drift (verbosity, efficiency loss) serves as a diagnostic signature of above-threshold regimes
+\item Adapter rank produces a sharp dose-response transition from stable to degradative recursive behavior
+\item The regime boundary is backbone-dependent, differing by an order of magnitude across architectures
+\item Output-distribution diagnostics detect degradation before factual retention metrics
+\item Modest reduction in synthetic exposure restores stability regardless of selection criterion
+\item Effective training pressure unifies capacity, magnitude, and exposure as a governance framework
 \end{highlights}
 
 % ============================================================
