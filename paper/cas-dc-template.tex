@@ -134,8 +134,7 @@ degradation is not unique to language models. Mitigation strategies based on
 data accumulation \citep{gerstgrasser2024}, verification \citep{yi2025}, and
 loss shaping \citep{zibakhsh2024} have been proposed, each operating on a
 different axis of the training pipeline. Together, these studies confirm that
-recursive degradation is a real and well-characterized phenomenon
-\citep{guo2024collapse}.
+recursive degradation is a real and well-characterized phenomenon.
 
 Despite these findings, modern adaptation pipelines rely predominantly on
 parameter-efficient methods such as LoRA \citep{hu2022} and QLoRA
@@ -213,7 +212,7 @@ data distribution progressively disappearing. This phenomenon extends beyond
 language: \citet{alemohammad2024} observed analogous quality and diversity
 degradation in self-consuming loops for diffusion models and GANs, suggesting
 that recursive collapse is a general consequence of iterative generative
-training rather than a language-specific artifact.
+training rather than a language-specific artifact \citep{guo2024collapse}.
 
 Theoretical work has formalized these observations. \citet{dohmatob2025}
 proved that expected test loss increases at least linearly with the number of
@@ -306,19 +305,21 @@ continual learning literature has long studied catastrophic forgetting under
 sequential task updates \citep{kirkpatrick2017,delange2022,shi2024continualllm}, recent work
 explores stability under recursive data regimes. \citet{biderman2024} observed
 that LoRA implicitly regularizes adaptation, concluding that it ``learns less
-and forgets less'' than full fine-tuning. Recent empirical analyses confirm that
+and forgets less'' than full fine-tuning. Recent preprints further suggest that
 higher LoRA ranks increase forgetting while improving plasticity
 \citep{biderman2024incremental,ding2024ranktrade,schwinn2025loraforgetting},
-consistent with the dose-response relationship we observe. Emerging frameworks attempt to
-operationalize this stability through structural matrix constraints
+a pattern consistent with the dose-response relationship we observe. Emerging
+frameworks attempt to operationalize this stability through structural matrix
+constraints
 \citep{fawi2024curlora} or localized memory slots \citep{le2026procl}. In
 recursive synthetic training specifically, \citet{adapala2025} combined
 cumulative data retention with quality filtering in their Anti-Ouroboros
 framework. Mechanistically, this protection may relate to how transformers
 store factual associations: \citet{geva2021} demonstrated that feed-forward
-layers function as key-value memories, suggesting that low-rank constraints on
-specific modules may bottleneck the network's ability to overwrite foundational
-facts.
+layers function as key-value memories, and \citet{meng2022locating} localized
+specific factual associations to individual MLP layers via causal tracing. These
+findings suggest that low-rank constraints on specific modules may bottleneck
+the network's ability to overwrite foundational facts.
 
 Complementing \citet{biderman2024}'s observation that LoRA reduces forgetting
 relative to full fine-tuning, our work shows that this stability is conditional
@@ -1151,10 +1152,10 @@ different facts than full fine-tuning at comparable perturbation magnitude.
 We refer to this pattern as a stable fragile-fact floor under FFT: certain facts
 are reliably displaced by full-parameter updates, whereas low-rank updates
 preserve those same facts while occasionally losing others. This observation is
-consistent with recent evidence that LoRA and full fine-tuning access different
-regions of parameter space even when achieving comparable task performance
-\citep{shuttleworth2024illusion}. Whether this reflects different optimization
-trajectories or structural differences in the update subspace remains an open
+consistent with prior work suggesting that LoRA and full fine-tuning can produce
+qualitatively different update patterns even when achieving similar downstream
+performance \citep{shuttleworth2024illusion,biderman2024}. The precise
+mechanistic basis of this divergence in the recursive setting remains an open
 question for future work.
 
 Both update capacity (Axis~1) and perturbation magnitude (Axis~2) each produce
