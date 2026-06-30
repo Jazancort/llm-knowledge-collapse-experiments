@@ -134,7 +134,8 @@ degradation is not unique to language models. Mitigation strategies based on
 data accumulation \citep{gerstgrasser2024}, verification \citep{yi2025}, and
 loss shaping \citep{zibakhsh2024} have been proposed, each operating on a
 different axis of the training pipeline. Together, these studies confirm that
-recursive degradation is a real and well-characterized phenomenon.
+recursive degradation is a real and well-characterized phenomenon
+\citep{guo2024collapse}.
 
 Despite these findings, modern adaptation pipelines rely predominantly on
 parameter-efficient methods such as LoRA \citep{hu2022} and QLoRA
@@ -305,7 +306,10 @@ continual learning literature has long studied catastrophic forgetting under
 sequential task updates \citep{kirkpatrick2017,delange2022,shi2024continualllm}, recent work
 explores stability under recursive data regimes. \citet{biderman2024} observed
 that LoRA implicitly regularizes adaptation, concluding that it ``learns less
-and forgets less'' than full fine-tuning. Emerging frameworks attempt to
+and forgets less'' than full fine-tuning. Recent empirical analyses confirm that
+higher LoRA ranks increase forgetting while improving plasticity
+\citep{biderman2024incremental,ding2024ranktrade,schwinn2025loraforgetting},
+consistent with the dose-response relationship we observe. Emerging frameworks attempt to
 operationalize this stability through structural matrix constraints
 \citep{fawi2024curlora} or localized memory slots \citep{le2026procl}. In
 recursive synthetic training specifically, \citet{adapala2025} combined
@@ -1133,9 +1137,12 @@ different facts than full fine-tuning at comparable perturbation magnitude.
 
 We refer to this pattern as a stable fragile-fact floor under FFT: certain facts
 are reliably displaced by full-parameter updates, whereas low-rank updates
-preserve those same facts while occasionally losing others. Whether this reflects
-different optimization trajectories or structural differences in the update
-subspace remains an open question for future work.
+preserve those same facts while occasionally losing others. This observation is
+consistent with recent evidence that LoRA and full fine-tuning access different
+regions of parameter space even when achieving comparable task performance
+\citep{shuttleworth2024illusion}. Whether this reflects different optimization
+trajectories or structural differences in the update subspace remains an open
+question for future work.
 
 Both update capacity (Axis~1) and perturbation magnitude (Axis~2) each produce
 monotonic dose-response relationships with factual retention. The regime
