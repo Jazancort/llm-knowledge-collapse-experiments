@@ -106,7 +106,155 @@ effective training pressure \sep knowledge retention
 % ============================================================
 \section{Related Work}\label{sec:related}
 
-% TODO: Write related work
+A growing body of work has investigated the effects of recursively training
+language models on synthetic data \citep{villalobos2024}, together with
+strategies for mitigating the resulting degradation. This section reviews the
+literature most relevant to the present study, covering recursive model
+collapse, factual knowledge degradation, mitigation approaches, and
+parameter-efficient fine-tuning, before positioning the contribution of this
+work within that landscape.
+
+\subsection{Recursive model collapse}
+
+Recent work has established recursive training on synthetic data as a distinct
+failure mode of generative models. Empirically, \citet{shumailov2024}
+demonstrated that language models trained iteratively on their own outputs
+exhibit irreversible distributional collapse, with the tails of the original
+data distribution progressively disappearing. This phenomenon extends beyond
+language: \citet{alemohammad2024} observed analogous quality and diversity
+degradation in self-consuming loops for diffusion models and GANs, suggesting
+that recursive collapse is a general consequence of iterative generative
+training rather than a language-specific artifact.
+
+Theoretical work has formalized these observations. \citet{dohmatob2025}
+proved that expected test loss increases at least linearly with the number of
+recursive generations for any nonzero fraction of synthetic data.
+\citet{seddik2024} showed convergence toward a degenerate distribution under
+iterated retraining, while \citet{xu2025} provided a random-walk interpretation
+demonstrating that the probability of model improvement under recursive training
+is strictly less than one-half. \citet{dey2024} further characterized the
+growth schedules required to avoid collapse in exponential-family models.
+
+Collectively, these studies establish that recursive degradation is both
+empirically observable and theoretically expected under full fine-tuning or
+pretraining. However, they provide limited insight into where the transition
+between stable and degradative behavior occurs under parameter-efficient
+fine-tuning, or how that transition depends on controllable training variables
+such as update capacity and perturbation magnitude.
+
+\subsection{Knowledge degradation under recursive training}
+
+Whereas much of the recursive-training literature examines statistical
+consequences of repeated synthetic training (distributional decay, mode
+collapse), a smaller body of work has focused on how recursive updates affect
+the retention of factual knowledge. Although not concerned with recursive
+training, \citet{petroni2019} established that pretrained language models encode
+factual associations accessible via probing, providing the conceptual basis for
+knowledge-retention evaluations. Building on this foundation,
+\citet{keisha2025} introduced the term \textit{knowledge collapse} to describe a
+three-stage process in which factual accuracy deteriorates while surface fluency
+persists. Their experiments on Gemma~3~1B under full fine-tuning identified a
+critical Stage~B where the model retains linguistic competence but loses factual
+grounding. Beyond factual degradation itself, \citet{leclerc2025recursive}
+showed that properties of the recursive training stream (domain breadth, sample
+diversity) modulate how distribution shift unfolds across iterations,
+demonstrating that degradation trajectory is not fixed but depends on
+controllable data characteristics.
+
+Our work is most closely related to \citet{keisha2025}, as both studies examine
+factual degradation under recursive training. However, the two works address
+different questions. Whereas \citet{keisha2025} characterize stages of knowledge
+collapse under recursive full fine-tuning, we map how factual retention responds
+as effective training pressure varies under parameter-efficient fine-tuning.
+These differences are reflected in the training protocol (replace-only QLoRA
+versus accumulated FFT) and evaluation methodology (exact-match $K_0$ retention
+versus multi-format assessment). Although both studies include Gemma~3~1B, the
+different protocols preclude direct quantitative comparison.
+
+\subsection{Mitigation strategies}
+
+Recent work has shifted from characterizing recursive collapse to developing
+interventions that improve the stability of recursive synthetic training. These
+interventions operate at different stages of the training pipeline.
+At the verification stage, \citet{yi2025} demonstrated that external filtering
+of synthetic data substantially improves short-term recursive stability, while
+also identifying a long-term convergence induced by repeated reliance on the
+same verifier. At the data-composition stage, \citet{gerstgrasser2024} showed
+that accumulating real data alongside synthetic generations bounds recursive
+error growth, preventing collapse when fresh human-generated data remains
+available. At the training-objective stage, \citet{zibakhsh2024} introduced
+Truncated Cross-Entropy (TCE), a loss function that selectively ignores
+high-confidence tokens during training, enabling models to remain stable under
+substantially larger proportions of synthetic data.
+
+These three approaches represent distinct mitigation axes: data quality
+(verification), data composition (accumulation), and training objective (loss
+shaping). Our work identifies a complementary control axis: the dynamics of
+parameter updates during fine-tuning. Rather than proposing a new
+data-selection, verification, or loss-modification method, we investigate how
+changes in update capacity, perturbation magnitude, and synthetic exposure
+can independently influence the transition between stable and degradative
+behavior under strict replace-only conditions.
+
+\subsection{Parameter-efficient fine-tuning and forgetting}
+
+Parameter-efficient fine-tuning (PEFT) constrains model updates to
+low-dimensional subspaces. \citet{hu2022} established this paradigm with LoRA,
+demonstrating that decomposing weight updates into low-rank matrices reduces
+trainable parameters by orders of magnitude without sacrificing downstream
+performance. The theoretical justification for such extreme parameter reduction
+relies on the low intrinsic dimensionality of pretrained models during
+fine-tuning \citep{aghajanyan2021}: pretrained representations already encode
+task-relevant structure in a compact subspace. \citet{zhang2023adalora}
+generalized this insight through adaptive rank allocation across layers, guided
+by SVD-based importance scoring. \citet{dettmers2023} further optimized the
+practical deployment of low-rank adaptation through QLoRA's 4-bit quantization,
+enabling fine-tuning of large models on consumer hardware.
+
+Beyond computational efficiency, recent work has begun investigating how
+parameter-efficient adaptation influences knowledge stability. While classical
+continual learning literature has long studied catastrophic forgetting under
+sequential task updates \citep{kirkpatrick2017,delange2022}, recent work
+explores stability under recursive data regimes. \citet{biderman2024} observed
+that LoRA implicitly regularizes adaptation, concluding that it ``learns less
+and forgets less'' than full fine-tuning. Emerging frameworks attempt to
+operationalize this stability through structural matrix constraints
+\citep{fawi2024curlora} or localized memory slots \citep{le2026procl}. In
+recursive synthetic training specifically, \citet{adapala2025} combined
+cumulative data retention with quality filtering in their Anti-Ouroboros
+framework. Mechanistically, this protection may relate to how transformers
+store factual associations: \citet{geva2021} demonstrated that feed-forward
+layers function as key-value memories, suggesting that low-rank constraints on
+specific modules may bottleneck the network's ability to overwrite foundational
+facts.
+
+Complementing \citet{biderman2024}'s observation that LoRA reduces forgetting
+relative to full fine-tuning, our work shows that this stability is conditional
+rather than universal. We empirically identify backbone-dependent pressure
+thresholds, determined by effective training pressure (a composite of adapter
+capacity, perturbation magnitude, and synthetic exposure), beyond which
+recursive synthetic fine-tuning transitions from bounded retention to
+progressive degradation.
+
+\subsection{Positioning of this work}
+
+The present study does not refute the model-collapse results of
+\citet{shumailov2024} or \citet{dohmatob2025}; it characterizes the pressure
+regime in which their predictions apply under practical PEFT configurations. It
+does not discover that LoRA mitigates forgetting \citep{biderman2024}; it
+characterizes the boundary conditions under which this protection ceases to
+hold. It does not propose a general-purpose mitigation method; rather, it
+demonstrates experimentally that recursive stability varies systematically with
+effective training pressure along three axes: update capacity, perturbation
+magnitude, and synthetic exposure. These axes are orthogonal to the
+data-composition \citep{gerstgrasser2024}, synthetic-data verification
+\citep{yi2025}, and loss-shaping \citep{zibakhsh2024} approaches in the
+existing mitigation literature.
+
+Rather than asking whether recursive synthetic training inevitably collapses or
+whether PEFT universally prevents forgetting, this work asks where the
+transition between stable and degradative regimes occurs under controlled
+changes in training pressure.
 
 % ============================================================
 % 3. METHODOLOGY
