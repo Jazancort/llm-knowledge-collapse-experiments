@@ -569,3 +569,105 @@
 ## Item 7: Xu et al. (2025) — Probabilistic Perspective
 
 *(próximo item — aguardando)*
+
+
+## Item 7: Xu et al. (2025) — Probabilistic Perspective
+
+*"A Probabilistic Perspective on Model Collapse"*
+*arXiv, 2025*
+
+### Escrita
+
+**O que fazem bem:**
+- O título é preciso e posicional: "A Probabilistic Perspective" sinaliza que estão oferecendo um novo framework teórico, não apenas mais um resultado empírico.
+- A formulação de recursive training como random walk é elegante e intuitiva. Qualquer pessoa com estatística básica entende a metáfora.
+- Os resultados são formulados como questões (Q1, Q2) com respostas formais. Estrutura pergunta → teorema.
+- O resultado P(T) < 1/2 é comunicado de forma limpa: "the probability of improvement is strictly less than one-half." Memorável.
+
+**O que fazem mal:**
+- O paper é denso. Muitos teoremas, corolários, lemas. Audiência técnica restrita.
+- Pouca empiria em modelos reais (foco em Gaussian estimation).
+- A apresentação poderia ser mais acessível para engenheiros.
+
+**Lição para nosso paper:**
+- O random walk framework é uma metáfora poderosa. Nosso "effective training pressure" opera na mesma intuição: cada geração é um passo, e o tamanho do passo depende da pressão.
+- Mas eles formalizam; nós operacionalizamos. São contribuições complementares.
+- A clareza de "P(T) < 1/2" — uma estatística única que resume o paper — é algo que devemos emular. Nosso equivalente: "threshold differs by 10× across backbones" ou "5% shifts the regime." Números únicos que resumem.
+
+### Claims
+
+**O que fazem:**
+- "Superlinear sample growth prevents collapse." — Generaliza Shumailov.
+- "P(improvement) < 1/2 regardless of sample schedule." — Resultado negativo forte.
+- "Biased estimation accelerates collapse." — Insight mecanística.
+- Contribuição taxonômica: small bias vs large bias regimes com thresholds diferentes.
+
+**O que fazem mal:**
+- Tudo em Gaussian/parametric models. Não provam que vale para LLMs.
+- O gap teoria → prática é grande.
+
+**Lição para nosso paper:**
+- O resultado "P(T) < 1/2" é consistente com nosso achado: no regime degradativo, retenção cai monotonicamente. Cada geração tem mais chance de perder do que ganhar fatos.
+- No regime homeostático, essa probabilidade parece estar acima de 1/2 (retenção estável ou melhora após Gen1). Isso é um insight que podemos articular na Discussion.
+- Podemos dizer: "The random-walk framework of Xu et al. predicts that improvement probability is bounded below 1/2. Our homeostatic regime is consistent with configurations where step size is small enough to keep the walk bounded."
+
+### Venda / Impacto
+
+**O que fazem:**
+- Vendem como a "base teórica rigorosa" para o que outros observaram empiricamente.
+- Conectam com estimation theory clássica (bias-variance tradeoff).
+- Positioning: "We generalize Shumailov et al. as a special case."
+
+**Lição para nosso paper:**
+- Eles generalizam a teoria. Nós operacionalizamos a prática. São lados complementares.
+- Para EAAI, nosso framing prático é mais valioso. Para ICLR/NeurIPS, o deles seria.
+- Podemos usar o resultado P(T)<1/2 para contextualizar por que o regime degradativo degrada monotonicamente: "consistent with the theoretical prediction that recursive improvement probability is bounded below 1/2."
+
+### Precisão
+
+**O que fazem:**
+- Provas formais com concentration bounds, supermartingale inequalities.
+- Framework geral: qualquer classe paramétrica com estimation procedure M.
+- Conditions explícitas: Assumptions 1, 2, 3 (unbiased, convergence rate, bias bounds).
+- Corollaries com closed-form para Gaussian case.
+
+**O que fazem mal:**
+- Não experimentam com neural networks ou LLMs.
+- As assumptions (especially unbiasedness) podem não valer para fine-tuning.
+
+**Lição para nosso paper:**
+- As assumptions deles (unbiased estimation, parametric model) não valem diretamente para LoRA fine-tuning. Mas a intuição (random walk, step size = f(sample size)) mapa para nosso framework: step size ≈ f(rank, LR).
+- Não precisamos provar que nosso cenário satisfaz as assumptions deles. Basta dizer que a intuição é consistente.
+
+### Memorabilidade
+
+**O que faz esse paper ser lembrado:**
+1. "P(T) < 1/2" — resultado único, limpo, citável.
+2. "Random walk of model parameters" — metáfora intuitiva.
+3. "Superlinear sample growth" como threshold — prescription clear.
+4. Generaliza Shumailov formalmente.
+5. Bias-variance tradeoff aplicado a recursive training.
+
+**Lição para nosso paper:**
+- Nosso equivalente a "P(T) < 1/2" como single-number summary:
+  - "Retention declines ~2pp/generation in degradative regime" (taxa constante)
+  - "Threshold effective rank: ~50 on Qwen, ~5 on Gemma" (números precisos)
+  - "5% exposure reduction: +9pp recovery" (intervention effect)
+- Devemos garantir que pelo menos 1 desses seja o "número de referência" do paper. O que melhor resume tudo provavelmente é o contraste de threshold: "10× difference across backbones."
+
+### Resumo de ações concretas
+
+| Dimensão | Ação sugerida |
+|---|---|
+| Escrita | Usar a metáfora random walk na Discussion como conexão teórica |
+| Claims | "Consistent with P(T)<1/2: degradative regime shows monotonic decline" |
+| Venda | Complementar: eles formalizam o why; nós mapamos o where/when |
+| Impacto | Para EAAI, operacionalização > teoria. Estamos no venue certo |
+| Precisão | Não precisamos satisfazer assumptions deles; basta conexão intuitiva |
+| Memorabilidade | Escolher 1 número como "the number" do paper (10× threshold diff?) |
+
+---
+
+## Síntese Final
+
+*(será preenchida após todos os items)*
