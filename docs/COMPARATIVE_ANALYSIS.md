@@ -472,3 +472,100 @@
 ## Item 6: Yi et al. (2025) — Verification
 
 *(próximo item — aguardando)*
+
+
+## Item 6: Yi et al. (2025) — Verification
+
+*"Escaping Model Collapse via Synthetic Data Verification: Near-term Improvements and Long-term Convergence"*
+*arXiv:2510.16657, University of Chicago*
+
+### Escrita
+
+**O que fazem bem:**
+- O título promete escape ("Escaping") e entrega teoria + empiria. Verbo ativo no título.
+- A dualidade "near-term improvements / long-term convergence" no subtítulo comunica que o paper tem nuance (não é simplista).
+- A Figure 1 (VAE MNIST: com verifier vs sem verifier) é uma prova visual instantânea. Leitor entende o paper em 3 segundos olhando a figura.
+- O conceito de "verifier's knowledge center" é elegante: o modelo converge para o que o verifier sabe, não para a verdade.
+- A insight "early gains will plateau and may reverse" é honesta e diferenciadora. Não vendem a solução como perfeita.
+
+**O que fazem mal:**
+- Abstract um pouco longo e repetitivo.
+- O cenário principal é linear regression + VAE/MNIST. Não testam LLMs full-scale.
+
+**Lição para nosso paper:**
+- A honestidade sobre limitações da própria solução ("gains plateau, may reverse") é uma estratégia brilhante: desativa o reviewer que ia atacar overclaim. Nós fazemos algo similar com "tested only at boundary, not claimed universal."
+- A Figure 1 estilo "antes/depois com e sem intervenção" é poderosíssima. Nosso equivalente seria: trajectories r=16 (stable) vs r=256 (degrades) — que é nosso Fig 1. Está bom.
+
+### Claims
+
+**O que fazem:**
+- "By injecting information through an external verifier, synthetic retraining will not cause collapse." — forte, com prova.
+- "Unless verifier is perfectly reliable, early gains will plateau." — nuance teórica.
+- Teorema 3.1 (short-term improvement) + Teorema 4.1 (long-term convergence to θc).
+- Contraction mapping framework: verifier transforma iteração em contração → convergência garantida.
+
+**O que fazem mal:**
+- O claim "will not cause collapse" depende de ter um verifier melhor que o modelo. Isso é uma assunção forte não sempre satisfeita.
+- Não testam em cenário de recursive fine-tuning com LLMs.
+
+**Lição para nosso paper:**
+- Eles provam que external information injection prevents collapse. Nós mostramos que internal constraint (low rank) prevents collapse. São mecanismos diferentes com o mesmo efeito.
+- A formulação "contraction mapping" é elegante. Nós não temos teoria equivalente, mas temos dose-response empírico que é mais diretamente aplicável para engenheiros.
+- O "verifier paradox" (convergence to θc, not θ*) é análogo ao nosso achado de que low-rank QLoRA preserva knowledge mas limits learning capacity. Ambos são trade-offs.
+
+### Venda / Impacto
+
+**O que fazem:**
+- Vendem como "the first to show verifier fundamentally alters long-term dynamics."
+- Posicionamento teórico forte (Schmidt Sciences funding, UChicago statistics).
+- O paper tem um resultado positivo E um resultado de cautela. Ambos são contribuições.
+
+**Lição para nosso paper:**
+- Nós também temos resultado positivo (stability under low pressure) E resultado de cautela (r=128 hidden degradation). Esse padrão "good news + warning" é poderoso.
+- A frase "the first to formally show that..." é uma reivindicação de prioridade. Nós evitamos "the first" (corretamente), mas podemos dizer "to our knowledge, the first systematic dose-response characterization" — o que já fazemos.
+
+### Precisão
+
+**O que fazem:**
+- Teoria: linear regression com provas formais (contraction, supermartingale).
+- Empiria: linear regression simulation + VAE on MNIST.
+- Não testam: LLMs, recursive fine-tuning, factual QA, PEFT.
+
+**O que fazem mal:**
+- O gap entre a teoria (linear models) e prática (LLMs) não é bridged.
+- O "verifier" é assumido como disponível e melhor que o modelo. Em prática de recursive fine-tuning, isso nem sempre existe.
+
+**Lição para nosso paper:**
+- Nosso approach não requer verifier externo. O rank é um constraint intrínseco. Isso é uma vantagem prática significativa que devemos articular: "no external verifier or oracle needed."
+- A comparação: eles precisam de algo externo (verifier); Gerstgrasser precisa de algo externo (real data); TCE modifica a loss. Nós não precisamos de nada externo — só configurar corretamente.
+
+### Memorabilidade
+
+**O que faz esse paper ser lembrado:**
+1. "Verifier's knowledge center" — conceito elegante.
+2. "Near-term improvement, long-term plateau" — dualidade honesta.
+3. Figure 1: MNIST com/sem verifier (visual proof instantâneo).
+4. "Contraction mapping" — framework teórico limpo.
+5. "Escaping" no título — promessa de solução.
+
+**Lição para nosso paper:**
+- Nosso conceito equivalente a "knowledge center" é "pressure threshold" — o ponto para o qual o sistema converge (homeostasis) ou do qual diverge (degradation).
+- A dualidade "near-term/long-term" deles é análoga à nossa "bounded/degradative." Ambos capturam que há regimes diferentes dependendo das condições.
+- A grande vantagem nossa: não precisamos de nada externo. A estabilidade é uma propriedade intrínseca do sistema quando a pressão é baixa.
+
+### Resumo de ações concretas
+
+| Dimensão | Ação sugerida |
+|---|---|
+| Escrita | Enfatizar que nosso approach é "intrinsic" (não precisa de verifier, real data, ou loss change) |
+| Claims | "Internal constraint (low rank) achieves similar stability to external verification" |
+| Venda | Contraste: verification/accumulation/TCE = external; rank governance = internal |
+| Impacto | Posicionar como a alternativa zero-cost: nenhuma infraestrutura adicional |
+| Precisão | Testamos em LLMs reais com factual QA; eles testam linear + VAE/MNIST |
+| Memorabilidade | "Pressure threshold" é nosso equivalente a "knowledge center" |
+
+---
+
+## Item 7: Xu et al. (2025) — Probabilistic Perspective
+
+*(próximo item — aguardando)*
