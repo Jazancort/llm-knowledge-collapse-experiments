@@ -1413,6 +1413,19 @@ training pipelines (Section~\ref{sec:disc_practical}).
 
 \subsection{Effective training pressure as framework}\label{sec:disc_pressure}
 
+\vspace{6pt}
+\begin{center}
+  \includegraphics[width=0.95\linewidth]{figs/fig_etp_framework.png}
+  \captionof{figure}{Conceptual overview of the effective training pressure
+  framework. Three independently manipulated components (update capacity,
+  perturbation magnitude, synthetic exposure) contribute to effective training
+  pressure. When pressure exceeds a backbone-dependent threshold, the system
+  transitions from homeostatic to bounded or degradative regimes, each
+  characterized by distinct retention and distributional
+  signatures.}\label{fig:etp}
+\end{center}
+\vspace{6pt}
+
 The results presented in Section~\ref{sec:results} converge on a consistent
 empirical pattern: recursive factual degradation is not observed uniformly
 across recursive synthetic fine-tuning, but instead emerges only when the
@@ -1431,6 +1444,33 @@ configuration is sufficient to shift the system from degradative to bounded
 behavior. This sharpness suggests that the underlying phenomenon operates near
 an abrupt regime boundary rather than degrading gradually as any single
 parameter increases.
+
+We emphasize that the contribution is the existence and reproducibility of this
+sharp transition, not the numerical threshold itself. We do not claim that the
+specific effective-rank values at which regimes change will generalize to
+arbitrary models or tasks. What appears to generalize is the qualitative
+structure: a pressure-dependent boundary separating stable from degradative
+recursive behavior, controllable through multiple independent axes.
+
+Table~\ref{tab:evidence} summarizes how each component of the framework is
+supported by independent experimental evidence.
+
+\begin{table}[width=.95\linewidth,cols=2,pos=htbp]
+\caption{Evidence matrix: mapping framework components to supporting
+experiments.}\label{tab:evidence}
+\begin{tabular*}{\tblwidth}{@{} p{3.5cm}p{3.8cm}@{} }
+\toprule
+Observation & Supporting evidence \\
+\midrule
+Rank governs regime transition & QLoRA rank sweep (6 values, $N{=}3$) \\
+Magnitude governs transition & FFT learning-rate sweep (4 values) \\
+Exposure governs transition & Intervention C3/C5 ($N{=}3$ masks) \\
+Threshold is backbone-dependent & Qwen vs Gemma 3 ($10{\times}$ gap) \\
+Output drift accompanies degradation & Distribution metrics (5 indicators) \\
+Transition is sharp, not gradual & 5\% exposure shift flips regime \\
+\bottomrule
+\end{tabular*}
+\end{table}
 
 Two features of this framework merit emphasis. First, the threshold is
 backbone-dependent: Gemma~3 transitions at effective rank 3--9, while Qwen
@@ -1513,6 +1553,26 @@ commonly used in practice. This aligns with the recent observation by
 \citet{schaeffer2025position} that the term ``model collapse'' encompasses
 multiple distinct phenomena, and that empirical regime characterization may be
 more productive than treating collapse as a monolithic threat.
+
+To clarify the scope of the present findings, Table~\ref{tab:generalization}
+distinguishes what the evidence supports from what remains open.
+
+\begin{table}[width=.95\linewidth,cols=2,pos=htbp]
+\caption{Scope of generalization: what the present evidence supports versus
+what remains unknown.}\label{tab:generalization}
+\begin{tabular*}{\tblwidth}{@{} p{3.5cm}p{3.8cm}@{} }
+\toprule
+Supported by evidence & Remains unknown \\
+\midrule
+Existence of regime transition & Threshold value at larger scales \\
+Pressure dependence of transition & Exact functional form of pressure \\
+Sharp (not gradual) boundary & Behavior beyond Gen10 \\
+Reproducibility across seeds & Transfer to non-factoid tasks \\
+Cross-backbone regime structure & Normalization across architectures \\
+Multi-axis controllability & Interaction effects among axes \\
+\bottomrule
+\end{tabular*}
+\end{table}
 
 \subsection{Distributional degradation as a diagnostic signal}\label{sec:disc_drift}
 
@@ -1597,6 +1657,19 @@ similar to those evaluated here. Under the evaluated conditions, random
 downsampling performed comparably to targeted filtering, suggesting that
 identifying specific problematic examples may not always be necessary.
 
+In summary, practitioners deploying recursive synthetic fine-tuning should
+consider:
+\begin{itemize}
+    \item Keeping adapter rank or learning rate below the empirically
+    characterized pressure threshold for the target backbone.
+    \item Monitoring distributional diagnostics (output length, content
+    efficiency, response persistence) alongside factual accuracy.
+    \item Reducing synthetic exposure when distributional drift is detected,
+    even before retention metrics decline.
+    \item Calibrating pressure thresholds independently for each model
+    architecture, as cross-backbone transfer of numerical values is unreliable.
+\end{itemize}
+
 These considerations are derived from experiments on 1--2B parameter models with
 factoid QA data. Their applicability to larger models, different domains, or
 longer recursive horizons remains to be established. They should therefore be
@@ -1638,8 +1711,26 @@ observed consistency across seeds supports consistency under the evaluated
 conditions but does not substitute for larger-scale replication.
 
 Cross-architecture threshold normalization was attempted using several
-architectural ratios (hidden dimension, depth, head count), and none aligned the
-thresholds between Qwen and Gemma~3. The raw effective-rank threshold is
+architectural ratios, none of which aligned the thresholds between Qwen and
+Gemma~3:
+
+\begin{center}
+\small
+\begin{tabular}{lc}
+\toprule
+Normalization attempted & Aligned thresholds? \\
+\midrule
+erank / hidden dimension & No \\
+erank / $\sqrt{d}$ & No \\
+erank / num.\ layers & No \\
+erank / num.\ attention heads & No \\
+erank / num.\ KV heads & No \\
+erank / baseline diversity & No \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\noindent The raw effective-rank threshold is
 therefore not portable across backbones without empirical calibration, limiting
 its predictive utility for new architectures.
 
@@ -1686,6 +1777,14 @@ combining the three pressure components into a single scalar predictor can be
 derived, for instance through multivariate regression on a larger configuration
 space, remains an open question for future work.
 
+Despite these limitations, we note that the central qualitative phenomenon was
+reproduced independently in two model families (Qwen and Gemma), under two
+update mechanisms (QLoRA and full fine-tuning), across three independently
+manipulated pressure components, and with multiple seeds at the headline
+configurations. We therefore interpret the contribution as evidence for a
+reproducible qualitative regime structure rather than a universal quantitative
+predictor.
+
 % ============================================================
 % 7. CONCLUSION
 % ============================================================
@@ -1716,7 +1815,10 @@ Rather, it is a pressure-gated phenomenon: the boundary between stability and
 degradation can be controlled through multiple independent axes. This suggests
 that recursive synthetic training can be governed as an engineering challenge,
 provided that effective training pressure is monitored and maintained below the
-relevant backbone-dependent threshold.
+relevant backbone-dependent threshold. We note that the present contribution is
+the identification of this reproducible qualitative regime structure, not the
+specific numerical thresholds, which are expected to vary across architectures,
+scales, and tasks.
 
 Several directions for future work emerge from these findings. Scaling the
 present experiments to 7B and larger models would establish whether the regime

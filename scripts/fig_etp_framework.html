@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: white;
+    margin: 0;
+    padding: 20px 30px;
+    width: 680px;
+  }
+  .container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .components {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+  }
+  .component-box {
+    background: #f0f4ff;
+    border: 2px solid #4a6fa5;
+    border-radius: 8px;
+    padding: 10px 14px;
+    text-align: center;
+    width: 160px;
+  }
+  .component-box .label {
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 3px;
+  }
+  .component-box .value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  .arrow-down {
+    font-size: 22px;
+    color: #4a6fa5;
+    line-height: 1;
+  }
+  .pressure-box {
+    background: #4a6fa5;
+    color: white;
+    border-radius: 8px;
+    padding: 12px 28px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 700;
+  }
+  .threshold-line {
+    width: 85%;
+    border: none;
+    border-top: 2.5px dashed #e74c3c;
+    margin: 4px 0;
+    position: relative;
+  }
+  .threshold-label {
+    font-size: 11px;
+    color: #e74c3c;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .regimes {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    width: 100%;
+  }
+  .regime-box {
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+    flex: 1;
+    max-width: 180px;
+  }
+  .regime-box .regime-name {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .regime-box .regime-desc {
+    font-size: 10px;
+    color: #555;
+    line-height: 1.3;
+  }
+  .homeostatic {
+    background: #d4edda;
+    border: 2px solid #28a745;
+  }
+  .homeostatic .regime-name { color: #1e7e34; }
+  .bounded {
+    background: #fff3cd;
+    border: 2px solid #ffc107;
+  }
+  .bounded .regime-name { color: #856404; }
+  .degradative {
+    background: #f8d7da;
+    border: 2px solid #dc3545;
+  }
+  .degradative .regime-name { color: #721c24; }
+  .signatures {
+    background: #f8f9fa;
+    border: 1.5px solid #dee2e6;
+    border-radius: 8px;
+    padding: 10px 16px;
+    text-align: center;
+    width: 85%;
+  }
+  .signatures .sig-title {
+    font-size: 11px;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 4px;
+  }
+  .signatures .sig-items {
+    font-size: 10px;
+    color: #6c757d;
+  }
+  .title {
+    font-size: 10px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="title">Pressure Components</div>
+  <div class="components">
+    <div class="component-box">
+      <div class="label">Update Capacity</div>
+      <div class="value">Adapter Rank</div>
+    </div>
+    <div class="component-box">
+      <div class="label">Perturbation Magnitude</div>
+      <div class="value">Learning Rate</div>
+    </div>
+    <div class="component-box">
+      <div class="label">Synthetic Exposure</div>
+      <div class="value">Training Examples</div>
+    </div>
+  </div>
+
+  <div class="arrow-down">▼</div>
+
+  <div class="pressure-box">Effective Training Pressure</div>
+
+  <div class="arrow-down">▼</div>
+
+  <div class="threshold-label">BACKBONE-DEPENDENT THRESHOLD</div>
+  <hr class="threshold-line">
+
+  <div class="regimes">
+    <div class="regime-box homeostatic">
+      <div class="regime-name">Homeostatic</div>
+      <div class="regime-desc">Retention &gt;90%<br>Distribution stable<br>Low pressure</div>
+    </div>
+    <div class="regime-box bounded">
+      <div class="regime-name">Bounded</div>
+      <div class="regime-desc">Retention stable<br>Distribution drifts<br>Intermediate</div>
+    </div>
+    <div class="regime-box degradative">
+      <div class="regime-name">Degradative</div>
+      <div class="regime-desc">Retention declines<br>Distribution drifts<br>High pressure</div>
+    </div>
+  </div>
+
+  <div class="arrow-down">▼</div>
+
+  <div class="signatures">
+    <div class="sig-title">Observable Signatures</div>
+    <div class="sig-items">K0 retention | Content efficiency | Response persistence | Output length drift</div>
+  </div>
+</div>
+</body>
+</html>
