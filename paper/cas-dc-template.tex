@@ -396,18 +396,16 @@ interventions (Section~\ref{sec:intervention}), and statistical conventions
 (Section~\ref{sec:statistics}). Figure~\ref{fig:methodology} provides a visual
 overview of the experimental pipeline.
 
-\vspace{6pt}
-\begin{center}
-  \includegraphics[width=0.75\linewidth]{figs/fig7_methodology.png}
-  \captionof{figure}{Overview of the experimental methodology. The study
-  proceeds through five phases: data preparation and baseline establishment,
-  recursive replace-only fine-tuning over ten generations, manipulation of three
-  effective training pressure components (adapter capacity, perturbation
-  magnitude, synthetic exposure), multi-dimensional evaluation combining factual
+\begin{figure*}[htbp]
+  \centering
+  \includegraphics[width=0.35\textwidth]{figs/fig7_methodology.png}
+  \caption{Overview of the experimental methodology. The study proceeds through
+  five phases: data preparation and baseline establishment, recursive
+  replace-only fine-tuning over ten generations, manipulation of three effective
+  training pressure components, multi-dimensional evaluation combining factual
   and distributional metrics, and regime classification with boundary
   intervention testing.}\label{fig:methodology}
-\end{center}
-\vspace{6pt}
+\end{figure*}
 
 \subsection{Recursive replace-only protocol}\label{sec:protocol}
 
