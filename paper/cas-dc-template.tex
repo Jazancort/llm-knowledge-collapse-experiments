@@ -82,11 +82,11 @@ for monitoring and governing recursive training pipelines.
 % HIGHLIGHTS
 % ============================================================
 \begin{highlights}
-\item Recursive degradation under QLoRA is governed by effective training pressure
-\item Three independent variables produce the same homeostatic-to-degradative transition
-\item Pressure thresholds are backbone-dependent rather than universally determined by rank
-\item Distributional metrics reveal degradation missed by factual retention alone
-\item Small reductions in synthetic exposure restore stability near the transition boundary
+\item Recursive degradation exhibits a sharp pressure-dependent transition rather than gradual decline
+\item Pressure thresholds differ substantially across model backbones and are not universal
+\item QLoRA and full fine-tuning produce the same transition through different update mechanisms
+\item Output-distribution changes accompany degradative regimes beyond factual retention alone
+\item Near-boundary degradation is reversed by reducing synthetic exposure by approximately 5\%
 \end{highlights}
 
 % ============================================================
