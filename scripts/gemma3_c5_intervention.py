@@ -241,7 +241,7 @@ def main():
 
     # Load TriviaQA
     print("Loading TriviaQA...")
-    ds = load_dataset("trivia_qa", "rc.nocontext", split="train")
+    ds = load_dataset("mandarjoshi/trivia_qa", "rc.nocontext", split="train")
     rng = np.random.default_rng(SEED)
     indices = rng.permutation(len(ds))
 
