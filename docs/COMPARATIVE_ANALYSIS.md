@@ -275,3 +275,95 @@
 ## Item 4: Gerstgrasser et al. (2024) — Accumulation
 
 *(próximo item — aguardando)*
+
+
+## Item 4: Gerstgrasser et al. (2024) — Accumulation
+
+*"Is Model Collapse Inevitable? Breaking the Curse of Recursion by Accumulating Real and Synthetic Data"*
+*arXiv:2404.01413, Stanford*
+
+### Escrita
+
+**O que fazem bem:**
+- O título é uma **pergunta**. "Is Model Collapse Inevitable?" Isso engaja imediatamente. O leitor quer a resposta.
+- A resposta está no subtítulo: "Breaking the Curse of Recursion by Accumulating." Completo em si.
+- O abstract tem estrutura perfeita: (1) problema, (2) assunção incorreta da literatura, (3) correção, (4) empiria, (5) teoria.
+- A Figure 1 resume o paper inteiro visualmente (replace vs accumulate diagrama). Extremamente eficiente.
+- Usam "arguably more realistic assumption" — suave mas devastador para a literatura anterior.
+
+**O que fazem mal:**
+- O paper é longo (grande número de autores Stanford, muitos experimentos + teoria). Para nosso formato EAAI isso não é um problema, mas mostra que eles gastam espaço.
+
+**Lição para nosso paper:**
+- Um título como pergunta ("When Does Recursive Degradation Emerge Under PEFT?") seria memorável. Nosso título é uma afirmação técnica. É preciso mas não convida.
+- A frase "arguably more realistic assumption" é uma técnica poderosa: invalida gentilmente a premissa da literatura sem ser agressivo. Nós podemos usar algo similar: "while prior work assumes full fine-tuning, practical adaptation pipelines overwhelmingly use PEFT."
+- A Figure 1 tipo diagrama "Replace vs Accumulate" é o que nossa Fig 7 (methodology) tenta fazer. Mas a deles é mais simples e mais impactante.
+
+### Claims
+
+**O que fazem:**
+- Claim principal: "accumulating data avoids model collapse." Simples. Limpo.
+- Suporte: LLMs (pretraining sequences), diffusion models, VAEs, + prova teórica (linear models).
+- A prova é que com acumulação, test error tem upper bound finito (não diverge).
+- Contraste direto com Shumailov: under replace → diverge; under accumulate → bounded.
+
+**Lição para nosso paper:**
+- A estrutura "under X → bad; under Y → good" é muito clara. Nosso equivalente: "under high pressure → degradation; under low pressure → homeostasis." Já fazemos isso, mas podemos ser mais diretos no abstract/highlights.
+- Eles provam um bound teórico. Nós não. Mas temos something melhor para EAAI: a demonstração de que a transição é **sharp** e **manipulável**. Isso é mais actionable.
+
+### Venda / Impacto
+
+**O que fazem:**
+- Vendem como "correção de uma premissa da literatura." A premissa replace-only era artificial.
+- O paper basicamente diz: "O alarme de Shumailov era sobre um cenário que não corresponde à realidade."
+- Impacto: Stanford, 10+ autores (incluindo Donoho, Koyejo — nomes pesados).
+
+**Lição para nosso paper:**
+- Nós também "corrigimos uma premissa": a premissa de que FFT é o paradigma relevante. Na prática, PEFT domina. E sob PEFT, o regime de collapse é diferente.
+- Mas cuidado: Gerstgrasser opera no eixo **dados** (accumulate vs replace). Nós operamos no eixo **updates** (rank, LR, exposure). São ortogonais. Isso já está claro no Related Work.
+
+### Precisão
+
+**O que fazem:**
+- LLMs reais (sequences of GPT-2 scale models pretrained from scratch). Não fine-tuning.
+- Diffusion models (molecular conformation). VAEs (images).
+- Prova teórica (linear models, bounded MSE under accumulation).
+- Múltiplos tamanhos de modelo, arquiteturas, hyperparameters.
+
+**O que fazem mal:**
+- Não testam PEFT. Não testam fine-tuning recursivo. O cenário deles é pretraining.
+- Não fazem dose-response (não variam a proporção gradualmente).
+
+**Lição para nosso paper:**
+- A diferença fundamental: eles fazem pretraining from scratch a cada geração; nós fazemos fine-tuning. São problemas diferentes que podem ter dinâmicas diferentes.
+- Nós estamos mais próximos da prática industrial (fine-tuning recursivo com adapters). Isso é uma vantagem para EAAI que devemos enfatizar.
+
+### Memorabilidade
+
+**O que faz esse paper ser lembrado:**
+1. Título como pergunta: "Is Model Collapse Inevitable?"
+2. A resposta: "No, if you accumulate."
+3. Figure 1: diagrama Replace vs Accumulate (visual instantâneo).
+4. Upper bound teórico (prova que não diverge).
+5. Stanford + Donoho (autoridade).
+
+**Lição para nosso paper:**
+- Nosso equivalente de "No, if you accumulate" seria: **"No, if you control pressure."** Essa frase deveria estar no paper.
+- O Figure 1 deles funciona porque mostra o contraste em 1 imagem. Nosso Fig 7 é bom mas não tem esse "before/after" instantâneo. Nosso Fig 2 (dose-response) é talvez mais impactante nesse sentido.
+
+### Resumo de ações concretas
+
+| Dimensão | Ação sugerida |
+|---|---|
+| Escrita | Título como pergunta seria mais memorável (mas não vamos mudar agora) |
+| Claims | Estrutura "under X → bad; under Y → good" mais direta no abstract |
+| Venda | "We correct the implicit assumption that FFT is the relevant paradigm" |
+| Impacto | Nosso cenário (PEFT fine-tuning) é mais próximo da prática que pretraining |
+| Precisão | Diferenciar claramente: eles fazem pretraining; nós fazemos fine-tuning |
+| Memorabilidade | "Is collapse inevitable? Not if you control pressure." — frase candidata |
+
+---
+
+## Item 5: Zibakhsh et al. (2024) — ForTIFAI / TCE
+
+*(próximo item — aguardando)*
