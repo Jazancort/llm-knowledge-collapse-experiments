@@ -2,149 +2,213 @@
 <html>
 <head>
 <style>
-  body {
-    font-family: 'Arial', sans-serif;
-    background: white;
-    margin: 0;
-    padding: 24px 36px;
-    width: 780px;
+  * {
+    box-sizing: border-box;
   }
+
+  body {
+    font-family: Inter, Arial, sans-serif;
+    background: #f6f7f9;
+    margin: 0;
+    padding: 28px 36px;
+    width: 780px;
+    color: #17202a;
+  }
+
   .container {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 14px;
+    background: #ffffff;
+    border: 1px solid #e3e7ec;
+    border-radius: 14px;
+    padding: 28px 30px;
+    box-shadow: 0 12px 32px rgba(20, 31, 43, 0.08);
   }
+
   .section-label {
     font-size: 11px;
-    font-weight: 700;
-    color: #333;
+    font-weight: 800;
+    color: #607080;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
-    margin-bottom: 2px;
+    letter-spacing: 1.8px;
   }
+
   .components {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-  }
-  .component-box {
-    background: #ffffff;
-    border: 2.5px solid #2c3e50;
-    border-radius: 6px;
-    padding: 14px 18px;
-    text-align: center;
-    width: 180px;
-  }
-  .component-box .label {
-    font-size: 12px;
-    color: #555;
-    margin-bottom: 5px;
-    font-weight: 400;
-  }
-  .component-box .value {
-    font-size: 15px;
-    font-weight: 700;
-    color: #1a1a1a;
-  }
-  .arrow-down {
-    font-size: 28px;
-    color: #2c3e50;
-    line-height: 1;
-  }
-  .pressure-box {
-    background: #2c3e50;
-    color: white;
-    border-radius: 6px;
-    padding: 14px 36px;
-    text-align: center;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-  }
-  .threshold-container {
-    width: 90%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-  }
-  .threshold-line {
-    width: 100%;
-    border: none;
-    border-top: 3px dashed #c0392b;
-    margin: 0;
-  }
-  .threshold-label {
-    font-size: 12px;
-    color: #c0392b;
-    font-weight: 700;
-    letter-spacing: 1px;
-  }
-  .regimes {
     display: flex;
     gap: 16px;
     justify-content: center;
     width: 100%;
   }
+
+  .component-box {
+    background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);
+    border: 1px solid #d9e0e7;
+    border-radius: 10px;
+    padding: 16px 18px;
+    text-align: center;
+    width: 190px;
+    box-shadow: 0 4px 12px rgba(20, 31, 43, 0.05);
+  }
+
+  .component-box .label {
+    font-size: 11px;
+    color: #6d7a88;
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  .component-box .value {
+    font-size: 15px;
+    font-weight: 800;
+    color: #14202b;
+  }
+
+  .arrow-down {
+    font-size: 22px;
+    color: #8291a1;
+    line-height: 1;
+    margin: -2px 0;
+  }
+
+  .pressure-box {
+    background: linear-gradient(135deg, #243447 0%, #34495e 100%);
+    color: white;
+    border-radius: 999px;
+    padding: 14px 42px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 800;
+    letter-spacing: 0.2px;
+    box-shadow: 0 8px 18px rgba(44, 62, 80, 0.22);
+  }
+
+  .threshold-container {
+    width: 92%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    margin-top: 2px;
+  }
+
+  .threshold-label {
+    font-size: 11px;
+    color: #b9312b;
+    font-weight: 800;
+    letter-spacing: 1.4px;
+  }
+
+  .threshold-line {
+    width: 100%;
+    height: 3px;
+    border: 0;
+    background: repeating-linear-gradient(
+      to right,
+      #c0392b 0,
+      #c0392b 14px,
+      transparent 14px,
+      transparent 24px
+    );
+    opacity: 0.85;
+  }
+
+  .regimes {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    width: 100%;
+  }
+
   .regime-box {
-    border-radius: 6px;
-    padding: 14px 16px;
+    border-radius: 10px;
+    padding: 16px 16px;
     text-align: center;
     flex: 1;
-    max-width: 200px;
+    max-width: 205px;
+    border: 1px solid transparent;
+    box-shadow: 0 5px 14px rgba(20, 31, 43, 0.06);
   }
+
   .regime-box .regime-name {
     font-size: 15px;
-    font-weight: 700;
-    margin-bottom: 6px;
+    font-weight: 850;
+    margin-bottom: 7px;
   }
+
   .regime-box .regime-desc {
     font-size: 12px;
-    line-height: 1.5;
+    line-height: 1.55;
+    font-weight: 600;
   }
+
   .homeostatic {
-    background: #d4edda;
-    border: 2.5px solid #155724;
+    background: #eef8f1;
+    border-color: #9bd3aa;
   }
-  .homeostatic .regime-name { color: #155724; }
-  .homeostatic .regime-desc { color: #1e4620; }
+
+  .homeostatic .regime-name {
+    color: #146c36;
+  }
+
+  .homeostatic .regime-desc {
+    color: #245b36;
+  }
+
   .bounded {
-    background: #fff3cd;
-    border: 2.5px solid #856404;
+    background: #fff8e6;
+    border-color: #e2c56c;
   }
-  .bounded .regime-name { color: #6d5200; }
-  .bounded .regime-desc { color: #5a4500; }
+
+  .bounded .regime-name {
+    color: #8a6500;
+  }
+
+  .bounded .regime-desc {
+    color: #6c5310;
+  }
+
   .degradative {
-    background: #f8d7da;
-    border: 2.5px solid #721c24;
+    background: #fff0f1;
+    border-color: #e4a2a8;
   }
-  .degradative .regime-name { color: #721c24; }
-  .degradative .regime-desc { color: #5a1a1f; }
+
+  .degradative .regime-name {
+    color: #9d222f;
+  }
+
+  .degradative .regime-desc {
+    color: #743039;
+  }
+
   .signatures {
-    background: #f5f5f5;
-    border: 2px solid #999;
-    border-radius: 6px;
-    padding: 12px 20px;
+    background: #f8fafc;
+    border: 1px solid #d6dde5;
+    border-radius: 10px;
+    padding: 14px 20px;
     text-align: center;
-    width: 88%;
+    width: 92%;
   }
+
   .signatures .sig-title {
     font-size: 12px;
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 5px;
+    font-weight: 850;
+    color: #2f3b46;
+    margin-bottom: 6px;
   }
+
   .signatures .sig-items {
     font-size: 12px;
-    color: #444;
-    font-weight: 500;
+    color: #536171;
+    font-weight: 650;
   }
 </style>
 </head>
 <body>
 <div class="container">
   <div class="section-label">Pressure Components</div>
+
   <div class="components">
     <div class="component-box">
       <div class="label">Update Capacity</div>
@@ -168,7 +232,7 @@
 
   <div class="threshold-container">
     <div class="threshold-label">BACKBONE-DEPENDENT THRESHOLD</div>
-    <hr class="threshold-line">
+    <div class="threshold-line"></div>
   </div>
 
   <div class="regimes">
