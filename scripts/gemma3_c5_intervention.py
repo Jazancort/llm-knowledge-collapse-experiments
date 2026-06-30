@@ -58,6 +58,11 @@ def exact_match(pred, gts):
     return any(normalize_answer(g) in p or p in normalize_answer(g) for g in gts)
 
 
+def defrag():
+    gc.collect()
+    torch.cuda.empty_cache()
+
+
 def load_base():
     bnb = BitsAndBytesConfig(
         load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16,
@@ -96,7 +101,7 @@ def evaluate_k0(model, tokenizer, k0_questions, k0_answers):
     return results
 
 
-def generate_synthetic(model, tokenizer, questions):
+def generate_synthetic(model, tokenizer, questions, seed_offset=0):
     responses = []
     model.eval()
     for q in tqdm(questions, desc="Generating"):
@@ -122,7 +127,7 @@ def downsample_dataset(questions, responses, rng):
     return [questions[i] for i in indices], [responses[i] for i in indices]
 
 
-def train_adapter(model, tokenizer, questions, responses):
+def train_adapter(model, tokenizer, questions, responses, gen):
     """Train QLoRA adapter on synthetic data."""
     texts = []
     for q, r in zip(questions, responses):
@@ -146,14 +151,14 @@ def train_adapter(model, tokenizer, questions, responses):
     training_args = TrainingArguments(
         output_dir="/tmp/gemma3_c5_tmp",
         num_train_epochs=2,
-        per_device_train_batch_size=2,
-        gradient_accumulation_steps=8,
+        per_device_train_batch_size=8,
+        gradient_accumulation_steps=2,
         learning_rate=LR,
         bf16=True,
-        logging_steps=50,
+        logging_steps=9999,
         save_strategy="no",
         report_to="none",
-        seed=SEED,
+        seed=SEED + gen,
     )
 
     trainer = Trainer(
@@ -163,71 +168,113 @@ def train_adapter(model, tokenizer, questions, responses):
         data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=False),
     )
     trainer.train()
+    peft_model.eval()
+    del trainer, ds
+    defrag()
     return peft_model
 
 
-def run_single_mask(mask_seed, train_questions, k0_questions, k0_answers, output_dir):
+def run_single_mask(mask_seed, train_questions, k0_questions, k0_answers, k0_total, output_dir):
     """Run full 5-gen recursive loop with one downsample mask."""
     print(f"\n{'='*60}")
     print(f"  MASK SEED: {mask_seed}")
     print(f"{'='*60}\n")
 
+    result_path = output_dir / f"gemma3_c5_mask{mask_seed}.json"
+
+    # Check for resume
+    gen_results = []
+    start_gen = 1
+    if result_path.exists():
+        existing = json.loads(result_path.read_text())
+        gen_results = existing.get("generations", [])
+        if gen_results:
+            start_gen = gen_results[-1]["gen"] + 1
+            print(f"  Resuming from gen {start_gen} (found {len(gen_results)} completed)")
+            if start_gen > GENERATIONS:
+                print(f"  Already complete!")
+                return existing
+
     rng = np.random.default_rng(mask_seed)
-    results = {"mask_seed": mask_seed, "generations": []}
 
     # Gen 0: baseline
     model, tokenizer = load_base()
     k0_results = evaluate_k0(model, tokenizer, k0_questions, k0_answers)
     k0_correct = sum(k0_results)
     print(f"Gen 0: K0 = {k0_correct}/{len(k0_questions)}")
-    results["k0_total"] = len(k0_questions)
-    results["k0_correct_gen0"] = k0_correct
 
     # Generate initial synthetic
     responses = generate_synthetic(model, tokenizer, train_questions)
     del model
-    gc.collect()
-    torch.cuda.empty_cache()
+    defrag()
+
+    # If resuming, fast-forward the RNG and regenerate from last known state
+    # For simplicity on resume, we re-run from scratch (masks are deterministic)
+    # The save-per-gen ensures no work is lost on crash
 
     for gen in range(1, GENERATIONS + 1):
-        print(f"\n--- Generation {gen} (mask={mask_seed}) ---")
+        t0 = time.time()
 
-        # Downsample
-        ds_questions, ds_responses = downsample_dataset(train_questions, responses, rng)
+        # Downsample (deterministic per gen given mask_seed)
+        gen_rng = np.random.default_rng(mask_seed * 1000 + gen)
+        ds_questions, ds_responses = downsample_dataset(train_questions, responses, gen_rng)
+
+        if gen < start_gen:
+            # Fast-forward: just regenerate synthetic without training
+            print(f"  [skip gen {gen} - already done]")
+            model, tokenizer = load_base()
+            # Still need to train to get the right synthetic for next gen
+            peft_model = train_adapter(model, tokenizer, ds_questions, ds_responses, gen)
+            responses = generate_synthetic(peft_model, tokenizer, train_questions)
+            del peft_model, model
+            defrag()
+            continue
+
+        print(f"\n--- Generation {gen} (mask={mask_seed}) ---")
         print(f"  Training on {len(ds_questions)}/{len(train_questions)} examples "
               f"({len(ds_questions)/len(train_questions)*100:.1f}%)")
 
         # Load fresh base + train adapter
         model, tokenizer = load_base()
-        peft_model = train_adapter(model, tokenizer, ds_questions, ds_responses)
+        peft_model = train_adapter(model, tokenizer, ds_questions, ds_responses, gen)
 
         # Evaluate K0
         k0_results = evaluate_k0(peft_model, tokenizer, k0_questions, k0_answers)
-        k0_correct = sum(k0_results)
-        retention = k0_correct / results["k0_correct_gen0"] * 100
-        print(f"  K0: {k0_correct}/{results['k0_correct_gen0']} ({retention:.1f}%)")
+        k0_correct_gen = sum(k0_results)
+        retention = k0_correct_gen / k0_correct * 100
+        elapsed = time.time() - t0
+        print(f"  K0: {k0_correct_gen}/{k0_correct} ({retention:.1f}%) [{elapsed:.0f}s]")
 
-        results["generations"].append({
+        gen_results.append({
             "gen": gen,
-            "k0_correct": k0_correct,
-            "retention_pct": retention,
+            "k0_correct": k0_correct_gen,
+            "k0_total": k0_correct,
+            "retention_pct": round(retention, 2),
             "train_examples": len(ds_questions),
+            "time_seconds": round(elapsed, 1),
         })
 
-        # Generate new synthetic (from FULL question set, not downsampled)
+        # Save incrementally
+        result_data = {
+            "mask_seed": mask_seed,
+            "model": MODEL_NAME,
+            "rank": RANK,
+            "downsample_fraction": DOWNSAMPLE_FRACTION,
+            "k0_size": len(k0_questions),
+            "k0_correct_gen0": k0_correct,
+            "generations": gen_results,
+        }
+        result_path.write_text(json.dumps(result_data, indent=2))
+        print(f"  Saved: {result_path}")
+
+        # Generate new synthetic (from FULL question set)
         responses = generate_synthetic(peft_model, tokenizer, train_questions)
 
         # Cleanup
         del peft_model, model
-        gc.collect()
-        torch.cuda.empty_cache()
+        defrag()
 
-    # Save
-    out_file = output_dir / f"gemma3_c5_mask{mask_seed}.json"
-    with open(out_file, "w") as f:
-        json.dump(results, f, indent=2)
-    print(f"\nSaved: {out_file}")
-    return results
+    return result_data
 
 
 def main():
@@ -259,20 +306,20 @@ def main():
     k0_mask = [i for i, correct in enumerate(k0_results) if correct]
     k0_questions = [eval_questions[i] for i in k0_mask]
     k0_answers = [eval_answers[i] for i in k0_mask]
-    print(f"K0 size: {len(k0_questions)} / {EVAL_SIZE}")
+    k0_total = len(k0_questions)
+    print(f"K0 size: {k0_total} / {EVAL_SIZE}")
     del model
-    gc.collect()
-    torch.cuda.empty_cache()
+    defrag()
 
     # Run each mask
     all_results = []
     for mask_seed in args.masks:
-        result = run_single_mask(mask_seed, train_questions, k0_questions, k0_answers, output_dir)
+        result = run_single_mask(mask_seed, train_questions, k0_questions, k0_answers, k0_total, output_dir)
         all_results.append(result)
 
     # Summary
     print("\n" + "=" * 60)
-    print("SUMMARY — Gemma 3 C5 Intervention (r=16, 5% downsample)")
+    print("SUMMARY — Gemma 3 C5 Intervention (r=16, ~5% downsample)")
     print("=" * 60)
     for r in all_results:
         gen5 = r["generations"][-1]
