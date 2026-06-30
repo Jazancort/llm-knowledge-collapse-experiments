@@ -74,7 +74,7 @@ retention remains above 88\%; and (4) restoration of near-homeostatic behavior
 through approximately 5\% reduction in synthetic exposure at the regime
 boundary, regardless of the selection criterion used. These findings suggest that recursive
 degradation is a pressure-gated phenomenon whose stability can be controlled
-through multiple independent training variables, providing a practical framework
+through multiple independent training variables, providing an empirical basis
 for monitoring and governing recursive training pipelines.
 \end{abstract}
 
@@ -86,7 +86,7 @@ for monitoring and governing recursive training pipelines.
 \item Pressure thresholds differ by an order of magnitude across backbones and are not universal
 \item QLoRA and full fine-tuning produce the same transition through different update mechanisms
 \item Output-distribution changes accompany degradative regimes beyond factual retention alone
-\item Near-boundary degradation is reversed by reducing synthetic exposure by approximately 5\%
+\item Approximately 5\% less synthetic exposure restores near-homeostatic behavior at the regime boundary
 \end{highlights}
 
 % ============================================================
@@ -161,12 +161,12 @@ regimes and show that these transitions can be controlled through multiple
 independently manipulated variables.
 
 Beyond explaining the observed behavior, this perspective has practical
-implications for the governance of recursive training systems. Existing
+implications for the control of recursive training systems. Existing
 pipelines offer little guidance for selecting adapter capacity or synthetic-data
 reuse policies that preserve long-term stability. By framing recursive stability
 as a function of effective training pressure, the present results provide a
 basis for monitoring, controlling, and intervening in recursive fine-tuning
-before degradation becomes irreversible. Critically, this governance requires no
+before degradation becomes irreversible. Critically, this control requires no
 external verifier, no additional real data, and no changes to the training
 objective: adapter rank selection alone can maintain stability.
 
@@ -1560,7 +1560,7 @@ the numerical threshold is backbone-dependent, the underlying principle appears
 consistent across the evaluated models: lower effective training pressure is
 associated with greater recursive stability in the tested configurations. When
 full fine-tuning is required, lower learning rates reduce recursive degradation
-in the evaluated setting. Notably, this form of governance requires no external
+in the evaluated setting. Notably, this form of control requires no external
 verifier, no additional real data, and no modification to the training objective;
 it operates entirely through configuration choices already available to
 practitioners.
