@@ -367,3 +367,108 @@
 ## Item 5: Zibakhsh et al. (2024) — ForTIFAI / TCE
 
 *(próximo item — aguardando)*
+
+
+## Item 5: Zibakhsh et al. (2024) — ForTIFAI / TCE
+
+*"ForTIFAI: Fending Off Recursive Training Induced Failure for AI Model Collapse"*
+*Preprint, UCSD + Stanford*
+
+### Escrita
+
+**O que fazem bem:**
+- O acrônimo "ForTIFAI" é catchy e memorável (Fortify + AI). Marketing acadêmico eficiente.
+- A insight central é comunicada em 1 frase: "auto-regressive models tend to generate text to which they assign high confidence." Simples, verificável, intuitivo.
+- A contribuição é ultra-prática: "a loss function." É algo que qualquer engenheiro pode implementar amanhã.
+- "2.3× more synthetic data before collapse" — número claro, benchmark-able.
+- Figure 1 mostra distribuição de confiança (real vs synthetic) — prova visual instantânea da insight.
+
+**O que fazem mal:**
+- O paper é preprint (sem peer review ainda).
+- A escrita é boa mas não excepcional (padrão ICLR workshop).
+- A teoria é limitada (observação empírica + loss function, sem prova de convergência).
+
+**Lição para nosso paper:**
+- A força deles é a **simplicidade actionable**: 1 insight → 1 loss function → 1 número (2.3×).
+- Nosso equivalente actionable é: "1 knob (rank) → 1 threshold → 1 number (5% to flip)."
+- Mas nós temos MAIS knobs e MAIS generalizáveis. A vantagem é que mostramos o landscape inteiro, não apenas 1 hack.
+
+### Claims
+
+**O que fazem:**
+- "Model's confidence is a strong signal for identifying its own generated text." — verificável e surpreendente.
+- "TCE tolerates 2.3× more synthetic data without degradation." — benchmark claro.
+- "Model-agnostic, computationally efficient, easy to implement." — vende para engenheiros.
+- Também contribuem: "comprehensive evaluation framework for model collapse" (benchmark open-source).
+
+**O que fazem mal:**
+- Não provam por que TCE funciona teoricamente. É puramente empírica.
+- Não testam sob PEFT. Só FFT.
+- O "2.3×" é sobre mixed-data proportion tolerance, não sobre recursion depth.
+
+**Lição para nosso paper:**
+- O claim "model-agnostic, computationally efficient, easy to implement" é exatamente o tipo de frase que EAAI adora.
+- Nós podemos dizer algo análogo: "Adapter rank selection requires no additional infrastructure, no external data, and no changes to the optimization procedure." Isso posiciona nosso achado como igualmente prático.
+- A diferença: TCE é uma **intervenção** (muda como treinar). Nosso achado é uma **observação + framework** (mostra quando treinar é seguro). São complementares.
+
+### Venda / Impacto
+
+**O que fazem:**
+- Vendem como "practical tool for deployment." Não como ciência básica.
+- O open-source benchmark é uma contribuição tangível (reprodutibilidade).
+- A afiliação UCSD + Stanford + Azalia Mirhoseini (nome de peso em ML systems) ajuda.
+- Posicionamento: "while causes are understood, mitigation is scarce." Cria urgência para a solução.
+
+**Lição para nosso paper:**
+- Nós também temos código open-source (GitHub). Devemos mencionar isso mais prominentemente.
+- A frase "mitigation strategies remain scarce" poderia ser adaptada para nós: "governance frameworks for recursive PEFT remain absent." 
+- Para EAAI, o fato de termos resultados **sem modificar a loss** é uma vantagem: nosso approach é zero-cost (só escolher rank correto).
+
+### Precisão
+
+**O que fazem:**
+- LLaMA-3.2-1B como modelo principal.
+- WikiText como dataset. Mixed-data settings (variando proporção de synthetic).
+- Benchmark com métricas de retained + acquired knowledge.
+- Comparação com CE padrão ao longo de gerações.
+
+**O que fazem mal:**
+- Não fazem recursion pura (replace-only). Fazem mixed-data com proporções crescentes.
+- Não isolam rank/capacity como variável.
+- O cenário é "quanto synthetic tolero?" não "quando o recursive loop degrada?"
+
+**Lição para nosso paper:**
+- Cenários diferentes: eles medem tolerância a synthetic proportion; nós medimos dinâmica recursiva completa.
+- Nós somos mais agressivos no protocolo (100% replace, zero real data). Isso é mais exigente e mais informativo.
+- O posicionamento "eixo ortogonal" no Related Work está correto: TCE opera na loss; nós operamos no update mechanism.
+
+### Memorabilidade
+
+**O que faz esse paper ser lembrado:**
+1. "ForTIFAI" — acrônimo catchy.
+2. "2.3× more synthetic data" — número claro e impressionante.
+3. "Ignore what the model already knows too well" — insight intuitiva.
+4. Figure 1: histograma de confiança (visual proof of concept).
+5. "Minimal extension of CE" — baixa barreira de adoção.
+
+**Lição para nosso paper:**
+- Nosso paper não tem acrônimo nem nome memorável para o método/framework. "Effective training pressure" é funcional mas longo. "ETP" como abreviação? Provavelmente não vale criar.
+- O visual proof of concept equivalente é nosso **Fig 2 (dose-response curve)**: queda monotônica clara = proof visual.
+- A "baixa barreira de adoção" para nós é: "just pick a lower rank." Zero cost, zero infrastructure change.
+
+### Resumo de ações concretas
+
+| Dimensão | Ação sugerida |
+|---|---|
+| Escrita | Adicionar frase tipo "requires no changes to optimization or data pipeline" |
+| Claims | Posicionar rank selection como zero-cost governance (sem modificar loss, dados, ou pipeline) |
+| Venda | Mencionar open-source code + reprodutibility como contribuição tangível |
+| Impacto | Nosso approach é complementar ao deles: rank governance + TCE poderiam ser combinados |
+| Precisão | Nosso protocolo (100% replace) é mais exigente que o mixed-data deles |
+| Memorabilidade | Fig 2 (dose-response) é nosso visual proof of concept — dar destaque |
+
+---
+
+## Item 6: Yi et al. (2025) — Verification
+
+*(próximo item — aguardando)*
