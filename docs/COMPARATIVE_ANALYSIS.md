@@ -167,3 +167,111 @@
 ## Item 3: Keisha et al. (2025) — Knowledge Collapse
 
 *(próximo item — aguardando)*
+
+
+## Item 3: Keisha et al. (2025) — Knowledge Collapse
+
+*"Knowledge Collapse in LLMs: When Fluency Survives but Facts Fail under Recursive Synthetic Training"*
+*arXiv:2509.04796, UCL / Holistic AI*
+
+### Escrita
+
+**O que fazem bem:**
+- O subtítulo "When Fluency Survives but Facts Fail" é extremamente memorável. Resume o paper inteiro em 6 palavras.
+- As 4 contribuições são listadas de forma limpa no final da Intro (numbered, com verbos diferentes).
+- A taxonomia Stage A/B/C cria um vocabulário compartilhado que outros papers podem usar.
+- "Confidently wrong" como conceito é imediatamente compreensível e assustador.
+
+**O que fazem mal:**
+- A escrita é competente mas não excepcional. Frases longas, alguns parágrafos densos demais.
+- A Introduction mistura Related Work (não há seção separada). Isso funciona em preprint curto mas não em journal.
+- Metodologia pouco detalhada (MMLU, synthetic ratios, mas poucos detalhes de training).
+
+**Lição para nosso paper:**
+- O subtítulo deles é melhor que o nosso título inteiro como "soundbite." Considerar se "Effective Training Pressure" precisa de um subtítulo mais acessível.
+- A taxonomia Stage A/B/C é poderosa. Nossa taxonomia (homeostatic/bounded/degradative) é igualmente boa mas menos catchy. "Bounded" não comunica tanto quanto "confidently wrong."
+
+### Claims
+
+**O que fazem:**
+- 4 contribuições claras: (1) define knowledge collapse, (2) mostra sensibilidade a formato, (3) propõe domain-specific mitigation (15× improvement), (4) framework de avaliação.
+- Estatística formal: F(4, 1960)=5.92, p<10^-3 para sensibilidade; p<0.001 para mitigação.
+- Claim bold: "15× improvement in collapse resistance."
+
+**O que fazem mal:**
+- Single model (Gemma 3 1B IT). Single dataset family (MMLU). Single method (FFT).
+- N=? Não fica claro quantos seeds usam.
+- O claim de "15×" é sobre decay rate, não sobre resultado absoluto. Pode confundir.
+
+**Lição para nosso paper:**
+- Nós temos 3 backbones, N=3 seeds, 6 ranks, 4 LRs. Empiricamente muito mais sólido.
+- Mas eles têm números mais impressionantes na apresentação ("15×"). Nosso equivalente seria: "regime transition spans >16 percentage points" ou "threshold differs by 10× across backbones." Precisamos apresentar nossos números com o mesmo impacto.
+- A estatística formal deles (ANOVA F-test) é algo que não temos (N=3 insuficiente). Isso é uma limitação honesta que já declaramos.
+
+### Venda / Impacto
+
+**O que fazem:**
+- Vendem como problema de **segurança**: "confidently wrong outputs that pose critical risks in accuracy-dependent domains."
+- Referências a healthcare (40% error rates). Isso cria urgência imediata.
+- Propõem uma solução (domain-specific training). O paper tem "problema + solução."
+
+**O que fazem mal:**
+- A solução proposta (domain-specific) é bastante limitada e ad-hoc.
+- Não explicam por que a solução funciona mecanisticamente.
+
+**Lição para nosso paper:**
+- Eles vendem segurança/risco. Nós vendemos engenharia/controle. Ambos são válidos para venues diferentes.
+- Para EAAI, nosso framing de "governança de pipelines" é melhor que o framing de "safety risk."
+- MAS: poderíamos adicionar uma frase na Intro mencionando o risco prático de outputs "confidently wrong" que nosso r=128 dissociation ilustra. Conecta com audiência de safety sem mudar o foco.
+
+### Precisão
+
+**O que fazem:**
+- Usam Gemma 3 1B IT — mesmo backbone que nós!
+- Protocolo: FFT recursivo com synthetic ratios (25%, 50%, 75%, 100%).
+- Avaliação: MMLU (multiple choice), greedy rate, entropy, perplexity.
+- 15 gerações recursivas.
+
+**O que fazem mal:**
+- Não fazem dose-response de capacidade (rank/params). Testam ratios de dados.
+- Não isolam perturbation magnitude.
+- Não testam PEFT/LoRA.
+- Single seed aparentemente.
+
+**Lição para nosso paper:**
+- A comparação direta é forte: mesmo backbone (Gemma 3 1B), eles observam collapse com FFT; nós observamos homeostase com QLoRA r=4. Isso é exatamente o que nosso Related Work diz ("suggestive context, different protocol").
+- Devemos ser MUITO cuidadosos para não parecer que estamos contradizendo Keisha. A frase "different protocol precludes direct comparison" é essencial e já temos.
+
+### Memorabilidade
+
+**O que faz esse paper ser lembrado:**
+1. "Confidently wrong" — frase que gruda.
+2. Stage A/B/C — taxonomia citável.
+3. "Fluency survives but facts fail" — subtítulo perfeito.
+4. "15× improvement" — número impressionante.
+5. Healthcare connection — cria urgência.
+
+**Lição para nosso paper:**
+- Nossos equivalentes memoráveis:
+  - "Pressure-gated" (conceito novo)
+  - "r=128: retention bounded, distribution collapsed" (surprise)
+  - "5% reduction flips the regime" (actionable)
+  - "Homeostatic / Bounded / Degradative" (taxonomia)
+- Precisamos de uma frase-soundbite equivalente a "fluency survives but facts fail." Candidata: **"Retention survives but quality collapses"** ou **"The model looks stable but isn't."**
+
+### Resumo de ações concretas
+
+| Dimensão | Ação sugerida |
+|---|---|
+| Escrita | Considerar subtítulo mais acessível ou frase-soundbite no abstract |
+| Claims | Apresentar nossos números com mais impacto ("16pp span", "10× threshold") |
+| Venda | Mencionar risco de "looks stable but isn't" (r=128) como implicação de safety |
+| Impacto | Somos empiricamente superiores (3 backbones, N=3, dose-response). Usar isso. |
+| Precisão | Mesmo backbone (Gemma 3). Não contradizer, complementar. |
+| Memorabilidade | Precisamos de 1 frase-soundbite equivalente a "fluency survives but facts fail" |
+
+---
+
+## Item 4: Gerstgrasser et al. (2024) — Accumulation
+
+*(próximo item — aguardando)*
