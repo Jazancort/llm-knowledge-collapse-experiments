@@ -393,7 +393,21 @@ backbones (Section~\ref{sec:models}), experimental axes (Section~\ref{sec:axes})
 effective-rank and perturbation metrics (Section~\ref{sec:pressure}),
 output-distribution diagnostics (Section~\ref{sec:metrics}), synthetic-exposure
 interventions (Section~\ref{sec:intervention}), and statistical conventions
-(Section~\ref{sec:statistics}).
+(Section~\ref{sec:statistics}). Figure~\ref{fig:methodology} provides a visual
+overview of the experimental pipeline.
+
+\vspace{6pt}
+\begin{center}
+  \includegraphics[width=\linewidth]{figs/fig7_methodology.png}
+  \captionof{figure}{Overview of the experimental methodology. The study
+  proceeds through five phases: data preparation and baseline establishment,
+  recursive replace-only fine-tuning over ten generations, manipulation of three
+  effective training pressure components (adapter capacity, perturbation
+  magnitude, synthetic exposure), multi-dimensional evaluation combining factual
+  and distributional metrics, and regime classification with boundary
+  intervention testing.}\label{fig:methodology}
+\end{center}
+\vspace{6pt}
 
 \subsection{Recursive replace-only protocol}\label{sec:protocol}
 
