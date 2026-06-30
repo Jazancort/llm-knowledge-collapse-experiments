@@ -86,3 +86,84 @@
 ## Item 2: Dohmatob et al. (2025) — ICLR
 
 *(próximo item — aguardando)*
+
+
+## Item 2: Dohmatob et al. (2025) — ICLR
+
+*"Strong Model Collapse"*
+*ICLR 2025, Meta FAIR*
+
+### Escrita
+
+**O que fazem bem:**
+- O abstract abre dentro do paradigma de "scaling laws" — posiciona o paper imediatamente no debate mais quente de ML.
+- A frase-chave é cirúrgica: "even the smallest fraction of synthetic data (e.g., as little as 1%) can still lead to model collapse: larger and larger training sets do not enhance performance."
+- Usam uma progressão teoria → empiria → implicação. Cada seção constrói sobre a anterior.
+- O título "Strong Model Collapse" é uma extensão deliberada do "Model Collapse" de Shumailov. Posiciona-se como sequência natural.
+
+**Lição para nosso paper:**
+- A abertura deles ancora no paradigma dominante (scaling laws). Nosso paper poderia ancorar mais fortemente no paradigma de "PEFT como padrão de facto."
+- A frase "as little as 1%" cria shock value. Nosso equivalente seria "as little as 5% reduction restores stability" — já temos, mas está enterrado nos Results.
+
+### Claims
+
+**O que fazem:**
+- "Strong" model collapse: mais forte que Shumailov (inevitável mesmo com 1%).
+- "Larger models amplify collapse" — resultado contraintuitivo que gera citações.
+- Suporte: provas formais (Theorem 1), scaling laws regime, random projections.
+- Claim negativo poderoso: "cannot be fixed by naively mixing synthetic and real data."
+
+**Lição para nosso paper:**
+- Dohmatob faz claims sobre o que NÃO funciona (mixing não resolve). Nós fazemos claims sobre o que FUNCIONA (exposure reduction resolve no boundary). Essa é uma vantagem narrativa que devemos explorar mais.
+- O resultado contraintuitivo deles é "bigger = worse." O nosso é "r=128 looks stable but isn't" (dissociation). Ambos geram surprise. Devemos vender melhor a surpresa.
+
+### Venda / Impacto
+
+**O que fazem:**
+- Vendem como extensão do debate scaling laws.
+- Vendem como resultado negativo universal: nenhuma quantidade de dados salva.
+- Meta FAIR como afiliação adiciona peso institucional.
+
+**Lição para nosso paper:**
+- Posicionar como a **resposta prática** ao pessimismo de Dohmatob: "They showed collapse is inevitable under their assumptions. We show those assumptions don't hold under low-rank PEFT, except when pressure exceeds the threshold."
+- Esse posicionamento de "resposta a um pessimismo teórico" é muito citável.
+
+### Precisão
+
+**O que fazem:**
+- Extremamente rigoroso matematicamente (operator-valued free probability theory).
+- Mas os experimentos empíricos são em regressão linear e random features, não em LLMs full-scale.
+
+**Lição para nosso paper:**
+- Somos o oposto: empiricamente ricos, teoricamente leves. Complementar.
+- Podemos dizer: "The bounds of Dohmatob et al. predict linear error growth. Our observations are consistent in high-pressure regimes, while low-pressure PEFT configurations fall outside their model's assumptions."
+
+### Memorabilidade
+
+**O que faz esse paper ser lembrado:**
+1. "Even 1% synthetic data causes collapse" — número chocante.
+2. "Bigger models amplify collapse" — contraintuitivo.
+3. "Strong" (extensão de Shumailov).
+4. Conexão com scaling laws.
+5. ICLR 2025 + Meta FAIR.
+
+**Lição para nosso paper:**
+- Nossos "números chocantes": "5% flips regime", "10× threshold difference", "88.6% retention but 0.13 efficiency."
+- Garantir que pelo menos 2 apareçam no abstract/highlights.
+
+### Resumo de ações concretas
+
+| Dimensão | Ação sugerida |
+|---|---|
+| Escrita | Ancorar abertura no paradigma PEFT dominante |
+| Claims | "Resposta prática ao pessimismo teórico" |
+| Venda | Contraste: "inevitable under theirs; controllable under ours" |
+| Impacto | Seus bounds valem no regime de alta pressão, não no de baixa |
+| Precisão | Complementar: empiria rica vs teoria deles |
+| Memorabilidade | Destacar 3 números chocantes |
+
+---
+
+## Item 3: Keisha et al. (2025) — Knowledge Collapse
+
+*(próximo item — aguardando)*
