@@ -54,22 +54,28 @@
 % ABSTRACT
 % ============================================================
 \begin{abstract}
-Recursive training on synthetic data causes model collapse, but the transition
-from stability to degradation is sharper and more controllable than previously
-understood. We show that recursive factual degradation under QLoRA is governed
-by effective training pressure, a composite of adapter capacity, update
-magnitude, and synthetic exposure. Through systematic dose-response mapping
-across three backbones (Qwen 2.5 1.5B, Gemma 3 1B, Gemma 4 E2B), full
-fine-tuning comparison, and causal intervention experiments, we find: (1) a
-sharp regime transition between homeostatic retention and progressive
-degradation; (2) backbone-dependent thresholds not reducible to a universal
-effective-rank value; (3) a one-time adaptation cost advantage of approximately
-5 percentage points for QLoRA over full fine-tuning at matched perturbation; (4)
-output drift as a diagnostic signature of above-threshold regimes; and (5)
-restoration of near-homeostatic stability by reducing synthetic exposure by
-approximately 5\%, confirmed across three independent random masks. These
-results position recursive degradation as pressure-gated, with practical
-implications for monitoring and governing recursive training pipelines.
+Recursive fine-tuning on synthetic data enables scalable model adaptation, but
+repeated retraining on model-generated outputs can progressively degrade factual
+knowledge. The practical conditions under which this degradation emerges, remains
+bounded, or can be reversed under parameter-efficient fine-tuning remain poorly
+understood. Through systematic dose-response experiments spanning three backbones
+(Qwen 2.5 1.5B, Gemma 3 1B, and Gemma 4 E2B) and ten recursive generations, we
+investigate how recursive factual retention changes as adapter capacity,
+perturbation magnitude, and synthetic exposure vary. Together, these experiments
+reveal a common empirical organizing principle, which we term effective training
+pressure. We find: (1) a sharp, monotonic regime transition from homeostatic
+retention (above 90\% over ten generations) to progressive degradation as
+adapter rank increases, with the threshold differing by approximately an order
+of magnitude across architectures; (2) full fine-tuning learning-rate sweeps
+that reproduce the same qualitative pattern, showing that the transition is not
+unique to low-rank adaptation; (3) a retention/distribution dissociation at
+intermediate pressure, where output quality degrades substantially while factual
+retention remains bounded; and (4) restoration of near-homeostatic behavior
+through modest reductions in synthetic exposure at the regime boundary,
+regardless of the selection criterion used. These findings suggest that recursive
+degradation is a pressure-gated phenomenon whose stability can be controlled
+through multiple independent training variables, providing a practical framework
+for monitoring and governing recursive training pipelines.
 \end{abstract}
 
 % ============================================================
