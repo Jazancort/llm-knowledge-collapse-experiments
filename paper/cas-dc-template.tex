@@ -220,7 +220,9 @@ training rather than a language-specific artifact \citep{guo2024collapse}.
 
 Theoretical work has formalized these observations. \citet{dohmatob2025}
 proved that expected test loss increases at least linearly with the number of
-recursive generations for any nonzero fraction of synthetic data.
+recursive generations for any nonzero fraction of synthetic data, disrupting
+the neural scaling laws that underpin modern LLM training
+\citep{kaplan2020scaling,dohmatob2024scaling}.
 \citet{seddik2024} showed convergence toward a degenerate distribution under
 iterated retraining, while \citet{xu2025} provided a random-walk interpretation
 demonstrating that the probability of model improvement under recursive training
@@ -271,10 +273,16 @@ interventions operate at different stages of the training pipeline.
 At the verification stage, \citet{yi2025} demonstrated that external filtering
 of synthetic data substantially improves short-term recursive stability, while
 also identifying a long-term convergence induced by repeated reliance on the
-same verifier. At the data-composition stage, \citet{gerstgrasser2024} showed
+same verifier; \citet{feng2025verification} provided complementary theoretical
+analysis showing that verification is necessary for scaling with synthesized
+data. At the data-composition stage, \citet{gerstgrasser2024} showed
 that accumulating real data alongside synthetic generations bounds recursive
 error growth, preventing collapse when fresh human-generated data remains
-available. At the training-objective stage, \citet{zibakhsh2024} introduced
+available. \citet{bertrand2024stability} proved stability conditions for
+iterative retraining when real data constitutes a sufficient proportion of each
+training batch, while \citet{kazdan2025accumulation} argued that accumulation
+renders collapse avoidable under realistic data-growth assumptions. At the
+training-objective stage, \citet{zibakhsh2024} introduced
 Truncated Cross-Entropy (TCE), a loss function that selectively ignores
 high-confidence tokens during training, enabling models to remain stable under
 substantially larger proportions of synthetic data.
@@ -1501,7 +1509,10 @@ operating regime varies across backbones, and how it can be manipulated through
 multiple independent control axes. In this sense, the present study offers a
 practical response to the theoretical pessimism of prior work: recursive
 degradation, while real, is not inevitable under the configurations most
-commonly used in practice.
+commonly used in practice. This aligns with the recent observation by
+\citet{schaeffer2025position} that the term ``model collapse'' encompasses
+multiple distinct phenomena, and that empirical regime characterization may be
+more productive than treating collapse as a monolithic threat.
 
 \subsection{Distributional degradation as a diagnostic signal}\label{sec:disc_drift}
 
