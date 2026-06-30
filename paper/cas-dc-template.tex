@@ -30,7 +30,7 @@
 \setlength{\belowcaptionskip}{0pt}
 
 \shorttitle{Pressure-Gated Recursive Degradation in LLMs}
-\shortauthors{Azancort et~al.}
+\shortauthors{Azancort}
 
 \title[mode=title]{Effective Training Pressure Gates Recursive Knowledge
   Degradation in LLMs: A Multi-Axis Dose-Response Study}
@@ -69,8 +69,8 @@ adapter rank increases, with the threshold differing by approximately an order
 of magnitude across architectures; (2) full fine-tuning learning-rate sweeps
 that reproduce the same qualitative pattern, showing that the transition is not
 unique to low-rank adaptation; (3) a retention/distribution dissociation at
-intermediate pressure, where output quality degrades threefold while factual
-retention remains above 88\%; and (4) restoration of near-homeostatic behavior
+intermediate pressure (r=128 on Qwen), where output efficiency degrades
+threefold while factual retention remains above 88\%; and (4) restoration of near-homeostatic behavior
 through approximately 5\% reduction in synthetic exposure at the regime
 boundary, regardless of the selection criterion used. These findings suggest that recursive
 degradation is a pressure-gated phenomenon whose stability can be controlled
@@ -166,9 +166,11 @@ pipelines offer little guidance for selecting adapter capacity or synthetic-data
 reuse policies that preserve long-term stability. By framing recursive stability
 as a function of effective training pressure, the present results provide a
 basis for monitoring, controlling, and intervening in recursive fine-tuning
-before degradation becomes irreversible. Critically, this control requires no
-external verifier, no additional real data, and no changes to the training
-objective: adapter rank selection alone can maintain stability.
+before degradation becomes irreversible. Critically, these results suggest that
+recursive training stability can be influenced through configuration choices
+already available to practitioners, without requiring external verifiers,
+additional real data, or changes to the training objective, provided that the
+relevant backbone-specific threshold is first characterized.
 
 The principal contributions of this work are:
 \begin{enumerate}
@@ -309,11 +311,10 @@ explores stability under recursive data regimes. \citet{biderman2024} observed
 that LoRA implicitly regularizes adaptation, concluding that it ``learns less
 and forgets less'' than full fine-tuning. Recent preprints further suggest that
 higher LoRA ranks increase forgetting while improving plasticity
-\citep{biderman2024incremental,ding2024ranktrade,schwinn2025loraforgetting},
+\citep{biderman2024incremental,ding2024ranktrade},
 a pattern consistent with the dose-response relationship we observe. Emerging
 frameworks attempt to operationalize this stability through structural matrix
-constraints
-\citep{fawi2024curlora} or localized memory slots \citep{le2026procl}. In
+constraints \citep{fawi2024curlora}. In
 recursive synthetic training specifically, \citet{adapala2025} combined
 cumulative data retention with quality filtering in their Anti-Ouroboros
 framework. Mechanistically, this protection may relate to how transformers
