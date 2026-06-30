@@ -1593,11 +1593,17 @@ All experiments use models in the 1--2B parameter range (Qwen~2.5~1.5B,
 Gemma~3~1B, Gemma~4~E2B). Whether these findings generalize to 7B, 70B, or
 larger models has not been established in this work. Larger models may exhibit
 different pressure thresholds for reasons not evaluated in the present study.
+We note that this scale is consistent with prior model-collapse studies
+\citep{shumailov2024,keisha2025} and reflects the computational constraints of
+running ten recursive generations with multiple seeds and configurations.
 
 The evaluation uses a single dataset (TriviaQA) comprising short factoid
-question-answer pairs. The findings may not extend to long-form generation,
-open-ended dialogue, code synthesis, or other domains where output structure and
-evaluation criteria differ substantially from factoid recall.
+question-answer pairs. TriviaQA was chosen specifically to isolate factual
+retention from reasoning or stylistic confounds: short answers minimize
+format-dependent evaluation noise, and the substring-matching criterion is
+resilient to changes in verbosity. The findings may not extend to long-form
+generation, open-ended dialogue, code synthesis, or other domains where output
+structure and evaluation criteria differ substantially.
 
 The recursive horizon extends to ten generations. The long-term dynamics beyond
 Gen10 are unknown: configurations classified as homeostatic over this horizon
@@ -1619,11 +1625,21 @@ its predictive utility for new architectures.
 The perturbation-matching comparison between QLoRA and FFT relies on approximate
 proxies ($\|BA\|_F$ for QLoRA versus mean absolute weight drift for FFT). These
 quantities are operationally comparable but not geometrically identical,
-introducing residual confounding in the method comparison.
+introducing residual confounding in the method comparison. Additionally, all
+QLoRA experiments use 4-bit NormalFloat quantization of the base model. Although
+the quantized base remains static across generations and adapters are trained in
+higher precision, the interaction between quantization error and high-rank
+adapter updates has not been isolated. A comparison against standard 16-bit LoRA
+would be needed to fully disentangle quantization effects from rank effects.
 
 The synthetic-exposure interventions (C3/C5) are tested only at the $r=256$
 boundary on Qwen. Whether comparable sensitivity exists at other ranks, on other
-backbones, or with different datasets has not been established.
+backbones, or with different datasets has not been established. We note that the
+restriction to a single boundary configuration is deliberate: the purpose of
+these experiments is to demonstrate pressure sensitivity at the regime
+transition, not to propose a general mitigation method. Whether the same
+intervention would recover stability under extreme pressure (e.g., FFT at high
+learning rate) remains untested.
 
 All mechanistic analysis operates at the output level (retention counts, response
 properties, cross-lag correlations). No weight-level analysis of adapter update
@@ -1634,12 +1650,20 @@ remain outside the scope of the present study.
 The output-distribution diagnostics (content efficiency, persistence, SDI-3) are
 evaluated only under the present experimental conditions. Their effectiveness as
 monitoring signals in production settings, including reliability across domains
-and deployment conditions, has not been assessed.
+and deployment conditions, has not been assessed. Regarding the $K_0$ metric
+itself, substring matching could in principle confound verbosity-induced format
+changes with genuine knowledge loss. However, the C2 intervention (which
+constrains response format to short answers) improves retention without fully
+restoring homeostatic levels, indicating that the degradation measured by $K_0$
+reflects actual factual displacement rather than format masking alone.
 
 Finally, effective training pressure is proposed as an empirical organizing
-framework rather than a predictive mathematical model. Whether a quantitative
-formulation combining the three pressure components into a single scalar
-predictor exists remains an open question.
+framework rather than a predictive mathematical model. The present work
+establishes the phenomenological mapping (which variables shift which regimes)
+as a necessary precursor to formal modeling. Whether a quantitative formulation
+combining the three pressure components into a single scalar predictor can be
+derived, for instance through multivariate regression on a larger configuration
+space, remains an open question for future work.
 
 % ============================================================
 % 7. CONCLUSION
