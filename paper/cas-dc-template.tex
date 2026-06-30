@@ -231,7 +231,7 @@ between stable and degradative behavior occurs under parameter-efficient
 fine-tuning, or how that transition depends on controllable training variables
 such as update capacity and perturbation magnitude.
 
-\subsection{Knowledge degradation under recursive training}
+\subsection{Knowledge degradation}
 
 Whereas much of the recursive-training literature examines statistical
 consequences of repeated synthetic training (distributional decay, mode
@@ -890,7 +890,7 @@ as supporting evidence. Consistent with the methodology, comparisons emphasize
 effect sizes and reproducible experimental patterns rather than formal
 inferential statistics.
 
-\subsection{Update capacity: QLoRA rank dose-response}\label{sec:res_capacity}
+\subsection{Update capacity: rank dose-response}\label{sec:res_capacity}
 
 Increasing adapter rank produces a clear, monotonic decline in factual retention
 across the full rank sweep on Qwen~2.5~1.5B.
@@ -1062,7 +1062,7 @@ the regime structure generalizes across architectures, we next examine whether
 the same transition occurs when perturbation magnitude is varied independently
 of adapter capacity.
 
-\subsection{Perturbation magnitude: FFT learning-rate sweep}\label{sec:res_fft}
+\subsection{Perturbation magnitude: FFT comparison}\label{sec:res_fft}
 
 The previous sections established that increasing update capacity through adapter
 rank shifts the system from homeostatic to degradative regimes. This section asks
@@ -1096,7 +1096,7 @@ FFT          & $2{\times}10^{-5}$ & 3.48               & 84.6\% \\
 \end{tabular*}
 \end{table}
 
-\subsubsection{QLoRA versus FFT at approximately matched perturbation}
+\subsubsection{QLoRA versus FFT at matched perturbation}
 To compare the two update mechanisms at similar perturbation, we selected FFT at
 LR$\,=10^{-6}$ (drift 0.39) as the closest available match to QLoRA $r=16$
 ($\|BA\|_F \approx 0.42$). Both were run for 10 generations with three seeds.
@@ -1166,7 +1166,7 @@ near 0.16, and baseline response persistence holds steady at approximately 36\%.
 Content efficiency declines modestly from 0.41 to 0.35, reflecting the initial
 one-generation adaptation cost but no progressive drift.
 
-\subsubsection{Bounded regime ($r=128$): a retention/distribution dissociation}
+\subsubsection{Bounded regime ($r=128$)}
 The $r=128$ configuration reveals a dissociation between factual retention and
 output-distribution quality. While K0 retention remains bounded at 88.6\% through
 Gen10, the output distribution degrades substantially: mean response length
@@ -1255,8 +1255,7 @@ The next section tests whether the third component of effective training
 pressure, synthetic data exposure, can shift the system back toward homeostasis
 at the regime boundary.
 
-\subsection{Synthetic exposure: pressure sensitivity at the
-boundary}\label{sec:res_intervention}
+\subsection{Synthetic exposure interventions}\label{sec:res_intervention}
 
 The preceding sections established that update capacity and perturbation
 magnitude each govern the regime transition. This section tests the third
@@ -1387,7 +1386,7 @@ diagnostic role of output-distribution changes (Section~\ref{sec:disc_drift}),
 and the practical implications for the design and monitoring of recursive
 training pipelines (Section~\ref{sec:disc_practical}).
 
-\subsection{Effective training pressure as an organizing framework}\label{sec:disc_pressure}
+\subsection{Effective training pressure as framework}\label{sec:disc_pressure}
 
 The results presented in Section~\ref{sec:results} converge on a consistent
 empirical pattern: recursive factual degradation is not observed uniformly
@@ -1524,7 +1523,7 @@ in above-threshold and distributionally degraded configurations, while remaining
 low in homeostatic ones, regardless of whether it contributes to, or simply
 accompanies, factual degradation.
 
-\subsection{Practical implications for recursive training systems}\label{sec:disc_practical}
+\subsection{Practical implications}\label{sec:disc_practical}
 
 The results and interpretations above translate into actionable considerations
 for practitioners designing or monitoring recursive synthetic fine-tuning
