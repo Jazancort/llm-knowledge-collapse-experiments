@@ -69,10 +69,10 @@ adapter rank increases, with the threshold differing by approximately an order
 of magnitude across architectures; (2) full fine-tuning learning-rate sweeps
 that reproduce the same qualitative pattern, showing that the transition is not
 unique to low-rank adaptation; (3) a retention/distribution dissociation at
-intermediate pressure, where output quality degrades substantially while factual
-retention remains bounded; and (4) restoration of near-homeostatic behavior
-through modest reductions in synthetic exposure at the regime boundary,
-regardless of the selection criterion used. These findings suggest that recursive
+intermediate pressure, where output quality degrades threefold while factual
+retention remains above 88\%; and (4) restoration of near-homeostatic behavior
+through approximately 5\% reduction in synthetic exposure at the regime
+boundary, regardless of the selection criterion used. These findings suggest that recursive
 degradation is a pressure-gated phenomenon whose stability can be controlled
 through multiple independent training variables, providing a practical framework
 for monitoring and governing recursive training pipelines.
@@ -83,7 +83,7 @@ for monitoring and governing recursive training pipelines.
 % ============================================================
 \begin{highlights}
 \item Recursive degradation exhibits a sharp pressure-dependent transition rather than gradual decline
-\item Pressure thresholds differ substantially across model backbones and are not universal
+\item Pressure thresholds differ by an order of magnitude across backbones and are not universal
 \item QLoRA and full fine-tuning produce the same transition through different update mechanisms
 \item Output-distribution changes accompany degradative regimes beyond factual retention alone
 \item Near-boundary degradation is reversed by reducing synthetic exposure by approximately 5\%
@@ -166,7 +166,9 @@ pipelines offer little guidance for selecting adapter capacity or synthetic-data
 reuse policies that preserve long-term stability. By framing recursive stability
 as a function of effective training pressure, the present results provide a
 basis for monitoring, controlling, and intervening in recursive fine-tuning
-before degradation becomes irreversible.
+before degradation becomes irreversible. Critically, this governance requires no
+external verifier, no additional real data, and no changes to the training
+objective: adapter rank selection alone can maintain stability.
 
 The principal contributions of this work are:
 \begin{enumerate}
@@ -1495,7 +1497,10 @@ The present work complements rather than challenges the collapse literature by
 identifying the practical conditions under which bounded and degradative
 recursive behavior are observed in parameter-efficient fine-tuning, how the
 operating regime varies across backbones, and how it can be manipulated through
-multiple independent control axes.
+multiple independent control axes. In this sense, the present study offers a
+practical response to the theoretical pessimism of prior work: recursive
+degradation, while real, is not inevitable under the configurations most
+commonly used in practice.
 
 \subsection{Distributional degradation as a diagnostic signal}\label{sec:disc_drift}
 
@@ -1555,7 +1560,10 @@ the numerical threshold is backbone-dependent, the underlying principle appears
 consistent across the evaluated models: lower effective training pressure is
 associated with greater recursive stability in the tested configurations. When
 full fine-tuning is required, lower learning rates reduce recursive degradation
-in the evaluated setting.
+in the evaluated setting. Notably, this form of governance requires no external
+verifier, no additional real data, and no modification to the training objective;
+it operates entirely through configuration choices already available to
+practitioners.
 
 Regarding runtime monitoring, the $r=128$ dissociation demonstrates that factual
 accuracy alone is insufficient for detecting distributional drift. Based on the
