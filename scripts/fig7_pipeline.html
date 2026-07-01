@@ -6,214 +6,233 @@
   body {
     font-family: 'Inter', Arial, sans-serif;
     background: white;
-    padding: 30px 40px;
-    width: 1300px;
+    width: 1100px;
+    padding: 40px 60px;
   }
-  .pipeline {
-    display: flex;
-    gap: 8px;
-    align-items: stretch;
-  }
-  .phase {
-    flex: 1;
-    border-radius: 6px;
-    padding: 24px 20px;
+  .framework {
     display: flex;
     flex-direction: column;
-  }
-  .phase-number {
-    font-size: 11px;
-    font-weight: 600;
-    color: rgba(0,0,0,0.35);
-    margin-bottom: 4px;
-  }
-  .phase-title {
-    font-size: 15px;
-    font-weight: 800;
-    margin-bottom: 20px;
-  }
-  .phase-content {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    flex: 1;
-  }
-  .block-label {
-    font-size: 13px;
-    font-weight: 700;
-    color: #222;
-    margin-bottom: 4px;
-  }
-  .block-detail {
-    font-size: 12px;
-    color: #555;
-    line-height: 1.6;
-  }
-  .block-detail strong {
-    color: #222;
-  }
-  .gen-flow {
-    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 14px 16px;
-    background: white;
-    border: 2px solid #333;
-    border-radius: 5px;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-  }
-  .gen-flow .arr { color: #888; }
-  .arrow-col {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 28px;
-    color: #bbb;
-    padding: 0 6px;
-  }
-  .regime-item {
-    padding: 12px 16px;
-    border-radius: 5px;
-    border-left: 4px solid;
-    background: white;
-  }
-  .regime-item .regime-name {
-    font-size: 14px;
-    font-weight: 700;
-  }
-  .regime-item .regime-desc {
-    font-size: 11px;
-    color: #666;
-    margin-top: 2px;
+    gap: 0;
   }
 
-  .phase-data { background: #fffde7; }
-  .phase-data .phase-title { color: #6d5b00; }
-  .phase-recursive { background: #e8f1fa; }
-  .phase-recursive .phase-title { color: #1a4d7a; }
-  .phase-pressure { background: #e8f5e9; }
-  .phase-pressure .phase-title { color: #1b5e20; }
-  .phase-eval { background: #fff3e0; }
-  .phase-eval .phase-title { color: #7a4a00; }
-  .phase-regime { background: #fafafa; }
-  .phase-regime .phase-title { color: #333; }
+  /* Top inputs row */
+  .inputs-row {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    margin-bottom: 8px;
+  }
+  .input-item {
+    text-align: center;
+  }
+  .input-item .input-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #333;
+  }
+  .input-item .input-detail {
+    font-size: 11px;
+    color: #888;
+    margin-top: 3px;
+  }
+
+  /* Converging arrows */
+  .converge {
+    width: 400px;
+    height: 40px;
+    position: relative;
+  }
+  .converge svg { width: 100%; height: 100%; }
+
+  /* Central pressure box */
+  .pressure-core {
+    background: #1b2d3d;
+    border-radius: 50px;
+    padding: 20px 60px;
+    text-align: center;
+    margin: 6px 0;
+  }
+  .pressure-core .pressure-text {
+    font-size: 18px;
+    font-weight: 800;
+    color: white;
+    letter-spacing: 0.3px;
+  }
+
+  /* Arrow down */
+  .arrow-down {
+    font-size: 20px;
+    color: #aaa;
+    margin: 10px 0;
+  }
+
+  /* Context line */
+  .context-line {
+    font-size: 11px;
+    color: #999;
+    margin: 4px 0 12px;
+    font-style: italic;
+  }
+
+  /* Threshold */
+  .threshold-section {
+    width: 70%;
+    text-align: center;
+    margin: 8px 0;
+    position: relative;
+  }
+  .threshold-line {
+    width: 100%;
+    height: 2px;
+    background: repeating-linear-gradient(to right, #c62828 0, #c62828 8px, transparent 8px, transparent 14px);
+    opacity: 0.6;
+    margin: 8px 0;
+  }
+  .threshold-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: #c62828;
+    letter-spacing: 0.5px;
+  }
+
+  /* Regimes */
+  .regimes-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 16px;
+  }
+  .regime {
+    text-align: center;
+    padding: 16px 24px;
+    border-radius: 8px;
+    min-width: 150px;
+  }
+  .regime .regime-name {
+    font-size: 16px;
+    font-weight: 800;
+  }
+  .regime .regime-desc {
+    font-size: 11px;
+    color: #666;
+    margin-top: 5px;
+    line-height: 1.4;
+  }
+  .regime-homeo { background: #f0f9f1; }
+  .regime-homeo .regime-name { color: #2e7d32; }
+  .regime-bound { background: #fffde7; }
+  .regime-bound .regime-name { color: #c68c00; }
+  .regime-degrad { background: #fff5f5; }
+  .regime-degrad .regime-name { color: #c62828; }
+
+  /* Bottom metrics */
+  .metrics-section {
+    margin-top: 24px;
+    text-align: center;
+  }
+  .metrics-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+  .metrics-items {
+    font-size: 12px;
+    color: #666;
+  }
+
+  /* Sidebar context */
+  .sidebar-left {
+    position: absolute;
+    left: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    text-align: right;
+    max-width: 120px;
+  }
+  .sidebar-left .sl-label {
+    font-size: 9px;
+    color: #bbb;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .sidebar-left .sl-detail {
+    font-size: 10px;
+    color: #888;
+    margin-top: 3px;
+    line-height: 1.5;
+  }
 </style>
 </head>
 <body>
-<div class="pipeline">
+<div class="framework">
 
-  <!-- 1 -->
-  <div class="phase phase-data">
-    <div class="phase-number">01</div>
-    <div class="phase-title">Data &amp;<br>Models</div>
-    <div class="phase-content">
-      <div>
-        <div class="block-label">Dataset</div>
-        <div class="block-detail">TriviaQA<br>2k train &middot; 200 eval</div>
-      </div>
-      <div>
-        <div class="block-label">Models</div>
-        <div class="block-detail">Qwen 2.5 1.5B<br>Gemma 3 1B<br>Gemma 4 E2B</div>
-      </div>
-      <div>
-        <div class="block-label">Baseline</div>
-        <div class="block-detail">K&#8320; established<br>(5 seeds)</div>
-      </div>
+  <!-- Inputs: what feeds into pressure -->
+  <div class="inputs-row">
+    <div class="input-item">
+      <div class="input-label">Adapter Rank</div>
+      <div class="input-detail">update capacity</div>
+    </div>
+    <div class="input-item">
+      <div class="input-label">Learning Rate</div>
+      <div class="input-detail">perturbation magnitude</div>
+    </div>
+    <div class="input-item">
+      <div class="input-label">Synthetic Exposure</div>
+      <div class="input-detail">training examples</div>
     </div>
   </div>
 
-  <div class="arrow-col">&#8594;</div>
+  <!-- Converging lines -->
+  <div class="converge">
+    <svg viewBox="0 0 400 40" fill="none">
+      <path d="M 60,2 L 200,36" stroke="#bbb" stroke-width="1.2"/>
+      <path d="M 200,2 L 200,36" stroke="#bbb" stroke-width="1.2"/>
+      <path d="M 340,2 L 200,36" stroke="#bbb" stroke-width="1.2"/>
+      <polygon points="196,36 200,42 204,36" fill="#bbb"/>
+    </svg>
+  </div>
 
-  <!-- 2 -->
-  <div class="phase phase-recursive">
-    <div class="phase-number">02</div>
-    <div class="phase-title">Recursive<br>Training</div>
-    <div class="phase-content">
-      <div class="gen-flow">
-        Gen 0 <span class="arr">&#8594;</span> Gen 1 <span class="arr">&#8594;</span> &hellip; <span class="arr">&#8594;</span> Gen 10
-      </div>
-      <div>
-        <div class="block-label">Protocol</div>
-        <div class="block-detail"><strong>Replace-only</strong><br>No accumulation<br>Fresh adapter per gen</div>
-      </div>
-      <div>
-        <div class="block-label">Methods</div>
-        <div class="block-detail">QLoRA (4-bit)<br>Full fine-tuning</div>
-      </div>
+  <!-- Central concept -->
+  <div class="pressure-core">
+    <div class="pressure-text">Effective Training Pressure</div>
+  </div>
+
+  <div class="context-line">jointly determined by capacity, magnitude, and exposure</div>
+
+  <div class="arrow-down">&#9663;</div>
+
+  <!-- Threshold -->
+  <div class="threshold-section">
+    <div class="threshold-label">Backbone-Dependent Threshold</div>
+    <div class="threshold-line"></div>
+  </div>
+
+  <div class="arrow-down">&#9663;</div>
+
+  <!-- Three regimes -->
+  <div class="regimes-row">
+    <div class="regime regime-homeo">
+      <div class="regime-name">Homeostatic</div>
+      <div class="regime-desc">retention &gt;90%<br>distribution stable</div>
+    </div>
+    <div class="regime regime-bound">
+      <div class="regime-name">Bounded</div>
+      <div class="regime-desc">retention holds<br>output quality drifts</div>
+    </div>
+    <div class="regime regime-degrad">
+      <div class="regime-name">Degradative</div>
+      <div class="regime-desc">progressive<br>factual loss</div>
     </div>
   </div>
 
-  <div class="arrow-col">&#8594;</div>
-
-  <!-- 3 -->
-  <div class="phase phase-pressure">
-    <div class="phase-number">03</div>
-    <div class="phase-title">Pressure<br>Axes</div>
-    <div class="phase-content">
-      <div>
-        <div class="block-label">Capacity</div>
-        <div class="block-detail">Rank r=4 to 256</div>
-      </div>
-      <div>
-        <div class="block-label">Magnitude</div>
-        <div class="block-detail">LR 1e-6 to 2e-5</div>
-      </div>
-      <div>
-        <div class="block-label">Interaction</div>
-        <div class="block-detail">Rank &times; LR</div>
-      </div>
-      <div>
-        <div class="block-label">Exposure</div>
-        <div class="block-detail">Filter / Downsample</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="arrow-col">&#8594;</div>
-
-  <!-- 4 -->
-  <div class="phase phase-eval">
-    <div class="phase-number">04</div>
-    <div class="phase-title">Evaluation</div>
-    <div class="phase-content">
-      <div>
-        <div class="block-label">Factual</div>
-        <div class="block-detail">K&#8320; Retention<br>Item transitions</div>
-      </div>
-      <div>
-        <div class="block-label">Distributional</div>
-        <div class="block-detail">Content efficiency<br>Persistence<br>Length drift</div>
-      </div>
-      <div>
-        <div class="block-label">Adapter</div>
-        <div class="block-detail">Effective rank</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="arrow-col">&#8594;</div>
-
-  <!-- 5 -->
-  <div class="phase phase-regime">
-    <div class="phase-number">05</div>
-    <div class="phase-title">Regime<br>Assignment</div>
-    <div class="phase-content">
-      <div class="regime-item" style="border-color: #2e7d32; background: #f1f8f2;">
-        <div class="regime-name" style="color: #2e7d32;">Homeostatic</div>
-        <div class="regime-desc">retention &gt;90%</div>
-      </div>
-      <div class="regime-item" style="border-color: #f9a825; background: #fffde7;">
-        <div class="regime-name" style="color: #c68c00;">Bounded</div>
-        <div class="regime-desc">retention holds, output drifts</div>
-      </div>
-      <div class="regime-item" style="border-color: #c62828; background: #fff5f5;">
-        <div class="regime-name" style="color: #c62828;">Degradative</div>
-        <div class="regime-desc">progressive loss</div>
-      </div>
-    </div>
+  <!-- Observable -->
+  <div class="metrics-section">
+    <div class="metrics-label">Monitored via</div>
+    <div class="metrics-items">K&#8320; retention &nbsp;&bull;&nbsp; content efficiency &nbsp;&bull;&nbsp; response persistence &nbsp;&bull;&nbsp; output length</div>
   </div>
 
 </div>
