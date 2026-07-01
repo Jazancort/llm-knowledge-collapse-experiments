@@ -303,14 +303,15 @@ text_h = np.array([["97.4%", "97.4%", "92.3%"],
 fig_h = go.Figure(data=go.Heatmap(
     z=ret_pct, x=lrs_h, y=[f"r = {r}" for r in ranks_h],
     text=text_h, texttemplate="%{text}",
-    textfont={"size": 16, "family": FONT, "color": "#1a1a1a"},
+    textfont={"size": 20, "family": FONT, "color": "#1a1a1a"},
     colorscale=[[0, "#1a9641"], [0.3, "#a6d96a"], [0.5, "#ffffbf"], [0.7, "#fdae61"], [1, "#d7191c"]],
     zmin=80, zmax=100,
     colorbar=dict(title=dict(text="Retention (%)", font=dict(size=11, family=FONT), side="right"),
                   tickfont=dict(size=10, family=FONT), thickness=12, len=0.85,
                   y=0.5, yanchor="middle"),
 ))
-fig_h.update_layout(**LAYOUT_DEFAULTS, width=520, height=340,
+fig_h.update_layout(**LAYOUT_DEFAULTS, width=560, height=420,
+    margin=dict(l=90, r=100, t=30, b=70),
     xaxis_title="Learning Rate", yaxis=dict(title="Adapter Rank", autorange="reversed"))
 save(fig_h, "fig_rank_lr_heatmap")
 
