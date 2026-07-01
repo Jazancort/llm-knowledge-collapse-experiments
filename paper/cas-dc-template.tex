@@ -1208,7 +1208,7 @@ $r=256$ & 70/78 (89.7\%) & 66/78 (84.6\%) & 64/78 (82.1\%) \\
 \end{tabular*}
 \end{table}
 
-The interaction is evident: configurations that remain homeostatic under one
+The interaction is evident (Figure~\ref{fig:heatmap}): configurations that remain homeostatic under one
 learning rate become bounded or degradative under another. At $r=16$, only
 $\mathrm{LR}=2 \times 10^{-5}$ pushes the system below 95\% retention. At
 $r=64$, the same degradation appears already at $\mathrm{LR}=10^{-5}$. At
@@ -1219,6 +1219,16 @@ retains 89.7\%, compared to 84.6\% at $\mathrm{LR}=10^{-5}$ and 82.1\% at
 $\mathrm{LR}=2 \times 10^{-5}$. This demonstrates that the observed regime
 depends jointly on update capacity and perturbation magnitude rather than on
 either axis in isolation.
+
+\vspace{6pt}
+\begin{center}
+  \includegraphics[width=\columnwidth]{figs/fig_rank_lr_heatmap.png}
+  \captionof{figure}{Rank $\times$ learning-rate interaction on Qwen~2.5~1.5B
+  (Gen5 retention). Higher rank and higher learning rate jointly push the
+  system toward lower retention, demonstrating that pressure components interact
+  rather than operating independently.}\label{fig:heatmap}
+\end{center}
+\vspace{6pt}
 
 \subsubsection{FFT on Gemma~3 confirms cross-backbone magnitude effect}
 
