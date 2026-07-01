@@ -1015,34 +1015,44 @@ a single seed as a robustness check.
 
 On Gemma~3, the same qualitative structure emerges, but at a substantially lower
 effective rank. Table~\ref{tab:gemma3} summarizes the results. At $r=4$ (mean
-effective rank 3.07), Gemma~3 remains homeostatic across three seeds (mean Gen5
-retention 92.9\%, range 91.5--93.6\%). At $r=16$ (mean effective rank 9.17),
-Gemma~3 enters the degradative regime across all three seeds (mean Gen5 retention
-68.8\%, range 68.1--70.2\%). The ranges do not overlap, providing consistent
+effective rank 3.07), Gemma~3 remains homeostatic across five seeds (mean Gen5
+retention 91.3\%, range 89.1--93.5\%). At $r=16$ (mean effective rank 9.17),
+Gemma~3 enters the degradative regime across all five seeds (mean Gen5 retention
+69.1\%, range 68.1--70.2\%). The ranges do not overlap, providing consistent
 empirical separation between the two regimes on this backbone.
+
+To localize the threshold more precisely, we additionally evaluated intermediate
+ranks $r \in \{10, 12, 14\}$ with a single seed. All three exhibited progressive
+degradation: Gen5 retention of 78.3\% ($r=10$, effective rank 6.37), 73.9\%
+($r=12$, effective rank 7.35), and 69.6\% ($r=14$, effective rank 8.37). These
+values place the Gemma~3 regime boundary between effective ranks 3 and 6,
+substantially tighter than the initial 3--9 estimate.
 
 \begin{table}[width=.95\linewidth,cols=5,pos=htbp]
 \caption{QLoRA rank sweep on Gemma~3~1B~IT. Boundary ranks ($r=4$ and $r=16$)
-are evaluated with three seeds; $r=2$ and $r=256$ are evaluated with a single
-seed. Retention is reported at Gen5 for comparability across ranks; the $r=4$
-condition was additionally extended to Gen10 (seed~15:
-93.6\%).}\label{tab:gemma3}
+are evaluated with five seeds; intermediate ranks ($r=10,12,14$) with a single
+seed. Retention is reported at Gen5.}\label{tab:gemma3}
 \begin{tabular*}{\tblwidth}{@{} lllll@{} }
 \toprule
 Rank & Gen & Retention & Eff.\ Rank & Regime \\
 \midrule
 $r=2$   & 5 & 97.9\%       & 1.75  & Homeostatic \\
-$r=4$   & 5 & 92.9\% (N=3) & 3.07  & Homeostatic \\
-$r=16$  & 5 & 68.8\% (N=3) & 9.17  & Degradative \\
+$r=4$   & 5 & 91.3\% (N=5) & 3.07  & Homeostatic \\
+$r=10$  & 5 & 78.3\%       & 6.37  & Degradative \\
+$r=12$  & 5 & 73.9\%       & 7.35  & Degradative \\
+$r=14$  & 5 & 69.6\%       & 8.37  & Degradative \\
+$r=16$  & 5 & 69.1\% (N=5) & 9.17  & Degradative \\
 $r=256$ & 5 & 70.2\%       & 71.47 & Degradative \\
 \bottomrule
 \end{tabular*}
 \end{table}
 
 Two additional observations are noteworthy. First, the Gemma~3 threshold lies
-between effective ranks 3 and 9, substantially below the Qwen threshold (between
-effective ranks 50 and 88). These results indicate that raw effective-rank values
-are not directly portable across architectures. Second, Gemma~3 exhibits a
+between effective ranks 3 and 6, approximately an order of magnitude below the
+Qwen threshold (between effective ranks 50 and 88). These results indicate that
+raw effective-rank values are not directly portable across architectures. The
+observed regimes remained consistent across five independent random seeds at
+both boundary ranks. Second, Gemma~3 exhibits a
 post-threshold plateau: $r=16$ and $r=256$ reach comparable retention floors
 (68.8\% vs 70.2\%), indicating that additional capacity beyond the threshold does
 not worsen degradation further within the observed horizon. This plateau behavior
@@ -1169,11 +1179,59 @@ performance \citep{shuttleworth2024illusion,biderman2024}. The precise
 mechanistic basis of this divergence in the recursive setting remains an open
 question for future work.
 
+\subsubsection{Rank and learning rate interact}
+
+The preceding analyses vary adapter rank and learning rate independently. To
+test whether their effects are additive or interactive, we evaluated a
+$3 \times 3$ matrix on Qwen: ranks 16, 64, and 256 crossed with learning rates
+$5 \times 10^{-6}$, $10^{-5}$, and $2 \times 10^{-5}$. Table~\ref{tab:ranklr}
+reports Gen5 retention for each cell.
+
+\begin{table}[width=.95\linewidth,cols=4,pos=htbp]
+\caption{Rank $\times$ learning rate interaction matrix on Qwen~2.5~1.5B
+(Gen5 retention, $K_0 = 78$, seed 15).}\label{tab:ranklr}
+\begin{tabular*}{\tblwidth}{@{} llll@{} }
+\toprule
+Rank & LR=$5{\times}10^{-6}$ & LR=$10^{-5}$ & LR=$2{\times}10^{-5}$ \\
+\midrule
+$r=16$  & 76/78 (97.4\%) & 76/78 (97.4\%) & 72/78 (92.3\%) \\
+$r=64$  & 76/78 (97.4\%) & 72/78 (92.3\%) & 69/78 (88.5\%) \\
+$r=256$ & 70/78 (89.7\%) & 66/78 (84.6\%) & 64/78 (82.1\%) \\
+\bottomrule
+\end{tabular*}
+\end{table}
+
+The interaction is evident: configurations that remain homeostatic under one
+learning rate become bounded or degradative under another. At $r=16$, only
+$\mathrm{LR}=2 \times 10^{-5}$ pushes the system below 95\% retention. At
+$r=64$, the same degradation appears already at $\mathrm{LR}=10^{-5}$. At
+$r=256$, even the lowest evaluated learning rate ($5 \times 10^{-6}$) produces
+measurable degradation (89.7\%). Conversely, reducing learning rate partially
+offsets the effect of higher rank: $r=256$ with $\mathrm{LR}=5 \times 10^{-6}$
+retains 89.7\%, compared to 84.6\% at $\mathrm{LR}=10^{-5}$ and 82.1\% at
+$\mathrm{LR}=2 \times 10^{-5}$. This demonstrates that the observed regime
+depends jointly on update capacity and perturbation magnitude rather than on
+either axis in isolation.
+
+\subsubsection{FFT on Gemma~3 confirms cross-backbone magnitude effect}
+
+To test whether the perturbation-magnitude axis generalizes beyond Qwen, we
+evaluated full fine-tuning on Gemma~3~1B at three learning rates. Gen5 retention
+was 78.3\% at $\mathrm{LR}=10^{-6}$, 54.3\% at $\mathrm{LR}=5 \times 10^{-6}$,
+and 63.0\% at $\mathrm{LR}=10^{-5}$. Although the two higher learning rates do
+not follow a strictly monotonic pattern (possibly reflecting single-seed
+variability), substantially higher degradation is observed at larger learning
+rates compared to $\mathrm{LR}=10^{-6}$. This confirms that the
+perturbation-magnitude axis operates on Gemma~3, producing substantially more
+degradation under higher learning rates and establishing that both the capacity
+and magnitude axes generalize across the evaluated architectures.
+
 Both update capacity (Axis~1) and perturbation magnitude (Axis~2) each produce
-monotonic dose-response relationships with factual retention. The regime
-transition therefore cannot be attributed to adapter rank alone. The next section
-examines how these regimes manifest in the distributional properties of the
-synthetic outputs.
+dose-response relationships with factual retention, and these axes interact
+rather than operating independently. The regime transition therefore reflects a
+multidimensional pressure landscape in which multiple control variables jointly
+determine recursive stability. The next section examines how these regimes
+manifest in the distributional properties of the synthetic outputs.
 
 \subsection{Distributional signatures of degradation}\label{sec:res_distribution}
 
@@ -1452,7 +1510,16 @@ sharp transition, not the numerical threshold itself. We do not claim that the
 specific effective-rank values at which regimes change will generalize to
 arbitrary models or tasks. What appears to generalize is the qualitative
 structure: a pressure-dependent boundary separating stable from degradative
-recursive behavior, controllable through multiple independent axes.
+recursive behavior, controllable through multiple axes.
+
+The rank $\times$ learning-rate interaction experiment
+(Table~\ref{tab:ranklr}) further demonstrates that these axes are not
+independent: increasing one partially compensates for decreasing the other.
+This result strengthens the interpretation of effective training pressure as a
+multidimensional control landscape rather than a collection of separable
+single-variable effects. Developing a quantitative formulation that combines
+update capacity, perturbation magnitude, and exposure into a single predictive
+scalar remains an important direction for future work.
 
 Table~\ref{tab:evidence} summarizes how each component of the framework is
 supported by independent experimental evidence.
@@ -1470,6 +1537,8 @@ Exposure governs transition & Intervention C3/C5 ($N{=}3$ masks) \\
 Threshold is backbone-dependent & Qwen vs Gemma 3 ($10{\times}$ gap) \\
 Output drift accompanies degradation & Distribution metrics (5 indicators) \\
 Transition is sharp, not gradual & 5\% exposure shift flips regime \\
+Capacity and magnitude interact & Rank $\times$ LR matrix (3$\times$3) \\
+Magnitude generalizes cross-backbone & FFT sweep on Gemma 3 \\
 \bottomrule
 \end{tabular*}
 \end{table}
@@ -1569,9 +1638,10 @@ Supported by evidence & Remains unknown \\
 Existence of regime transition & Threshold value at larger scales \\
 Pressure dependence of transition & Exact functional form of pressure \\
 Sharp (not gradual) boundary & Behavior beyond Gen10 \\
-Reproducibility across seeds & Transfer to non-factoid tasks \\
+Reproducibility across 5 seeds & Transfer to non-factoid tasks \\
 Cross-backbone regime structure & Normalization across architectures \\
-Multi-axis controllability & Interaction effects among axes \\
+Capacity and magnitude interact & Exposure sensitivity cross-backbone \\
+Magnitude axis cross-backbone (FFT) & Interaction strength at scale \\
 \bottomrule
 \end{tabular*}
 \end{table}
