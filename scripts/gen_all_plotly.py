@@ -114,6 +114,8 @@ fig1.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     yaxis_range=[65, 102],
     legend=dict(x=0.5, y=-0.2, xanchor="center", orientation="h", font=dict(size=10)),
     margin=dict(l=60, r=20, t=10, b=70))
+fig1.add_annotation(text="(a)", xref="paper", yref="paper", x=0.01, y=1.02,
+    showarrow=False, font=dict(size=14, family=FONT, color="#333"))
 style_axes(fig1)
 save(fig1, "fig1_trajectories")
 
@@ -146,6 +148,8 @@ fig2.update_yaxes(title_text="Effective Rank", secondary_y=True,
 fig2.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     legend=dict(x=0.35, y=0.05, font=dict(size=10)),
     margin=dict(l=60, r=60, t=10, b=50))
+fig2.add_annotation(text="(b)", xref="paper", yref="paper", x=0.01, y=1.02,
+    showarrow=False, font=dict(size=14, family=FONT, color="#333"))
 style_axes(fig2)
 save(fig2, "fig2_dose_response")
 
