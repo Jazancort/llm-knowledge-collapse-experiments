@@ -580,17 +580,19 @@ is reproducible on a single workstation-class GPU.
 All code, configuration files, and experimental outputs are publicly available
 at \url{https://github.com/Jazancort/llm-knowledge-collapse}.
 
-\vspace{6pt}
-\begin{center}
-  \includegraphics[width=0.9\linewidth]{figs/fig7_methodology.png}
-  \captionof{figure}{Overview of the experimental methodology. The study
-  proceeds through five phases: data preparation and baseline establishment,
-  recursive replace-only fine-tuning over ten generations, manipulation of three
-  effective training pressure components, multi-dimensional evaluation, and
-  regime classification with boundary intervention
-  testing.}\label{fig:methodology}
-\end{center}
-\vspace{6pt}
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figs/fig7_methodology.png}
+  \caption{Experimental methodology organized in five phases. (1)~Data
+  preparation: TriviaQA split, model selection, and $K_0$ baseline
+  establishment. (2)~Recursive training: replace-only synthetic retraining over
+  ten generations with fresh adapters. (3)~Pressure manipulation: systematic
+  variation of adapter rank, learning rate, rank$\times$LR interaction, and
+  synthetic exposure. (4)~Evaluation: factual retention, distributional
+  diagnostics, and adapter metrics at each generation. (5)~Regime
+  classification: assignment to homeostatic, bounded, or degradative categories
+  based on observed trajectories.}\label{fig:methodology}
+\end{figure*}
 
 \subsection{Experimental axes}\label{sec:axes}
 
