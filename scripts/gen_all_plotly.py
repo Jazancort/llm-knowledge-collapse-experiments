@@ -112,8 +112,8 @@ for s, dash in zip([15, 137, 256], [None, "dot", "dash"]):
 fig1.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     xaxis_title="Generation", yaxis_title="K0 Retention (%)",
     yaxis_range=[65, 102],
-    legend=dict(x=1.02, y=0.95, xanchor="left", font=dict(size=10)),
-    margin=dict(l=60, r=120, t=20, b=50))
+    legend=dict(x=0.5, y=-0.2, xanchor="center", orientation="h", font=dict(size=10)),
+    margin=dict(l=60, r=20, t=10, b=70))
 style_axes(fig1)
 save(fig1, "fig1_trajectories")
 
@@ -176,8 +176,8 @@ fig3.add_trace(go.Scatter(x=[d[0] for d in gemma4], y=[d[1] for d in gemma4],
 fig3.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     xaxis_title="Mean Effective Rank", yaxis_title="K0 Retention (%)",
     xaxis_type="log", yaxis_range=[60, 102],
-    legend=dict(x=1.02, y=0.95, xanchor="left", font=dict(size=10)),
-    margin=dict(l=60, r=130, t=20, b=50))
+    legend=dict(x=0.5, y=-0.2, xanchor="center", orientation="h", font=dict(size=10)),
+    margin=dict(l=60, r=20, t=10, b=70))
 style_axes(fig3)
 save(fig3, "fig3_cross_backbone")
 
@@ -203,8 +203,8 @@ for s, dash in zip([15, 137, 256], [None, "dot", "dash"]):
 fig4.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     xaxis_title="Generation", yaxis_title="K0 Retention (%)",
     yaxis_range=[85, 102],
-    legend=dict(x=1.02, y=0.5, xanchor="left", font=dict(size=10)),
-    margin=dict(l=60, r=100, t=20, b=50))
+    legend=dict(x=0.5, y=-0.2, xanchor="center", orientation="h", font=dict(size=10)),
+    margin=dict(l=60, r=20, t=10, b=70))
 style_axes(fig4)
 save(fig4, "fig4_fft_vs_qlora")
 
@@ -255,8 +255,8 @@ for data, name, color in [(pers_r16, "r=16", COLORS["homeostatic"]),
 
 fig5.update_xaxes(title_text="Generation", row=3, col=1)
 fig5.update_layout(**LAYOUT_DEFAULTS, width=560, height=560, showlegend=True,
-    legend=dict(x=1.02, y=0.95, xanchor="left", font=dict(size=10)),
-    margin=dict(l=60, r=120, t=30, b=50))
+    legend=dict(x=0.5, y=-0.08, xanchor="center", orientation="h", font=dict(size=10)),
+    margin=dict(l=60, r=20, t=30, b=60))
 style_axes(fig5)
 save(fig5, "fig5_distributional", w=560, h=560)
 
