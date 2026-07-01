@@ -283,10 +283,11 @@ fig6.add_hline(y=83.3, line_dash="dash", line_color="#888", line_width=1,
     annotation_text="Baseline (C1)", annotation_position="top right",
     annotation_font_size=10)
 
-fig6.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
+fig6.update_layout(**LAYOUT_DEFAULTS, width=560, height=320,
     xaxis_title="Intervention Condition",
     yaxis_title="K0 Retention (%, Gen5)",
-    yaxis_range=[75, 100], showlegend=False)
+    yaxis_range=[78, 96], showlegend=False,
+    margin=dict(l=60, r=20, t=10, b=50))
 style_axes(fig6)
 save(fig6, "fig6_interventions")
 
