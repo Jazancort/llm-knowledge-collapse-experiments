@@ -1387,11 +1387,14 @@ learning-rate sweeps reproduce the same dose-response relationship, indicating
 that the transition is not specific to low-rank adaptation. Above-threshold
 configurations exhibit characteristic distributional signatures, including a
 dissociation between factual retention and output quality at intermediate
-capacity. Finally, synthetic-exposure interventions demonstrate that boundary
-configurations can be shifted back toward near-homeostatic behavior through
-modest reductions in recursive exposure. The following section interprets these
-findings in the context of prior work, discusses their implications for
-recursive training systems, and outlines the limitations of the present study.
+capacity. Finally, synthetic-exposure interventions demonstrate that the
+evaluated Qwen boundary configuration can be shifted back toward
+near-homeostatic behavior through modest reductions in recursive exposure.
+Whether comparable exposure sensitivity exists at other boundary configurations
+or across architectures remains an open question. The following section
+interprets these findings in the context of prior work, discusses their
+implications for recursive training systems, and outlines the limitations of
+the present study.
 
 % ============================================================
 % 5. DISCUSSION
@@ -1668,6 +1671,17 @@ consider:
     \item Calibrating pressure thresholds independently for each model
     architecture, as cross-backbone transfer of numerical values is unreliable.
 \end{itemize}
+
+An exploratory replication of the synthetic-exposure intervention on the
+Gemma~3 boundary configuration (r=16, using the same approximate 5\% random
+downsampling protocol) did not reproduce the stabilization observed on Qwen.
+Under the evaluated conditions, Gemma~3 retention followed the same
+trajectory with and without the intervention. While update-capacity and
+perturbation-magnitude effects generalized across the evaluated backbones,
+exposure sensitivity at the tested magnitude remains demonstrated only for
+the Qwen boundary configuration. This asymmetry reinforces that effective
+training pressure should not be interpreted as implying identical sensitivity
+along all axes across architectures.
 
 These considerations are derived from experiments on 1--2B parameter models with
 factoid QA data. Their applicability to larger models, different domains, or
