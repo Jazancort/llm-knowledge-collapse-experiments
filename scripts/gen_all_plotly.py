@@ -261,8 +261,8 @@ for data, name, color in [(pers_r16, "r=16", COLORS["homeostatic"]),
 
 fig5.update_xaxes(title_text="Generation", row=3, col=1)
 fig5.update_layout(**LAYOUT_DEFAULTS, width=560, height=560, showlegend=True,
-    legend=dict(x=0.5, y=-0.08, xanchor="center", orientation="h", font=dict(size=10)),
-    margin=dict(l=60, r=20, t=30, b=60))
+    legend=dict(x=0.5, y=-0.12, xanchor="center", orientation="h", font=dict(size=10)),
+    margin=dict(l=60, r=20, t=30, b=80))
 style_axes(fig5)
 save(fig5, "fig5_distributional", w=560, h=560)
 
