@@ -151,11 +151,12 @@ def run_fft_config(lr, train_questions, k0_indices, k0_questions, k0_answers, ou
             model=model,
             args=TrainingArguments(
                 output_dir=str(output_dir / "tmp"), num_train_epochs=2,
-                per_device_train_batch_size=2, gradient_accumulation_steps=8,
+                per_device_train_batch_size=1, gradient_accumulation_steps=16,
                 learning_rate=lr, bf16=True, logging_steps=9999,
                 save_strategy="no", report_to="none", seed=SEED + gen,
                 gradient_checkpointing=True,
                 optim="paged_adamw_8bit",
+                max_grad_norm=1.0,
             ),
             train_dataset=train_ds,
             data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=False),
