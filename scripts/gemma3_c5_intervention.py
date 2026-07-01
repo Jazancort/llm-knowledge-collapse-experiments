@@ -104,17 +104,22 @@ def evaluate_k0(model, tokenizer, k0_questions, k0_answers):
 def generate_synthetic(model, tokenizer, questions, seed_offset=0):
     responses = []
     model.eval()
-    for q in tqdm(questions, desc="Generating"):
-        prompt = format_prompt(tokenizer, q)
-        inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+    batch_size = 16
+    tokenizer.padding_side = "left"
+    for i in tqdm(range(0, len(questions), batch_size), desc="Generating"):
+        batch_q = questions[i:i + batch_size]
+        prompts = [format_prompt(tokenizer, q) for q in batch_q]
+        inputs = tokenizer(prompts, return_tensors="pt", padding=True, truncation=True, max_length=256).to(model.device)
         with torch.inference_mode():
             out = model.generate(
                 **inputs, max_new_tokens=50, do_sample=True,
                 temperature=0.7, top_p=0.9,
                 pad_token_id=tokenizer.pad_token_id,
             )
-        resp = tokenizer.decode(out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True)
-        responses.append(resp)
+        for j, seq in enumerate(out):
+            resp = tokenizer.decode(seq[inputs["input_ids"].shape[1]:], skip_special_tokens=True)
+            responses.append(resp)
+    tokenizer.padding_side = "right"
     return responses
 
 
