@@ -55,7 +55,7 @@ def style_axes(fig, xgrid=False, ygrid=True):
     return fig
 
 
-def save(fig, name, w=480, h=340):
+def save(fig, name, w=560, h=360):
     pio.write_image(fig, str(FIG_DIR / f"{name}.png"), width=w, height=h, scale=4)
     print(f"  OK: {name}.png")
 
@@ -109,13 +109,13 @@ for s, dash in zip([15, 137, 256], [None, "dot", "dash"]):
         name=f"r=256 (s{s})", line=dict(color=COLORS["degradative"], width=2, dash=dash),
         marker=dict(size=5), legendgroup="r256", showlegend=(s==15)))
 
-fig1.update_layout(**LAYOUT_DEFAULTS, width=520, height=320,
+fig1.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     xaxis_title="Generation", yaxis_title="K0 Retention (%)",
     yaxis_range=[65, 102],
     legend=dict(x=1.02, y=0.95, xanchor="left", font=dict(size=10)),
     margin=dict(l=60, r=120, t=20, b=50))
 style_axes(fig1)
-save(fig1, "fig1_trajectories", w=520, h=320)
+save(fig1, "fig1_trajectories")
 
 
 # ============================================================
@@ -142,9 +142,9 @@ fig2.update_xaxes(title_text="Nominal Rank", type="log", row=1, col=1)
 fig2.update_xaxes(title_text="Nominal Rank", type="log", row=1, col=2)
 fig2.update_yaxes(title_text="Retention (%)", row=1, col=1)
 fig2.update_yaxes(title_text="Effective Rank", row=1, col=2)
-fig2.update_layout(**LAYOUT_DEFAULTS, width=580, height=300, showlegend=False)
+fig2.update_layout(**LAYOUT_DEFAULTS, width=560, height=360, showlegend=False)
 style_axes(fig2)
-save(fig2, "fig2_dose_response", w=580, h=300)
+save(fig2, "fig2_dose_response")
 
 
 # ============================================================
@@ -170,13 +170,13 @@ fig3.add_trace(go.Scatter(x=[d[0] for d in gemma4], y=[d[1] for d in gemma4],
     mode="markers", name="Gemma 4 E2B",
     marker=dict(size=9, symbol="triangle-up", color=COLORS["gemma4"])))
 
-fig3.update_layout(**LAYOUT_DEFAULTS, width=500, height=340,
+fig3.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     xaxis_title="Mean Effective Rank", yaxis_title="K0 Retention (%)",
     xaxis_type="log", yaxis_range=[60, 102],
     legend=dict(x=1.02, y=0.95, xanchor="left", font=dict(size=10)),
     margin=dict(l=60, r=130, t=20, b=50))
 style_axes(fig3)
-save(fig3, "fig3_cross_backbone", w=500, h=340)
+save(fig3, "fig3_cross_backbone")
 
 
 # ============================================================
@@ -197,13 +197,13 @@ for s, dash in zip([15, 137, 256], [None, "dot", "dash"]):
         name=f"FFT (s{s})", line=dict(color=COLORS["fft"], width=2, dash=dash),
         marker=dict(size=4), legendgroup="fft", showlegend=(s==15)))
 
-fig4.update_layout(**LAYOUT_DEFAULTS, width=500, height=300,
+fig4.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     xaxis_title="Generation", yaxis_title="K0 Retention (%)",
     yaxis_range=[85, 102],
     legend=dict(x=1.02, y=0.5, xanchor="left", font=dict(size=10)),
     margin=dict(l=60, r=100, t=20, b=50))
 style_axes(fig4)
-save(fig4, "fig4_fft_vs_qlora", w=500, h=300)
+save(fig4, "fig4_fft_vs_qlora")
 
 
 # ============================================================
@@ -251,11 +251,11 @@ for data, name, color in [(pers_r16, "r=16", COLORS["homeostatic"]),
         legendgroup=name, showlegend=False), row=3, col=1)
 
 fig5.update_xaxes(title_text="Generation", row=3, col=1)
-fig5.update_layout(**LAYOUT_DEFAULTS, width=480, height=520, showlegend=True,
+fig5.update_layout(**LAYOUT_DEFAULTS, width=560, height=560, showlegend=True,
     legend=dict(x=1.02, y=0.95, xanchor="left", font=dict(size=10)),
     margin=dict(l=60, r=100, t=30, b=50))
 style_axes(fig5)
-save(fig5, "fig5_distributional", w=480, h=520)
+save(fig5, "fig5_distributional", w=560, h=560)
 
 
 # ============================================================
@@ -276,12 +276,12 @@ fig6.add_hline(y=83.3, line_dash="dash", line_color="#888", line_width=1,
     annotation_text="Baseline (C1)", annotation_position="top right",
     annotation_font_size=10)
 
-fig6.update_layout(**LAYOUT_DEFAULTS, width=420, height=320,
+fig6.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     xaxis_title="Intervention Condition",
     yaxis_title="K0 Retention (%, Gen5)",
     yaxis_range=[75, 100], showlegend=False)
 style_axes(fig6)
-save(fig6, "fig6_interventions", w=420, h=320)
+save(fig6, "fig6_interventions")
 
 
 # ============================================================
@@ -309,7 +309,7 @@ fig_h = go.Figure(data=go.Heatmap(
 ))
 fig_h.update_layout(**LAYOUT_DEFAULTS, width=520, height=340,
     xaxis_title="Learning Rate", yaxis=dict(title="Adapter Rank", autorange="reversed"))
-save(fig_h, "fig_rank_lr_heatmap", w=520, h=340)
+save(fig_h, "fig_rank_lr_heatmap")
 
 
 print("\nAll figures regenerated with Plotly!")
