@@ -144,8 +144,8 @@ fig2.update_yaxes(title_text="K0 Retention (%)", secondary_y=False,
 fig2.update_yaxes(title_text="Effective Rank", secondary_y=True,
     range=[0, 100], title_font_color=COLORS["degradative"])
 fig2.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
-    legend=dict(x=0.4, y=0.25, font=dict(size=10)),
-    margin=dict(l=60, r=60, t=20, b=50))
+    legend=dict(x=0.35, y=0.05, font=dict(size=10)),
+    margin=dict(l=60, r=60, t=10, b=50))
 style_axes(fig2)
 save(fig2, "fig2_dose_response")
 
