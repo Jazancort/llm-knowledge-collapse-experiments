@@ -6,192 +6,212 @@
   body {
     font-family: 'Inter', Arial, sans-serif;
     background: white;
-    padding: 24px;
-    width: 1400px;
+    padding: 30px 40px;
+    width: 1300px;
   }
   .pipeline {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     align-items: stretch;
   }
   .phase {
     flex: 1;
-    border-radius: 5px;
-    padding: 18px 14px;
+    border-radius: 6px;
+    padding: 24px 20px;
     display: flex;
     flex-direction: column;
   }
+  .phase-number {
+    font-size: 11px;
+    font-weight: 600;
+    color: rgba(0,0,0,0.35);
+    margin-bottom: 4px;
+  }
   .phase-title {
-    font-size: 13px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-    margin-bottom: 14px;
-    text-align: center;
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 20px;
   }
   .phase-content {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 16px;
     flex: 1;
   }
-  .box {
-    background: white;
-    border: 1.5px solid #333;
-    border-radius: 3px;
-    padding: 9px 12px;
-    font-size: 12.5px;
-    text-align: center;
-    color: #222;
-    font-weight: 500;
-    line-height: 1.35;
-  }
-  .box.bold {
-    font-weight: 700;
+  .block-label {
     font-size: 13px;
+    font-weight: 700;
+    color: #222;
+    margin-bottom: 4px;
+  }
+  .block-detail {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.6;
+  }
+  .block-detail strong {
+    color: #222;
   }
   .gen-flow {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
-    padding: 9px 12px;
+    gap: 6px;
+    padding: 14px 16px;
     background: white;
-    border: 1.5px solid #333;
-    border-radius: 3px;
-    font-size: 12px;
-    font-weight: 600;
+    border: 2px solid #333;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
   }
-  .gen-flow .arrow { color: #666; font-size: 13px; }
-  .arrow-between {
+  .gen-flow .arr { color: #888; }
+  .arrow-col {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    color: #555;
-    padding: 0 4px;
-    align-self: center;
+    font-size: 28px;
+    color: #bbb;
+    padding: 0 6px;
   }
-  .sub-group {
-    border: 1.2px dashed #999;
-    border-radius: 4px;
-    padding: 9px 8px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+  .regime-item {
+    padding: 12px 16px;
+    border-radius: 5px;
+    border-left: 4px solid;
+    background: white;
   }
-  .sub-group-label {
-    font-size: 10px;
-    color: #555;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 600;
-    margin-bottom: 2px;
+  .regime-item .regime-name {
+    font-size: 14px;
+    font-weight: 700;
   }
-  .phase-data { background: #fef9e7; border: 1.5px solid #f0d860; }
-  .phase-data .phase-title { color: #7a6200; }
-  .phase-recursive { background: #eaf2fb; border: 1.5px solid #7baed4; }
-  .phase-recursive .phase-title { color: #2c5f8a; }
-  .phase-pressure { background: #e8f5e9; border: 1.5px solid #81c784; }
-  .phase-pressure .phase-title { color: #2e6b32; }
-  .phase-eval { background: #fff3e0; border: 1.5px solid #ffb74d; }
+  .regime-item .regime-desc {
+    font-size: 11px;
+    color: #666;
+    margin-top: 2px;
+  }
+
+  .phase-data { background: #fffde7; }
+  .phase-data .phase-title { color: #6d5b00; }
+  .phase-recursive { background: #e8f1fa; }
+  .phase-recursive .phase-title { color: #1a4d7a; }
+  .phase-pressure { background: #e8f5e9; }
+  .phase-pressure .phase-title { color: #1b5e20; }
+  .phase-eval { background: #fff3e0; }
   .phase-eval .phase-title { color: #7a4a00; }
-  .phase-regime { background: #fce4ec; border: 1.5px solid #e57373; }
-  .phase-regime .phase-title { color: #7b1a1a; }
+  .phase-regime { background: #fafafa; }
+  .phase-regime .phase-title { color: #333; }
 </style>
 </head>
 <body>
 <div class="pipeline">
 
+  <!-- 1 -->
   <div class="phase phase-data">
-    <div class="phase-title">1. Data Preparation</div>
+    <div class="phase-number">01</div>
+    <div class="phase-title">Data &amp;<br>Models</div>
     <div class="phase-content">
-      <div class="box bold">TriviaQA (rc.nocontext)</div>
-      <div class="box">2,000 training questions</div>
-      <div class="box">200 evaluation questions</div>
-      <div class="sub-group">
-        <div class="sub-group-label">Models</div>
-        <div class="box">Qwen 2.5 1.5B</div>
-        <div class="box">Gemma 3 1B</div>
-        <div class="box">Gemma 4 E2B</div>
+      <div>
+        <div class="block-label">Dataset</div>
+        <div class="block-detail">TriviaQA<br>2k train &middot; 200 eval</div>
       </div>
-      <div class="box bold">K&#8320; baseline established</div>
+      <div>
+        <div class="block-label">Models</div>
+        <div class="block-detail">Qwen 2.5 1.5B<br>Gemma 3 1B<br>Gemma 4 E2B</div>
+      </div>
+      <div>
+        <div class="block-label">Baseline</div>
+        <div class="block-detail">K&#8320; established<br>(5 seeds)</div>
+      </div>
     </div>
   </div>
 
-  <div class="arrow-between">&#8594;</div>
+  <div class="arrow-col">&#8594;</div>
 
+  <!-- 2 -->
   <div class="phase phase-recursive">
-    <div class="phase-title">2. Recursive Training</div>
+    <div class="phase-number">02</div>
+    <div class="phase-title">Recursive<br>Training</div>
     <div class="phase-content">
       <div class="gen-flow">
-        Gen 0 <span class="arrow">&#8594;</span> Gen 1 <span class="arrow">&#8594;</span> ... <span class="arrow">&#8594;</span> Gen 10
+        Gen 0 <span class="arr">&#8594;</span> Gen 1 <span class="arr">&#8594;</span> &hellip; <span class="arr">&#8594;</span> Gen 10
       </div>
-      <div class="box">Synthetic data generation<br>(T=0.7, top-p=0.9)</div>
-      <div class="box bold">Replace-only retraining</div>
-      <div class="box">QLoRA (4-bit NF4)<br>or Full Fine-Tuning</div>
-      <div class="box">No accumulation<br>No replay buffer</div>
-      <div class="box">Fresh adapter each generation</div>
+      <div>
+        <div class="block-label">Protocol</div>
+        <div class="block-detail"><strong>Replace-only</strong><br>No accumulation<br>Fresh adapter per gen</div>
+      </div>
+      <div>
+        <div class="block-label">Methods</div>
+        <div class="block-detail">QLoRA (4-bit)<br>Full fine-tuning</div>
+      </div>
     </div>
   </div>
 
-  <div class="arrow-between">&#8594;</div>
+  <div class="arrow-col">&#8594;</div>
 
+  <!-- 3 -->
   <div class="phase phase-pressure">
-    <div class="phase-title">3. Pressure Axes</div>
+    <div class="phase-number">03</div>
+    <div class="phase-title">Pressure<br>Axes</div>
     <div class="phase-content">
-      <div class="sub-group">
-        <div class="sub-group-label">Update Capacity</div>
-        <div class="box">Rank: 4, 10, 12, 14,<br>16, 32, 64, 128, 256</div>
+      <div>
+        <div class="block-label">Capacity</div>
+        <div class="block-detail">Rank r=4 to 256</div>
       </div>
-      <div class="sub-group">
-        <div class="sub-group-label">Perturbation Magnitude</div>
-        <div class="box">FFT LR: 1e-6, 5e-6,<br>1e-5, 2e-5</div>
+      <div>
+        <div class="block-label">Magnitude</div>
+        <div class="block-detail">LR 1e-6 to 2e-5</div>
       </div>
-      <div class="sub-group">
-        <div class="sub-group-label">Interaction</div>
-        <div class="box">Rank &#215; LR (3&#215;3)</div>
+      <div>
+        <div class="block-label">Interaction</div>
+        <div class="block-detail">Rank &times; LR</div>
       </div>
-      <div class="sub-group">
-        <div class="sub-group-label">Synthetic Exposure</div>
-        <div class="box">C3 filter / C5 downsample</div>
+      <div>
+        <div class="block-label">Exposure</div>
+        <div class="block-detail">Filter / Downsample</div>
       </div>
     </div>
   </div>
 
-  <div class="arrow-between">&#8594;</div>
+  <div class="arrow-col">&#8594;</div>
 
+  <!-- 4 -->
   <div class="phase phase-eval">
-    <div class="phase-title">4. Evaluation</div>
+    <div class="phase-number">04</div>
+    <div class="phase-title">Evaluation</div>
     <div class="phase-content">
-      <div class="sub-group">
-        <div class="sub-group-label">Factual</div>
-        <div class="box">K&#8320; Retention</div>
-        <div class="box">Item-level transitions</div>
+      <div>
+        <div class="block-label">Factual</div>
+        <div class="block-detail">K&#8320; Retention<br>Item transitions</div>
       </div>
-      <div class="sub-group">
-        <div class="sub-group-label">Distributional</div>
-        <div class="box">Content efficiency</div>
-        <div class="box">Response persistence</div>
-        <div class="box">Output length drift</div>
+      <div>
+        <div class="block-label">Distributional</div>
+        <div class="block-detail">Content efficiency<br>Persistence<br>Length drift</div>
       </div>
-      <div class="sub-group">
-        <div class="sub-group-label">Adapter</div>
-        <div class="box">Effective rank (erank)</div>
+      <div>
+        <div class="block-label">Adapter</div>
+        <div class="block-detail">Effective rank</div>
       </div>
     </div>
   </div>
 
-  <div class="arrow-between">&#8594;</div>
+  <div class="arrow-col">&#8594;</div>
 
+  <!-- 5 -->
   <div class="phase phase-regime">
-    <div class="phase-title">5. Regime Classification</div>
+    <div class="phase-number">05</div>
+    <div class="phase-title">Regime<br>Assignment</div>
     <div class="phase-content">
-      <div class="box bold" style="border-color:#2e7d32; background:#e8f5e9;">Homeostatic<br><span style="font-size:10.5px;font-weight:400;color:#444;">retention &gt;90%, stable</span></div>
-      <div class="box bold" style="border-color:#f57f17; background:#fff8e1;">Bounded<br><span style="font-size:10.5px;font-weight:400;color:#444;">retention holds, dist. drifts</span></div>
-      <div class="box bold" style="border-color:#c62828; background:#ffebee;">Degradative<br><span style="font-size:10.5px;font-weight:400;color:#444;">progressive factual loss</span></div>
-      <div style="margin-top:10px; border-top:1px solid #ddd; padding-top:10px;">
-        <div class="box" style="border-style:dashed; font-size:11px;">5 seeds &#215; 3 backbones<br>19 configurations total</div>
+      <div class="regime-item" style="border-color: #2e7d32; background: #f1f8f2;">
+        <div class="regime-name" style="color: #2e7d32;">Homeostatic</div>
+        <div class="regime-desc">retention &gt;90%</div>
+      </div>
+      <div class="regime-item" style="border-color: #f9a825; background: #fffde7;">
+        <div class="regime-name" style="color: #c68c00;">Bounded</div>
+        <div class="regime-desc">retention holds, output drifts</div>
+      </div>
+      <div class="regime-item" style="border-color: #c62828; background: #fff5f5;">
+        <div class="regime-name" style="color: #c62828;">Degradative</div>
+        <div class="regime-desc">progressive loss</div>
       </div>
     </div>
   </div>
