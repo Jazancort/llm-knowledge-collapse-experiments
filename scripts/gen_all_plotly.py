@@ -119,30 +119,33 @@ save(fig1, "fig1_trajectories")
 
 
 # ============================================================
-# FIGURE 2: Dose-Response Curve
+# FIGURE 2: Dose-Response Curve (dual Y-axis)
 # ============================================================
 print("Fig 2: Dose-response...")
 
 ranks = [4, 16, 32, 64, 128, 256]
-retention_gen5 = [96.2, 94.9, 94.9, 89.9, 87.3, 83.1]  # Gen5 values
-retention_gen10 = [None, 94.9, None, 91.1, 88.6, 78.0]  # Gen10 where available
+retention_gen5 = [96.2, 94.9, 94.9, 89.9, 87.3, 83.1]
 eff_ranks = [3.34, 11.08, 17.85, 29.52, 50.16, 87.57]
 
-fig2 = make_subplots(rows=1, cols=2, subplot_titles=("K0 Retention vs Rank", "Effective Rank vs Rank"))
+fig2 = make_subplots(specs=[[{"secondary_y": True}]])
 
 fig2.add_trace(go.Scatter(x=ranks, y=retention_gen5, mode="lines+markers",
-    marker=dict(size=8, color=COLORS["qwen"]), line=dict(width=2.5, color=COLORS["qwen"]),
-    name="Gen5"), row=1, col=1)
+    marker=dict(size=9, color=COLORS["qwen"]), line=dict(width=2.5, color=COLORS["qwen"]),
+    name="K0 Retention"), secondary_y=False)
 
 fig2.add_trace(go.Scatter(x=ranks, y=eff_ranks, mode="lines+markers",
-    marker=dict(size=8, color=COLORS["degradative"]), line=dict(width=2.5, color=COLORS["degradative"]),
-    name="Eff. Rank"), row=1, col=2)
+    marker=dict(size=9, color=COLORS["degradative"], symbol="diamond"),
+    line=dict(width=2.5, color=COLORS["degradative"], dash="dot"),
+    name="Effective Rank"), secondary_y=True)
 
-fig2.update_xaxes(title_text="Nominal Rank", type="log", row=1, col=1)
-fig2.update_xaxes(title_text="Nominal Rank", type="log", row=1, col=2)
-fig2.update_yaxes(title_text="Retention (%)", row=1, col=1)
-fig2.update_yaxes(title_text="Effective Rank", row=1, col=2)
-fig2.update_layout(**LAYOUT_DEFAULTS, width=560, height=360, showlegend=False)
+fig2.update_xaxes(title_text="Nominal Rank", type="log")
+fig2.update_yaxes(title_text="K0 Retention (%)", secondary_y=False,
+    range=[75, 100], title_font_color=COLORS["qwen"])
+fig2.update_yaxes(title_text="Effective Rank", secondary_y=True,
+    range=[0, 100], title_font_color=COLORS["degradative"])
+fig2.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
+    legend=dict(x=0.4, y=0.25, font=dict(size=10)),
+    margin=dict(l=60, r=60, t=20, b=50))
 style_axes(fig2)
 save(fig2, "fig2_dose_response")
 
