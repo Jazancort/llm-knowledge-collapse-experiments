@@ -177,7 +177,9 @@ def run_fft_config(lr, train_questions, k0_indices, k0_questions, k0_answers, ou
                        "k0_size": len(k0_indices), "generations": gen_results}
         result_path.write_text(json.dumps(result_data, indent=2))
 
-        del trainer, model; defrag()
+        del trainer, train_ds, model, tokenizer; defrag()
+        torch.cuda.empty_cache()
+        time.sleep(2)  # Let VRAM settle
 
     return result_data
 
