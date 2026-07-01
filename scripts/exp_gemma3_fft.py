@@ -151,7 +151,7 @@ def run_fft_config(lr, train_questions, k0_indices, k0_questions, k0_answers, ou
             model=model,
             args=TrainingArguments(
                 output_dir=str(output_dir / "tmp"), num_train_epochs=2,
-                per_device_train_batch_size=1, gradient_accumulation_steps=16,
+                per_device_train_batch_size=4, gradient_accumulation_steps=4,
                 learning_rate=lr, bf16=True, logging_steps=9999,
                 save_strategy="no", report_to="none", seed=SEED + gen,
                 gradient_checkpointing=True,
