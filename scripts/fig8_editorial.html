@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', 'Helvetica Neue', Arial, sans-serif;
+    background: #f9f7f4;
+    padding: 32px 40px;
+    width: 920px;
+  }
+  .figure-container {
+    background: #f9f7f4;
+  }
+  .fig-header {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2.5px;
+    color: #7a6b5d;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .chart-area {
+    position: relative;
+    width: 840px;
+    height: 440px;
+  }
+  svg.main-chart {
+    width: 840px;
+    height: 440px;
+  }
+  .metrics-bar {
+    display: flex;
+    margin-top: 24px;
+    border-top: 1px solid #e0dbd5;
+    padding-top: 16px;
+    gap: 0;
+  }
+  .metric-item {
+    flex: 1;
+    text-align: center;
+    border-right: 1px solid #e8e4de;
+    padding: 0 12px;
+  }
+  .metric-item:last-child { border-right: none; }
+  .metric-item .metric-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #2c2a27;
+    margin-bottom: 3px;
+  }
+  .metric-item .metric-desc {
+    font-size: 9.5px;
+    color: #8c8578;
+  }
+</style>
+</head>
+<body>
+<div class="figure-container">
+  <div class="fig-header">Fig &mdash; Training Pressure Response Curve</div>
+
+  <div class="chart-area">
+    <svg class="main-chart" viewBox="0 0 840 440">
+      <defs>
+        <!-- Gradient for curve -->
+        <linearGradient id="curveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+          <stop offset="0%" stop-color="#1b3a5c"/>
+          <stop offset="50%" stop-color="#4a6d8c"/>
+          <stop offset="100%" stop-color="#8c9eab"/>
+        </linearGradient>
+        <!-- Zone backgrounds -->
+        <linearGradient id="zoneHomeo" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#eaf4ed" stop-opacity="0.4"/>
+          <stop offset="100%" stop-color="#eaf4ed" stop-opacity="0.1"/>
+        </linearGradient>
+        <linearGradient id="zoneBound" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#fdf6e3" stop-opacity="0.5"/>
+          <stop offset="100%" stop-color="#fdf6e3" stop-opacity="0.15"/>
+        </linearGradient>
+        <linearGradient id="zoneDegrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#fce8e6" stop-opacity="0.45"/>
+          <stop offset="100%" stop-color="#fce8e6" stop-opacity="0.1"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Plot area: x=80..790, y=30..380 -->
+      <!-- Zone backgrounds -->
+      <rect x="80" y="30" width="240" height="350" fill="url(#zoneHomeo)"/>
+      <rect x="320" y="30" width="220" height="350" fill="url(#zoneBound)"/>
+      <rect x="540" y="30" width="250" height="350" fill="url(#zoneDegrad)"/>
+
+      <!-- Grid lines (subtle) -->
+      <g stroke="#e5e0da" stroke-width="0.5" opacity="0.7">
+        <line x1="80" y1="105" x2="790" y2="105"/>
+        <line x1="80" y1="180" x2="790" y2="180"/>
+        <line x1="80" y1="255" x2="790" y2="255"/>
+        <line x1="80" y1="330" x2="790" y2="330"/>
+      </g>
+
+      <!-- Y-axis labels -->
+      <text x="72" y="38" text-anchor="end" font-size="9" fill="#8c8578" font-family="Inter, sans-serif">high</text>
+      <text x="72" y="378" text-anchor="end" font-size="9" fill="#8c8578" font-family="Inter, sans-serif">low</text>
+      <!-- Y-axis title -->
+      <text x="18" y="210" text-anchor="middle" font-size="10" fill="#5a5347" font-family="Inter, sans-serif" font-weight="600" transform="rotate(-90, 18, 210)">MODEL FIDELITY (K&#8320; RETENTION)</text>
+
+      <!-- Threshold lines (dashed) -->
+      <line x1="320" y1="20" x2="320" y2="385" stroke="#b5443b" stroke-width="1.3" stroke-dasharray="5,4" opacity="0.7"/>
+      <line x1="540" y1="20" x2="540" y2="385" stroke="#b5443b" stroke-width="1.3" stroke-dasharray="5,4" opacity="0.7"/>
+
+      <!-- Threshold label -->
+      <text x="430" y="18" text-anchor="middle" font-size="9" fill="#b5443b" font-family="Inter, sans-serif" font-weight="700" letter-spacing="1.5">BACKBONE-DEPENDENT THRESHOLD</text>
+
+      <!-- Main response curve -->
+      <path d="M 90,62 C 140,58 200,60 260,65 C 300,68 320,75 370,120 C 420,170 470,200 520,230 C 570,258 620,285 680,310 C 720,325 760,340 785,348"
+            fill="none" stroke="url(#curveGrad)" stroke-width="3" stroke-linecap="round"/>
+
+      <!-- Data points on curve -->
+      <!-- Homeostatic point (r=16) -->
+      <circle cx="200" cy="60" r="6" fill="#1a7a3a" stroke="#fff" stroke-width="2"/>
+      <!-- Bounded point (r=128) -->
+      <circle cx="450" cy="185" r="6" fill="#c68c00" stroke="#fff" stroke-width="2"/>
+      <!-- Degradative point (r=256) -->
+      <circle cx="700" cy="315" r="6" fill="#b5443b" stroke="#fff" stroke-width="2"/>
+
+      <!-- X-axis line -->
+      <line x1="80" y1="380" x2="790" y2="380" stroke="#ccc7bf" stroke-width="1"/>
+
+      <!-- Zone labels (bottom) -->
+      <text x="200" y="405" text-anchor="middle" font-size="13" fill="#1b3a5c" font-family="Inter, sans-serif" font-weight="700">Homeostatic</text>
+      <text x="200" y="422" text-anchor="middle" font-size="8.5" fill="#8c8578" font-family="Inter, sans-serif">retention &gt;90% &middot; distribution stable</text>
+
+      <text x="430" y="405" text-anchor="middle" font-size="13" fill="#9a7520" font-family="Inter, sans-serif" font-weight="700">Bounded</text>
+      <text x="430" y="422" text-anchor="middle" font-size="8.5" fill="#8c8578" font-family="Inter, sans-serif">retention stable &middot; distribution drifts</text>
+
+      <text x="665" y="405" text-anchor="middle" font-size="13" fill="#b5443b" font-family="Inter, sans-serif" font-weight="700">Degradative</text>
+      <text x="665" y="422" text-anchor="middle" font-size="8.5" fill="#8c8578" font-family="Inter, sans-serif">retention declines &middot; distribution drifts markedly</text>
+
+      <!-- X-axis title -->
+      <text x="435" y="440" text-anchor="middle" font-size="10" fill="#5a5347" font-family="Inter, sans-serif" font-weight="600">EFFECTIVE TRAINING PRESSURE &rarr;</text>
+
+      <!-- Pressure composition legend (top right) -->
+      <g transform="translate(620, 40)">
+        <text x="0" y="0" font-size="8" fill="#7a6b5d" font-family="Inter, sans-serif" font-weight="700" letter-spacing="1">PRESSURE COMPOSITION</text>
+        <!-- Mini stacked bar -->
+        <rect x="0" y="8" width="55" height="8" rx="2" fill="#1b3a5c"/>
+        <rect x="55" y="8" width="50" height="8" rx="0" fill="#4a6d8c"/>
+        <rect x="105" y="8" width="45" height="8" rx="2" fill="#8caa9e"/>
+        <!-- Labels -->
+        <circle cx="4" cy="30" r="3" fill="#1b3a5c"/>
+        <text x="12" y="33" font-size="8" fill="#5a5347" font-family="Inter, sans-serif">Adapter Rank</text>
+        <circle cx="84" cy="30" r="3" fill="#4a6d8c"/>
+        <text x="92" y="33" font-size="8" fill="#5a5347" font-family="Inter, sans-serif">Learning Rate</text>
+        <circle cx="4" cy="46" r="3" fill="#8caa9e"/>
+        <text x="12" y="49" font-size="8" fill="#5a5347" font-family="Inter, sans-serif">Examples</text>
+      </g>
+
+      <!-- Axis ticks -->
+      <text x="85" y="395" font-size="8.5" fill="#8c8578" font-family="Inter, sans-serif">low</text>
+      <text x="775" y="395" text-anchor="end" font-size="8.5" fill="#8c8578" font-family="Inter, sans-serif">high</text>
+    </svg>
+  </div>
+
+  <!-- Bottom metrics bar -->
+  <div class="metrics-bar">
+    <div class="metric-item">
+      <div class="metric-title">K&#8320; Retention</div>
+      <div class="metric-desc">knowledge preserved</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-title">Content Efficiency</div>
+      <div class="metric-desc">signal per token</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-title">Response Persistence</div>
+      <div class="metric-desc">behavioral stability</div>
+    </div>
+    <div class="metric-item">
+      <div class="metric-title">Output Length Drift</div>
+      <div class="metric-desc">response length change</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
