@@ -59,23 +59,27 @@ repeated retraining on model-generated outputs can progressively degrade factual
 knowledge. The practical conditions under which this degradation emerges, remains
 bounded, or can be reversed under parameter-efficient fine-tuning remain poorly
 understood. Through systematic dose-response experiments spanning three backbones
-(Qwen 2.5 1.5B, Gemma 3 1B, and Gemma 4 E2B) and ten recursive generations, we
-investigate how recursive factual retention changes as adapter capacity,
-perturbation magnitude, and synthetic exposure vary. Together, these experiments
-reveal a common empirical organizing principle, which we term effective training
-pressure. We find: (1) a sharp, monotonic regime transition from homeostatic
-retention (above 90\% over ten generations) to progressive degradation as
-adapter rank increases, with the threshold differing by approximately an order
-of magnitude across architectures; (2) full fine-tuning learning-rate sweeps
-that reproduce the same qualitative pattern, showing that the transition is not
-unique to low-rank adaptation; (3) a retention/distribution dissociation at
-intermediate pressure (r=128 on Qwen), where output efficiency degrades
-threefold while factual retention remains above 88\%; and (4) restoration of near-homeostatic behavior
-through approximately 5\% reduction in synthetic exposure at the regime
-boundary, regardless of the selection criterion used. These findings suggest that recursive
-degradation is a pressure-gated phenomenon whose stability can be controlled
-through multiple independent training variables, providing an empirical basis
-for monitoring and governing recursive training pipelines.
+(Qwen 2.5 1.5B, Gemma 3 1B, and Gemma 4 E2B), up to ten recursive generations,
+and five independent seeds, we investigate how recursive factual retention
+changes as adapter capacity, perturbation magnitude, and synthetic exposure
+vary. Together, these experiments reveal a common empirical organizing
+principle, which we term effective training pressure. We find: (1) a sharp
+regime transition from homeostatic retention (above 90\% over ten generations)
+to progressive degradation as adapter rank increases, with the threshold
+differing by approximately an order of magnitude across architectures
+(effective rank 3--6 on Gemma versus 50--88 on Qwen); (2) full fine-tuning
+learning-rate sweeps on both backbones that reproduce the same qualitative
+pattern, confirming that the transition is not unique to low-rank adaptation;
+(3) a rank $\times$ learning-rate interaction demonstrating that update capacity
+and perturbation magnitude jointly determine the operating regime rather than
+acting as independent axes; (4) a retention/distribution dissociation at
+intermediate pressure, where output efficiency degrades threefold while factual
+retention remains above 88\%; and (5) restoration of near-homeostatic behavior
+through approximately 5\% reduction in synthetic exposure at the Qwen boundary
+configuration. These findings suggest that recursive degradation is a
+pressure-gated phenomenon whose stability depends on a multidimensional control
+landscape, providing an empirical basis for monitoring and governing recursive
+training pipelines.
 \end{abstract}
 
 % ============================================================
@@ -84,9 +88,9 @@ for monitoring and governing recursive training pipelines.
 \begin{highlights}
 \item Recursive degradation exhibits a sharp pressure-dependent transition rather than gradual decline
 \item Pressure thresholds differ by an order of magnitude across backbones and are not universal
-\item QLoRA and full fine-tuning produce the same transition through different update mechanisms
+\item Adapter rank and learning rate interact to jointly determine the recursive operating regime
 \item Output-distribution changes accompany degradative regimes beyond factual retention alone
-\item Approximately 5\% less synthetic exposure restores near-homeostatic behavior at the regime boundary
+\item Approximately 5\% less synthetic exposure restores near-homeostatic behavior at the Qwen boundary
 \end{highlights}
 
 % ============================================================
@@ -176,21 +180,24 @@ The principal contributions of this work are:
 \begin{enumerate}
     \item We provide a systematic dose-response mapping between adapter rank and
     recursive factual retention, identifying a sharp regime transition on Qwen
-    and replicating the same qualitative structure on Gemma~3 with a
-    substantially lower threshold.
-    \item We demonstrate that full fine-tuning learning-rate sweeps reproduce
-    the same dose-response pattern, confirming that the phenomenon responds to
-    perturbation magnitude rather than being specific to low-rank adaptation.
-    \item We compare recursive behavior under QLoRA and full fine-tuning at
-    approximately matched perturbation, showing that both methods are equally
-    stable post-adaptation while QLoRA incurs a smaller one-time adaptation
-    cost.
+    and replicating the same qualitative structure on Gemma~3 at a
+    substantially lower threshold (effective rank 3--6 versus 50--88),
+    confirmed across five independent seeds.
+    \item We demonstrate that full fine-tuning learning-rate sweeps on both
+    Qwen and Gemma~3 reproduce the same dose-response pattern, confirming that
+    the phenomenon responds to perturbation magnitude rather than being
+    specific to low-rank adaptation.
+    \item We show through a rank $\times$ learning-rate interaction experiment
+    that update capacity and perturbation magnitude jointly determine the
+    operating regime, establishing that the pressure components are not
+    independent.
     \item We show that output-distribution diagnostics reveal a
     retention/distribution dissociation at intermediate capacity, where output
     quality degrades substantially while factual retention remains bounded.
     \item We demonstrate that marginal reduction in synthetic exposure restores
-    near-homeostatic behavior in a boundary configuration, with random
-    downsampling performing comparably to targeted filtering.
+    near-homeostatic behavior in a boundary configuration on Qwen, while an
+    exploratory replication on Gemma~3 did not reproduce the effect,
+    indicating that exposure sensitivity is configuration-dependent.
 \end{enumerate}
 
 % ============================================================
@@ -864,7 +871,7 @@ under the present experimental protocol, not as a formal hypothesis test.
 
 We avoid formal hypothesis testing. With only three seeds per condition,
 classical tests have very limited statistical power. We therefore emphasize
-effect sizes, monotonic dose-response behavior, and per-seed consistency. The
+effect sizes, ordinal dose-response behavior, and per-seed consistency. The
 QLoRA rank sweep and FFT learning-rate sweep are interpreted as dose-response
 curves across six and four levels respectively, where the ordinal consistency of
 the entire sweep provides stronger evidence than any single pairwise comparison.
