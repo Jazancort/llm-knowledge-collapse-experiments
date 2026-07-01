@@ -1493,14 +1493,17 @@ training pipelines (Section~\ref{sec:disc_practical}).
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=0.85\textwidth]{figs/fig_etp_framework.png}
-  \caption{Conceptual overview of the effective training pressure
-  framework. Three independently manipulated components (update capacity,
-  perturbation magnitude, synthetic exposure) contribute to effective training
-  pressure. When pressure exceeds a backbone-dependent threshold, the system
-  transitions from homeostatic to bounded or degradative regimes, each
-  characterized by distinct retention and distributional
-  signatures.}\label{fig:etp}
+  \includegraphics[width=0.75\textwidth]{figs/fig_etp_framework.png}
+  \caption{Pressure-response relationship governing recursive fine-tuning
+  stability. As effective training pressure increases (controlled by adapter
+  rank, learning rate, and synthetic exposure), factual retention ($K_0$)
+  transitions through three regimes: homeostatic (retention above 90\%,
+  distribution stable), bounded (retention stable but output quality degrades),
+  and degradative (progressive factual loss). The green, yellow, and red markers
+  indicate representative operating points observed in the experiments. Dashed
+  vertical lines mark the backbone-dependent regime boundaries. The transition
+  is sharp rather than gradual, and its location varies by approximately an
+  order of magnitude across the evaluated architectures.}\label{fig:etp}
 \end{figure*}
 
 The results presented in Section~\ref{sec:results} converge on a consistent
