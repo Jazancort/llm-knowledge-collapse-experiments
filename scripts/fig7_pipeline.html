@@ -6,126 +6,103 @@
   body {
     font-family: 'Inter', Arial, sans-serif;
     background: white;
-    padding: 20px;
-    width: 1100px;
+    padding: 24px;
+    width: 1400px;
   }
   .pipeline {
     display: flex;
-    gap: 10px;
+    gap: 12px;
     align-items: stretch;
   }
   .phase {
     flex: 1;
-    border-radius: 4px;
-    padding: 14px 12px;
+    border-radius: 5px;
+    padding: 18px 14px;
     display: flex;
     flex-direction: column;
-    position: relative;
   }
   .phase-title {
-    font-size: 10px;
+    font-size: 13px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
+    letter-spacing: 0.8px;
+    margin-bottom: 14px;
     text-align: center;
   }
   .phase-content {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
     flex: 1;
   }
   .box {
     background: white;
     border: 1.5px solid #333;
     border-radius: 3px;
-    padding: 7px 10px;
-    font-size: 10px;
+    padding: 9px 12px;
+    font-size: 12.5px;
     text-align: center;
     color: #222;
     font-weight: 500;
+    line-height: 1.35;
   }
   .box.bold {
     font-weight: 700;
-    font-size: 10.5px;
-  }
-  .cycle-box {
-    background: white;
-    border: 1.5px solid #333;
-    border-radius: 3px;
-    padding: 8px 10px;
-    font-size: 9.5px;
-    text-align: center;
-    color: #222;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
+    font-size: 13px;
   }
   .gen-flow {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    padding: 6px 8px;
+    gap: 5px;
+    padding: 9px 12px;
     background: white;
     border: 1.5px solid #333;
     border-radius: 3px;
-    font-size: 9px;
+    font-size: 12px;
     font-weight: 600;
   }
-  .gen-flow .arrow {
-    color: #666;
-    font-size: 10px;
-  }
+  .gen-flow .arrow { color: #666; font-size: 13px; }
   .arrow-between {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 24px;
     color: #555;
-    padding: 0 2px;
+    padding: 0 4px;
     align-self: center;
   }
-
-  /* Phase colors */
-  .phase-data { background: #fef9e7; border: 1.5px solid #f0d860; }
-  .phase-data .phase-title { color: #8b7000; }
-
-  .phase-recursive { background: #eaf2fb; border: 1.5px solid #7baed4; }
-  .phase-recursive .phase-title { color: #2c5f8a; }
-
-  .phase-pressure { background: #e8f5e9; border: 1.5px solid #81c784; }
-  .phase-pressure .phase-title { color: #2e6b32; }
-
-  .phase-eval { background: #fff3e0; border: 1.5px solid #ffb74d; }
-  .phase-eval .phase-title { color: #8d5600; }
-
-  .phase-regime { background: #fce4ec; border: 1.5px solid #e57373; }
-  .phase-regime .phase-title { color: #8b1a1a; }
-
   .sub-group {
-    border: 1px dashed #999;
-    border-radius: 3px;
-    padding: 6px;
+    border: 1.2px dashed #999;
+    border-radius: 4px;
+    padding: 9px 8px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 6px;
   }
   .sub-group-label {
-    font-size: 8px;
-    color: #666;
+    font-size: 10px;
+    color: #555;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    font-weight: 600;
     margin-bottom: 2px;
   }
+  .phase-data { background: #fef9e7; border: 1.5px solid #f0d860; }
+  .phase-data .phase-title { color: #7a6200; }
+  .phase-recursive { background: #eaf2fb; border: 1.5px solid #7baed4; }
+  .phase-recursive .phase-title { color: #2c5f8a; }
+  .phase-pressure { background: #e8f5e9; border: 1.5px solid #81c784; }
+  .phase-pressure .phase-title { color: #2e6b32; }
+  .phase-eval { background: #fff3e0; border: 1.5px solid #ffb74d; }
+  .phase-eval .phase-title { color: #7a4a00; }
+  .phase-regime { background: #fce4ec; border: 1.5px solid #e57373; }
+  .phase-regime .phase-title { color: #7b1a1a; }
 </style>
 </head>
 <body>
 <div class="pipeline">
 
-  <!-- Phase 1: Data Preparation -->
   <div class="phase phase-data">
     <div class="phase-title">1. Data Preparation</div>
     <div class="phase-content">
@@ -144,7 +121,6 @@
 
   <div class="arrow-between">&#8594;</div>
 
-  <!-- Phase 2: Recursive Training -->
   <div class="phase phase-recursive">
     <div class="phase-title">2. Recursive Training</div>
     <div class="phase-content">
@@ -155,38 +131,36 @@
       <div class="box bold">Replace-only retraining</div>
       <div class="box">QLoRA (4-bit NF4)<br>or Full Fine-Tuning</div>
       <div class="box">No accumulation<br>No replay buffer</div>
-      <div class="box">Fresh adapter each gen</div>
+      <div class="box">Fresh adapter each generation</div>
     </div>
   </div>
 
   <div class="arrow-between">&#8594;</div>
 
-  <!-- Phase 3: Pressure Manipulation -->
   <div class="phase phase-pressure">
     <div class="phase-title">3. Pressure Axes</div>
     <div class="phase-content">
       <div class="sub-group">
         <div class="sub-group-label">Update Capacity</div>
-        <div class="box">Rank: 4, 10, 12, 14, 16, 32, 64, 128, 256</div>
+        <div class="box">Rank: 4, 10, 12, 14,<br>16, 32, 64, 128, 256</div>
       </div>
       <div class="sub-group">
         <div class="sub-group-label">Perturbation Magnitude</div>
-        <div class="box">FFT LR: 1e-6, 5e-6, 1e-5, 2e-5</div>
+        <div class="box">FFT LR: 1e-6, 5e-6,<br>1e-5, 2e-5</div>
       </div>
       <div class="sub-group">
         <div class="sub-group-label">Interaction</div>
-        <div class="box">Rank &#215; LR matrix (3&#215;3)</div>
+        <div class="box">Rank &#215; LR (3&#215;3)</div>
       </div>
       <div class="sub-group">
         <div class="sub-group-label">Synthetic Exposure</div>
-        <div class="box">C3 filter / C5 downsample (~5%)</div>
+        <div class="box">C3 filter / C5 downsample</div>
       </div>
     </div>
   </div>
 
   <div class="arrow-between">&#8594;</div>
 
-  <!-- Phase 4: Evaluation -->
   <div class="phase phase-eval">
     <div class="phase-title">4. Evaluation</div>
     <div class="phase-content">
@@ -203,22 +177,21 @@
       </div>
       <div class="sub-group">
         <div class="sub-group-label">Adapter</div>
-        <div class="box">Effective rank</div>
+        <div class="box">Effective rank (erank)</div>
       </div>
     </div>
   </div>
 
   <div class="arrow-between">&#8594;</div>
 
-  <!-- Phase 5: Regime Classification -->
   <div class="phase phase-regime">
     <div class="phase-title">5. Regime Classification</div>
     <div class="phase-content">
-      <div class="box bold" style="border-color: #2e7d32; background: #e8f5e9;">Homeostatic<br><span style="font-size:8.5px;font-weight:400;color:#555;">retention &gt;90%, stable</span></div>
-      <div class="box bold" style="border-color: #f57f17; background: #fff8e1;">Bounded<br><span style="font-size:8.5px;font-weight:400;color:#555;">retention holds, dist. drifts</span></div>
-      <div class="box bold" style="border-color: #c62828; background: #ffebee;">Degradative<br><span style="font-size:8.5px;font-weight:400;color:#555;">progressive factual loss</span></div>
-      <div style="margin-top:8px; border-top: 1px solid #ddd; padding-top: 8px;">
-        <div class="box" style="border-style: dashed; font-size: 9px;">5 seeds &#215; 3 backbones<br>N=19 configurations</div>
+      <div class="box bold" style="border-color:#2e7d32; background:#e8f5e9;">Homeostatic<br><span style="font-size:10.5px;font-weight:400;color:#444;">retention &gt;90%, stable</span></div>
+      <div class="box bold" style="border-color:#f57f17; background:#fff8e1;">Bounded<br><span style="font-size:10.5px;font-weight:400;color:#444;">retention holds, dist. drifts</span></div>
+      <div class="box bold" style="border-color:#c62828; background:#ffebee;">Degradative<br><span style="font-size:10.5px;font-weight:400;color:#444;">progressive factual loss</span></div>
+      <div style="margin-top:10px; border-top:1px solid #ddd; padding-top:10px;">
+        <div class="box" style="border-style:dashed; font-size:11px;">5 seeds &#215; 3 backbones<br>19 configurations total</div>
       </div>
     </div>
   </div>
