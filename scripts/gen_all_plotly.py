@@ -110,12 +110,13 @@ for s, dash in zip([15, 137, 256], [None, "dot", "dash"]):
         marker=dict(size=5), legendgroup="r256", showlegend=(s==15)))
 
 fig1.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
+    title=dict(text="<b>(a)</b> Retention Trajectories", font=dict(size=13, family=FONT, color="#333"), x=0.01, xanchor="left", y=0.98),
     xaxis_title="Generation", yaxis_title="K0 Retention (%)",
     yaxis_range=[65, 102],
     legend=dict(x=0.5, y=-0.2, xanchor="center", orientation="h", font=dict(size=10)),
-    margin=dict(l=60, r=20, t=10, b=70))
-fig1.add_annotation(text="<b>(a)</b>", xref="paper", yref="paper", x=0.02, y=0.98,
-    showarrow=False, font=dict(size=14, family=FONT, color="#333"), xanchor="left", yanchor="top")
+    margin=dict(l=60, r=20, t=35, b=70))
+fig1.update_annotations(visible=False)
+fig1.update_annotations(visible=False)
 style_axes(fig1)
 save(fig1, "fig1_trajectories")
 
@@ -146,10 +147,11 @@ fig2.update_yaxes(title_text="K0 Retention (%)", secondary_y=False,
 fig2.update_yaxes(title_text="Effective Rank", secondary_y=True,
     range=[0, 100], title_font_color=COLORS["degradative"])
 fig2.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
+    title=dict(text="<b>(b)</b> Dose-Response (Retention and Effective Rank)", font=dict(size=13, family=FONT, color="#333"), x=0.01, xanchor="left", y=0.98),
     legend=dict(x=0.5, y=-0.2, xanchor="center", orientation="h", font=dict(size=10)),
-    margin=dict(l=60, r=60, t=10, b=70))
-fig2.add_annotation(text="<b>(b)</b>", xref="paper", yref="paper", x=0.02, y=0.98,
-    showarrow=False, font=dict(size=14, family=FONT, color="#333"), xanchor="left", yanchor="top")
+    margin=dict(l=60, r=60, t=35, b=70))
+fig2.update_annotations(visible=False)
+fig2.update_annotations(visible=False)
 style_axes(fig2)
 save(fig2, "fig2_dose_response")
 
