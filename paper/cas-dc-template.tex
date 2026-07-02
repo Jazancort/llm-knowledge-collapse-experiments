@@ -1066,6 +1066,20 @@ $r=256$ & 5 & 70.2\%       & 71.47 & Degradative \\
 \end{tabular*}
 \end{table}
 
+Figure~\ref{fig:gemma3_traj} visualizes the retention trajectories across
+generations for the Gemma~3 rank configurations.
+
+\vspace{6pt}
+\begin{center}
+  \includegraphics[width=0.95\columnwidth]{figs/fig_gemma3_trajectories.png}
+  \captionof{figure}{K0 retention trajectories on Gemma~3~1B~IT over five
+  recursive generations. Thin lines show individual seeds; bold lines show the
+  mean. The regime boundary lies between $r=4$ (homeostatic, $N=5$) and $r=10$
+  (degradative), with intermediate ranks confirming progressive
+  degradation.}\label{fig:gemma3_traj}
+\end{center}
+\vspace{6pt}
+
 Two additional observations are noteworthy. First, the Gemma~3 threshold lies
 between effective ranks 3 and 6, roughly an order of magnitude below the
 Qwen threshold (between effective ranks 50 and 88). These results indicate that
