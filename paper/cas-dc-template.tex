@@ -31,7 +31,7 @@
 \setlength{\belowcaptionskip}{0pt}
 
 \shorttitle{Pressure-Gated Recursive Degradation in LLMs}
-\shortauthors{Azancort}
+\shortauthors{Azancort Neto et al.}
 
 \title[mode=title]{Effective Training Pressure Gates Recursive Knowledge
   Degradation in LLMs: A Multi-Axis Dose-Response Study}
@@ -509,10 +509,13 @@ Normalization consists of lowercasing, removing articles
 written number words to digits, and collapsing whitespace.
 
 The subset of held-out questions answered correctly at generation~0 defines
-$K_0$. For example, for Qwen~2.5~1.5B, $|K_0|=78$ out of 200 held-out
-questions. Other backbones have their own fixed $K_0$ sets, determined once at
-generation~0 and held constant across all experimental conditions for that
-backbone.
+$K_0$. For example, for Qwen~2.5~1.5B, $|K_0|=79$ out of 200 held-out
+questions in the main rank sweep; subsequent experiments (rank $\times$ LR
+matrix and interventions) obtain $|K_0|=78$ due to a minor normalization
+difference affecting one borderline item. Results are always reported relative
+to the $K_0$ established within each experimental batch. Other backbones have
+their own fixed $K_0$ sets, determined once at generation~0 and held constant
+across all experimental conditions for that backbone.
 
 At each subsequent generation~$t$, only the corresponding $K_0$ items are used
 to compute retention:
