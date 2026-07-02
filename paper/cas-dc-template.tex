@@ -1539,7 +1539,8 @@ recursive behavior, controllable through multiple axes.
 
 The rank $\times$ learning-rate interaction experiment
 (Table~\ref{tab:ranklr}) further demonstrates that these axes are not
-independent: increasing one partially compensates for decreasing the other.
+independent: different combinations of rank and learning rate produce similar
+recursive outcomes, indicating that the regime depends jointly on both variables.
 This result strengthens the interpretation of effective training pressure as a
 multidimensional control landscape rather than a collection of separable
 single-variable effects. Developing a quantitative formulation that combines
@@ -1548,7 +1549,7 @@ scalar remains an important direction for future work.
 
 The evidence for treating these axes as manifestations of a
 common pressure is not merely that each produces regime transitions, but that
-(i)~they interact compensatorily (higher rank at lower LR preserves stability),
+(i)~they interact jointly (higher rank at lower LR preserves stability),
 (ii)~the transition boundary they induce shares the same qualitative signature
 (sharp rather than gradual), and (iii)~the same distributional drift patterns
 accompany degradation regardless of which axis crosses the threshold. These
@@ -1589,7 +1590,7 @@ Generalizes cross-backbone & FFT sweep on Gemma~3 \\
 
 Two features of this framework merit emphasis. First, the threshold is
 backbone-dependent: Gemma~3 transitions at effective rank 3--6, while Qwen
-remains stable up to effective rank ${\sim}$50. No simple normalization by architectural
+remains outside the degradative regime up to effective rank ${\sim}$50. No simple normalization by architectural
 parameters (hidden dimension, depth, head count) aligned these thresholds. This
 likely reflects properties of the pretrained backbone not captured by simple
 architectural dimensions. Second, the framework does not assume that the three
@@ -1962,7 +1963,7 @@ qualitative regime structure, not the specific numerical thresholds, which are
 expected to vary across architectures, scales, and tasks.
 
 Several directions for future work emerge from these findings. While we
-established the compensatory interaction between update capacity and
+established the joint interaction between update capacity and
 perturbation magnitude, mapping the complete multidimensional
 surface, including joint interactions with synthetic exposure, is necessary to
 translate this empirical framework into a formal predictive model. Scaling the
