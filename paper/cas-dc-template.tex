@@ -79,7 +79,7 @@ retention remains above 88\%; and (5) restoration of near-homeostatic behavior
 through approximately 5\% reduction in synthetic exposure at the Qwen boundary
 configuration. These findings suggest that recursive degradation is a
 pressure-gated phenomenon whose stability depends on a multidimensional control
-landscape, providing an empirical basis for monitoring and governing recursive
+landscape, providing an empirical basis for monitoring and configuring recursive
 training pipelines.
 \end{abstract}
 
@@ -155,7 +155,7 @@ stability boundary under parameter-efficient fine-tuning.
 
 Rather than studying adapter rank, learning rate, and synthetic exposure as
 isolated hyperparameters, we ask whether they represent different manifestations
-of a common underlying quantity governing recursive stability. Through
+of a common underlying quantity that controls recursive stability. Through
 systematic experiments spanning three backbones (Qwen~2.5~1.5B, Gemma~3~1B,
 Gemma~4~E2B), a strict replace-only protocol over ten recursive generations, and
 multiple intervention strategies, our experiments reveal that these variables can
@@ -685,9 +685,7 @@ this pressure arises from three jointly contributing factors:
 We do not assume a known functional form combining these components. Instead,
 our experiments manipulate each component separately and show that changes along
 any of the three axes can move the system between bounded and degradative
-regimes. The framework is therefore empirically motivated: it summarizes a set
-of observed control knobs rather than proposing a closed-form theory of
-recursive collapse.
+regimes.
 
 \subsubsection{Effective rank}\label{sec:erank}
 To quantify update capacity beyond nominal rank, we compute the effective rank
@@ -1501,7 +1499,7 @@ training pipelines (Section~\ref{sec:disc_practical}).
 \begin{figure*}[t]
   \centering
   \includegraphics[width=0.75\textwidth]{figs/fig_etp_framework.png}
-  \caption{Pressure-response relationship governing recursive fine-tuning
+  \caption{Pressure-response relationship guiding recursive fine-tuning
   stability. As effective training pressure increases (controlled by adapter
   rank, learning rate, and synthetic exposure), factual retention ($K_0$)
   transitions through three regimes: homeostatic (retention above 90\%,
@@ -1547,6 +1545,16 @@ multidimensional control landscape rather than a collection of separable
 single-variable effects. Developing a quantitative formulation that combines
 update capacity, perturbation magnitude, and exposure into a single predictive
 scalar remains an important direction for future work.
+
+We note that the evidence for treating these axes as manifestations of a
+common pressure is not merely that each produces regime transitions, but that
+(i)~they interact compensatorily (higher rank at lower LR preserves stability),
+(ii)~the transition boundary they induce shares the same qualitative signature
+(sharp rather than gradual), and (iii)~the same distributional drift patterns
+accompany degradation regardless of which axis crosses the threshold. These
+convergences would be coincidental under a model of three independent failure
+modes, but are naturally explained by a shared underlying sensitivity to the
+magnitude of per-generation parameter perturbation.
 
 Table~\ref{tab:evidence} summarizes how each component of the framework is
 supported by independent experimental evidence.
@@ -1801,7 +1809,7 @@ These considerations are derived from experiments on 1--2B parameter models with
 factoid QA data. Their applicability to larger models, different domains, or
 longer recursive horizons remains to be established. They should therefore be
 viewed as empirically grounded design considerations rather than universal
-governance rules.
+prescriptive rules.
 
 % ============================================================
 % 6. LIMITATIONS
@@ -1905,12 +1913,10 @@ constrains response format to short answers) improves retention without fully
 restoring homeostatic levels, indicating that the degradation measured by $K_0$
 reflects actual factual displacement rather than format masking alone.
 
-Finally, effective training pressure is proposed as an empirical organizing
-framework rather than a predictive mathematical model. The present work
-establishes the phenomenological mapping (which variables shift which regimes)
-as a necessary precursor to formal modeling. Whether a quantitative formulation
-combining the three pressure components into a single scalar predictor can be
-derived, for instance through multivariate regression on a larger configuration
+Finally, the present work establishes which variables shift which regimes,
+but does not yet derive a quantitative formulation combining the three pressure
+components into a single scalar predictor. Whether such a formulation can be
+obtained, for instance through multivariate regression on a larger configuration
 space, remains an open question for future work.
 
 Despite these limitations, we note that the central qualitative phenomenon was
