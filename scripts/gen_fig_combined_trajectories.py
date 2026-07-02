@@ -91,9 +91,9 @@ for rank in [10, 12, 14]:
 
 # === BUILD FIGURE ===
 fig = make_subplots(
-    rows=1, cols=2,
+    rows=2, cols=1,
     subplot_titles=["<b>(a)</b> Qwen 2.5 1.5B", "<b>(b)</b> Gemma 3 1B"],
-    horizontal_spacing=0.08,
+    vertical_spacing=0.15,
 )
 
 # --- QWEN (left) ---
@@ -124,18 +124,18 @@ fig.add_trace(go.Scatter(x=qwen_r256[0][0], y=mean_r256, mode="lines+markers",
     name="r=256 (degradative)", line=dict(color=C_DEG, width=3),
     marker=dict(size=5, symbol="diamond"), legendgroup="degrad"), row=1, col=1)
 
-# --- GEMMA 3 (right) ---
+# --- GEMMA 3 (bottom) ---
 # r=4 seeds (thin)
 for gens, ret in gemma_r4:
     fig.add_trace(go.Scatter(x=gens, y=ret, mode="lines",
         line=dict(color=C_HOMEO, width=1, dash="dot"), opacity=0.3,
-        showlegend=False, hoverinfo="skip"), row=1, col=2)
+        showlegend=False, hoverinfo="skip"), row=2, col=1)
 # r=4 mean
 max_gen = min(len(t[0]) for t in gemma_r4)
 mean_g4 = [np.mean([gemma_r4[s][1][i] for s in range(len(gemma_r4))]) for i in range(max_gen)]
 fig.add_trace(go.Scatter(x=gemma_r4[0][0][:max_gen], y=mean_g4, mode="lines+markers",
     name="r=4 (homeostatic)", line=dict(color=C_HOMEO, width=3),
-    marker=dict(size=5), legendgroup="homeo", showlegend=False), row=1, col=2)
+    marker=dict(size=5), legendgroup="homeo", showlegend=False), row=2, col=1)
 
 # Intermediates
 for rank in [10, 14]:
@@ -144,47 +144,47 @@ for rank in [10, 14]:
         fig.add_trace(go.Scatter(x=gens, y=ret, mode="lines+markers",
             name=f"r={rank} (degradative)", line=dict(color=C_INTERMEDIATE, width=2, dash="dash"),
             marker=dict(size=5, symbol="triangle-up"), legendgroup="int",
-            showlegend=(rank == 10)), row=1, col=2)
+            showlegend=(rank == 10)), row=2, col=1)
 
 # r=16 seeds (thin)
 for gens, ret in gemma_r16:
     fig.add_trace(go.Scatter(x=gens, y=ret, mode="lines",
         line=dict(color=C_DEG_DEEP, width=1, dash="dot"), opacity=0.3,
-        showlegend=False, hoverinfo="skip"), row=1, col=2)
+        showlegend=False, hoverinfo="skip"), row=2, col=1)
 # r=16 mean
 max_gen = min(len(t[0]) for t in gemma_r16)
 mean_g16 = [np.mean([gemma_r16[s][1][i] for s in range(len(gemma_r16))]) for i in range(max_gen)]
 fig.add_trace(go.Scatter(x=gemma_r16[0][0][:max_gen], y=mean_g16, mode="lines+markers",
     name="r=16 (degradative)", line=dict(color=C_DEG_DEEP, width=3),
-    marker=dict(size=5, symbol="diamond"), legendgroup="degrad", showlegend=False), row=1, col=2)
+    marker=dict(size=5, symbol="diamond"), legendgroup="degrad", showlegend=False), row=2, col=1)
 
 # 90% reference lines
 fig.add_hline(y=90, line_dash="dot", line_color="gray", opacity=0.4, row=1, col=1)
-fig.add_hline(y=90, line_dash="dot", line_color="gray", opacity=0.4, row=1, col=2)
+fig.add_hline(y=90, line_dash="dot", line_color="gray", opacity=0.4, row=2, col=1)
 
 # Layout
 fig.update_xaxes(title_text="Generation", row=1, col=1, range=[-0.5, 10.5], dtick=2,
                  showgrid=False, linecolor="#ccc", linewidth=1, mirror=True)
-fig.update_xaxes(title_text="Generation", row=1, col=2, range=[0.5, 5.5], dtick=1,
+fig.update_xaxes(title_text="Generation", row=2, col=1, range=[0.5, 5.5], dtick=1,
                  showgrid=False, linecolor="#ccc", linewidth=1, mirror=True)
 fig.update_yaxes(title_text="K₀ Retention (%)", row=1, col=1, range=[60, 102],
                  showgrid=True, gridcolor="#eee", linecolor="#ccc", linewidth=1, mirror=True)
-fig.update_yaxes(range=[60, 102], row=1, col=2,
+fig.update_yaxes(title_text="K₀ Retention (%)", row=2, col=1, range=[60, 102],
                  showgrid=True, gridcolor="#eee", linecolor="#ccc", linewidth=1, mirror=True)
 
 fig.update_layout(
     font=dict(family=FONT, size=11),
     paper_bgcolor="white",
     plot_bgcolor="white",
-    width=900, height=380,
-    legend=dict(x=0.5, y=-0.18, xanchor="center", yanchor="top",
-                orientation="h", font=dict(size=10)),
-    margin=dict(l=60, r=20, t=35, b=70),
+    width=480, height=620,
+    legend=dict(x=0.5, y=-0.08, xanchor="center", yanchor="top",
+                orientation="h", font=dict(size=9)),
+    margin=dict(l=55, r=15, t=30, b=60),
 )
 
 # Save
-pio.write_image(fig, str(FIG_DIR / "fig_combined_trajectories.png"), width=900, height=380, scale=4)
-pio.write_image(fig, str(FIG_DIR / "fig_combined_trajectories.pdf"), width=900, height=380)
+pio.write_image(fig, str(FIG_DIR / "fig_combined_trajectories.png"), width=480, height=620, scale=4)
+pio.write_image(fig, str(FIG_DIR / "fig_combined_trajectories.pdf"), width=480, height=620)
 sz = (FIG_DIR / "fig_combined_trajectories.png").stat().st_size / 1024
 print(f"Saved: fig_combined_trajectories.png ({sz:.0f} KB)")
 print(f"Saved: fig_combined_trajectories.pdf")
