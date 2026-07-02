@@ -173,12 +173,12 @@ fig.update_yaxes(title_text="K₀ Retention (%)", row=2, col=1, range=[60, 102],
                  showgrid=True, gridcolor="#eee", linecolor="#ccc", linewidth=1, mirror=True)
 
 fig.update_layout(
-    font=dict(family=FONT, size=11),
+    font=dict(family=FONT, size=13),
     paper_bgcolor="white",
     plot_bgcolor="white",
     width=480, height=620,
     legend=dict(x=0.5, y=-0.08, xanchor="center", yanchor="top",
-                orientation="h", font=dict(size=9)),
+                orientation="h", font=dict(size=12)),
     margin=dict(l=55, r=15, t=30, b=60),
 )
 
