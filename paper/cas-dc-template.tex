@@ -36,17 +36,30 @@
 \title[mode=title]{Effective Training Pressure Gates Recursive Knowledge
   Degradation in LLMs: A Multi-Axis Dose-Response Study}
 
-\author[1]{Julio Azancort}[
-  orcid=0000-0001-7511-2910,
+\author[1]{Julio Leite {Azancort Neto}}[
+  orcid=0000-0003-2866-5445,
   role=Researcher]
 \cormark[1]
-\ead{jazancort@ufpa.br}
+\ead{julio.azancort.neto@itec.ufpa.br}
 \credit{Conceptualization, Methodology, Software, Investigation,
   Writing - Original Draft, Visualization}
+
+\author[2]{Andr\'e Carlos Ponce de Leon {Ferreira de Carvalho}}[
+  role=Professor]
+\credit{Supervision, Writing - Review \& Editing}
+
+\author[1]{Carlos Renato {Lisboa Franc\^es}}[
+  role=Professor]
+\credit{Supervision, Writing - Review \& Editing, Funding acquisition}
 
 \affiliation[1]{organization={Universidade Federal do Par\'a (UFPA)},
     city={Bel\'em},
     state={PA},
+    country={Brazil}}
+
+\affiliation[2]{organization={Institute of Mathematics and Computer Sciences (ICMC), University of S\~ao Paulo (USP)},
+    city={S\~ao Carlos},
+    state={SP},
     country={Brazil}}
 
 \cortext[cor1]{Corresponding author}
@@ -98,9 +111,9 @@ training pipelines.
 % KEYWORDS
 % ============================================================
 \begin{keywords}
-recursive synthetic training \sep model collapse \sep
-parameter-efficient fine-tuning \sep knowledge retention \sep
-synthetic data \sep effective training pressure
+large language models \sep recursive fine-tuning \sep
+model collapse \sep knowledge retention \sep LoRA \sep
+dose-response \sep synthetic data feedback loop
 \end{keywords}
 
 \maketitle
@@ -576,10 +589,8 @@ few minutes at low ranks and approximately 12 minutes at $r=256$; full
 fine-tuning generations require approximately 25 minutes with gradient
 checkpointing. A complete 10-generation QLoRA recursive run at $r=16$ completes
 in under one hour. These timings are reported to document that the full protocol
-is reproducible on a single workstation-class GPU.
-
-All code, configuration files, and experimental outputs are publicly available
-at \url{https://github.com/Jazancort/llm-knowledge-collapse}.
+is reproducible on a single workstation-class GPU (see Appendix~\ref{app:repo}
+for code and data access).
 
 \begin{figure*}[t]
   \centering
@@ -1940,29 +1951,33 @@ full fine-tuning, output-distribution diagnostics, and synthetic-exposure
 interventions, we identified effective training pressure as an organizing
 framework for recursive stability under parameter-efficient fine-tuning.
 
-The experimental results consistently show that recursive stability depends on
-three controllable dimensions of the training process: update capacity,
-perturbation magnitude, and synthetic exposure. Across the evaluated backbones,
-increasing pressure along any of these dimensions moves the system from
-homeostatic to degradative behavior, while modest reductions near the regime
-boundary restore bounded or near-homeostatic performance. The regime transition
-is sharp, backbone-dependent, and reproducible across seeds. Complementary
-distributional diagnostics further reveal that output quality can degrade
-substantially before severe factual loss becomes apparent, providing additional
-signals for monitoring recursive training beyond accuracy alone.
+The experimental results consistently show that, in the evaluated backbones and
+configurations, recursive stability depends on three controllable dimensions of
+the training process: update capacity, perturbation magnitude, and synthetic
+exposure. Increasing pressure along any of these dimensions moves the system
+from homeostatic to degradative behavior, while modest reductions near the
+regime boundary restore bounded or near-homeostatic performance. The regime
+transition is sharp, backbone-dependent, and reproducible across seeds.
+Complementary distributional diagnostics further reveal that output quality can
+degrade substantially before severe factual loss becomes apparent, providing
+additional signals for monitoring recursive training beyond accuracy alone.
 
 The central implication is that recursive degradation under parameter-efficient
 fine-tuning need not be an inevitable consequence of training on synthetic data.
-Rather, it is a pressure-gated phenomenon: the boundary between stability and
-degradation can be controlled through multiple independent axes. This suggests
-that recursive synthetic training can be governed as an engineering challenge,
-provided that effective training pressure is monitored and maintained below the
-relevant backbone-dependent threshold. We note that the present contribution is
-the identification of this reproducible qualitative regime structure, not the
-specific numerical thresholds, which are expected to vary across architectures,
-scales, and tasks.
+Rather, in the present experiments, it is a pressure-gated phenomenon: the
+boundary between stability and degradation can be controlled through multiple
+independent axes. This suggests that recursive synthetic training can be
+managed as an engineering challenge, provided that effective training pressure
+is monitored and maintained below the relevant backbone-dependent threshold. We
+note that the present contribution is the identification of this reproducible
+qualitative regime structure, not the specific numerical thresholds, which are
+expected to vary across architectures, scales, and tasks.
 
-Several directions for future work emerge from these findings. Scaling the
+Several directions for future work emerge from these findings. While we
+established the compensatory interaction between update capacity and
+perturbation magnitude, mapping the complete multidimensional
+surface---including joint interactions with synthetic exposure---is necessary to
+translate this empirical framework into a formal predictive model. Scaling the
 present experiments to 7B and larger models would establish whether the regime
 structure persists at production-relevant scales. Extending the evaluation to
 diverse datasets (long-form generation, code, multi-turn dialogue) would test
@@ -1981,6 +1996,40 @@ datasets, and deployment conditions.
 % CREDIT
 % ============================================================
 \printcredits
+
+% ============================================================
+% APPENDIX
+% ============================================================
+\appendix
+
+\section{Project repository and data access}\label{app:repo}
+
+All source code, configuration files, and experimental outputs developed for
+the methodology proposed in this paper are publicly available at the following
+GitHub repository:
+
+\begin{itemize}
+\item \textbf{GitHub Repository:} \url{https://github.com/Jazancort/llm-knowledge-collapse}
+\end{itemize}
+
+\noindent These resources ensure full reproducibility of the experimental
+protocol and allow other researchers to replicate or extend the reported
+results.
+
+% ============================================================
+% ACKNOWLEDGMENTS
+% ============================================================
+\section*{Acknowledgments}
+
+The authors acknowledge the High-Performance Computing and Artificial
+Intelligence Center (CCAD/UFPA, www.ccad.ufpa.br) for institutional support.
+This work was supported in part by the Coordena\c{c}\~{a}o de
+Aperfei\c{c}oamento de Pessoal de N\'{i}vel Superior (CAPES), Brazil,
+under Grant~001; and in part by the National Institute of Science and
+Technology in Artificial Intelligence Applied to Smart and Sustainable Cities
+in Brazilian Amazon (INCT IAmazônia, inctiamazonia.org.br) funded by the
+Brazilian National Council for Scientific and Technological Development (CNPq)
+under Grant~409001/2024-4.
 
 % ============================================================
 % REFERENCES
