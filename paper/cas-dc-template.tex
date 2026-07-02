@@ -74,13 +74,13 @@ knowledge. The practical conditions under which this degradation emerges, remain
 bounded, or can be reversed under parameter-efficient fine-tuning remain poorly
 understood. Through systematic dose-response experiments spanning three backbones
 (Qwen 2.5 1.5B, Gemma 3 1B, and Gemma 4 E2B), up to ten recursive generations,
-and five independent seeds, we investigate how recursive factual retention
-changes as adapter capacity, perturbation magnitude, and synthetic exposure
-vary. Together, these experiments reveal a common empirical organizing
+and three to five independent seeds per condition, we investigate how recursive
+factual retention changes as adapter capacity, perturbation magnitude, and
+synthetic exposure vary. These experiments reveal a common empirical organizing
 principle, which we term effective training pressure. We find: (1) a sharp
 regime transition from homeostatic retention (above 90\% over ten generations)
 to progressive degradation as adapter rank increases, with the threshold
-differing by approximately an order of magnitude across architectures
+differing by roughly an order of magnitude across architectures
 (effective rank 3--6 on Gemma versus 50--88 on Qwen); (2) full fine-tuning
 learning-rate sweeps on both backbones that reproduce the same qualitative
 pattern, confirming that the transition is not unique to low-rank adaptation;
@@ -90,10 +90,10 @@ acting as independent axes; (4) a retention/distribution dissociation at
 intermediate pressure, where output efficiency degrades threefold while factual
 retention remains above 88\%; and (5) restoration of near-homeostatic behavior
 through approximately 5\% reduction in synthetic exposure at the Qwen boundary
-configuration. These findings suggest that recursive degradation is a
-pressure-gated phenomenon whose stability depends on a multidimensional control
-landscape, providing an empirical basis for monitoring and configuring recursive
-training pipelines.
+configuration. These findings characterize recursive degradation as a
+pressure-dependent phenomenon whose stability depends on a multidimensional
+control landscape, providing an empirical basis for monitoring and configuring
+recursive training pipelines.
 \end{abstract}
 
 % ============================================================
@@ -101,7 +101,7 @@ training pipelines.
 % ============================================================
 \begin{highlights}
 \item Recursive degradation exhibits a sharp pressure-dependent transition rather than gradual decline
-\item Pressure thresholds differ by an order of magnitude across backbones and are not universal
+\item Pressure thresholds differ by nearly an order of magnitude across backbones and are not universal
 \item Adapter rank and learning rate interact to jointly determine the recursive operating regime
 \item Output-distribution changes accompany degradative regimes beyond factual retention alone
 \item Approximately 5\% less synthetic exposure restores near-homeostatic behavior at the Qwen boundary
@@ -196,7 +196,7 @@ The principal contributions of this work are:
     recursive factual retention, identifying a sharp regime transition on Qwen
     and replicating the same qualitative structure on Gemma~3 at a
     substantially lower threshold (effective rank 3--6 versus 50--88),
-    confirmed across five independent seeds.
+    confirmed across three to five independent seeds per condition.
     \item We demonstrate that full fine-tuning learning-rate sweeps on both
     Qwen and Gemma~3 reproduce the same dose-response pattern, confirming that
     the phenomenon responds to perturbation magnitude rather than being
@@ -596,18 +596,11 @@ for code and data access).
   \centering
   \includegraphics[width=0.98\textwidth, trim=0 15px 0 0, clip]{figs/fig1_overview.png}%
   \vspace{4pt}
-  \caption{Overview of the experimental pipeline. Our study consists of five
-  main stages: (1)~data preparation, including TriviaQA dataset splitting,
-  $K_0$ factual baseline establishment, and evaluation protocol definition;
-  (2)~recursive training over ten generations using QLoRA or FFT with a strict
-  replace-only protocol across three backbones; (3)~systematic pressure
-  manipulation along four axes: adapter rank ($r \in \{4,16,32,64,128,256\}$),
-  learning rate ($10^{-6}$ to $2{\times}10^{-5}$), their joint interaction, and
-  synthetic exposure reduction; (4)~comprehensive evaluation of factual
-  retention, distributional shift, behavioral metrics, and effective rank at
-  each generation; and (5)~regime classification into homeostatic, bounded, or
-  degradative categories based on observed retention trajectories and
-  distributional drift.}\label{fig:methodology}
+  \caption{Overview of the experimental pipeline: (1)~data preparation and
+  $K_0$ baseline establishment; (2)~recursive training over ten generations
+  across three backbones; (3)~pressure manipulation along four axes (rank, LR,
+  interaction, exposure); (4)~evaluation of retention, distributional shift, and
+  effective rank; (5)~regime classification.}\label{fig:methodology}
 \end{figure*}
 
 \subsection{Experimental axes}\label{sec:axes}
@@ -718,7 +711,7 @@ matrices in a model. For comparisons across module-targeting schemes, we also
 consider aggregate effective rank, defined as the sum of effective ranks across
 adapted matrices. In our within-backbone rank sweeps, effective rank generally
 increases with nominal rank and organizes the observed transition between
-homeostatic and degradative regimes better than nominal rank alone. However,
+stable and degradative regimes better than nominal rank alone. However,
 raw effective-rank thresholds are not portable across architectures: Qwen
 remains bounded at substantially higher effective ranks than Gemma~3. We
 therefore treat effective rank as a within-backbone capacity measure and discuss
@@ -948,10 +941,9 @@ evaluated range, Gen10 retention decreases from 94.9\% at $r=16$ to 78.0\% at
 $r=256$, a difference of 16.9 percentage points.
 
 \begin{table}[width=.95\linewidth,cols=6,pos=htbp]
-\caption{QLoRA rank sweep on Qwen~2.5~1.5B-Instruct. Retention is reported at
-the last evaluated generation. Headline ranks ($r=16$ and $r=256$) are evaluated
-with three seeds; all others with a single seed. Configurations evaluated only
-to Gen5 correspond to intermediate dose-response points.}\label{tab:rank_sweep}
+\caption{QLoRA rank sweep on Qwen~2.5~1.5B-Instruct. Headline ranks ($r=16$,
+$r=256$) evaluated with three seeds; others with a single
+seed.}\label{tab:rank_sweep}
 \begin{tabular*}{\tblwidth}{@{}l@{\hskip 4pt}l@{\hskip 4pt}l@{\hskip 4pt}l@{\hskip 4pt}l@{\hskip 4pt}l@{}}
 \toprule
 Rank & Params & Gen & Ret. & Eff.\ Rk & Regime \\
@@ -988,7 +980,7 @@ an initial one-generation adaptation cost and remains flat through Gen10 (mean
 94.9\%, range 94.9--97.4\% across three seeds). At $r=128$, retention settles at
 approximately 88--89\% by Gen3 and remains bounded through Gen10, neither
 recovering nor declining further. This bounded behavior distinguishes it from
-both the stable homeostatic regime and the progressively degradative regime. At
+both the stable regime and the progressively degradative regime. At
 $r=256$, retention declines progressively at approximately 2 percentage points
 per generation on average, reaching 78.0\% (mean across three seeds) by Gen10
 with no sign of stabilization within the observed horizon.
@@ -1038,7 +1030,7 @@ a single seed as a robustness check.
 
 On Gemma~3, the same qualitative structure emerges, but at a substantially lower
 effective rank. Table~\ref{tab:gemma3} summarizes the results. At $r=4$ (mean
-effective rank 3.07), Gemma~3 remains homeostatic across five seeds (mean Gen5
+effective rank 3.07), Gemma~3 remains stable across five seeds (mean Gen5
 retention 91.3\%, range 89.1--93.5\%). At $r=16$ (mean effective rank 9.17),
 Gemma~3 enters the degradative regime across all five seeds (mean Gen5 retention
 69.1\%, range 68.1--70.2\%). The ranges do not overlap, providing consistent
@@ -1071,7 +1063,7 @@ $r=256$ & 5 & 70.2\%       & 71.47 & Degradative \\
 \end{table}
 
 Two additional observations are noteworthy. First, the Gemma~3 threshold lies
-between effective ranks 3 and 6, approximately an order of magnitude below the
+between effective ranks 3 and 6, roughly an order of magnitude below the
 Qwen threshold (between effective ranks 50 and 88). These results indicate that
 raw effective-rank values are not directly portable across architectures. The
 observed regimes remained consistent across five independent random seeds at
@@ -1083,14 +1075,14 @@ is observed on Gemma~3; whether the same saturation occurs on other backbones or
 at different generation depths remains an open question.
 
 On Gemma~4~E2B~IT, both tested ranks ($r=4$, effective rank 2.13; $r=16$,
-effective rank 5.64) remain homeostatic at Gen5 (96.1\% and 97.4\%,
+effective rank 5.64) remain stable at Gen5 (96.1\% and 97.4\%,
 respectively). Both configurations fall below the effective-rank threshold
-observed on Gemma~3, and both remain homeostatic, consistent with the pattern
+observed on Gemma~3, and both remain stable, consistent with the pattern
 established on Qwen and Gemma~3. We treat this as a robustness confirmation that
 low-effective-rank adapters can remain stable across multiple backbone
 architectures, not as an estimate of the Gemma~4 degradation threshold.
 
-We attempted to normalize effective-rank thresholds across architectures by
+An attempt was made to normalize effective-rank thresholds across architectures by
 dividing by hidden dimension, number of layers, number of attention heads, and
 baseline diversity. None of these normalizations reduced the discrepancy to a
 common threshold. The threshold is therefore likely influenced by architectural
@@ -1127,7 +1119,7 @@ rank shifts the system from homeostatic to degradative regimes. This section ask
 whether increasing perturbation magnitude through full fine-tuning, without
 varying adapter rank, reproduces the same qualitative pattern.
 
-We swept learning rate across four values on Qwen~2.5~1.5B under the same
+The learning rate was swept across four values on Qwen~2.5~1.5B under the same
 recursive replace-only protocol. Table~\ref{tab:fft_sweep} shows that retention
 at Gen3 decreases monotonically as learning rate and weight drift increase. Drift
 values span nearly an order of magnitude (0.39 to 3.48), and retention decreases
@@ -1176,7 +1168,7 @@ Both methods are stable from Gen1 through Gen10, with no progressive degradation
 within the observed horizon. QLoRA retains a consistent advantage of
 approximately 5.6 percentage points (mean Gen10: QLoRA 97.4\% vs FFT 91.9\%).
 This gap emerges entirely at Gen1 and does not widen over subsequent generations.
-We therefore interpret it as a difference in one-time adaptation cost rather than
+This result is therefore interpreted as a difference in one-time adaptation cost rather than
 a differential degradation rate: FFT incurs a larger initial factual cost when
 adapting to the synthetic stream, while both methods exhibit similarly stable
 trajectories once adapted.
@@ -1193,7 +1185,7 @@ lost by QLoRA and facts lost by FFT is zero across all seed pairs (Jaccard 0.0).
 In this low-perturbation regime, low-rank adaptation loses fewer facts and loses
 different facts than full fine-tuning at comparable perturbation magnitude.
 
-We refer to this pattern as a stable fragile-fact floor under FFT: certain facts
+This pattern is referred to as a stable fragile-fact floor under FFT: certain facts
 are reliably displaced by full-parameter updates, whereas low-rank updates
 preserve those same facts while occasionally losing others. This observation is
 consistent with prior work suggesting that LoRA and full fine-tuning can produce
@@ -1224,7 +1216,7 @@ $r=256$ & 70/78 (89.7\%) & 66/78 (84.6\%) & 64/78 (82.1\%) \\
 \end{tabular*}
 \end{table}
 
-The interaction is evident (Figure~\ref{fig:heatmap}): configurations that remain homeostatic under one
+The interaction is evident (Figure~\ref{fig:heatmap}): configurations that remain stable under one
 learning rate become bounded or degradative under another. At $r=16$, only
 $\mathrm{LR}=2 \times 10^{-5}$ pushes the system below 95\% retention. At
 $r=64$, the same degradation appears already at $\mathrm{LR}=10^{-5}$. At
@@ -1310,7 +1302,7 @@ varied vocabulary while losing factual anchoring. We refer to this as an
 diverse, but factually unanchored responses.
 
 The two above-threshold configurations therefore exhibit distinct distributional
-failure modes despite both departing from homeostatic behavior: $r=128$ degrades
+failure modes despite both departing from stable behavior: $r=128$ degrades
 through filler accumulation, while $r=256$ degrades through elaborative
 dispersion.
 
@@ -1358,11 +1350,11 @@ the coefficient drops to $-0.22$. First-difference analysis yields $-0.43$, and
 the reverse-lag correlation is of comparable magnitude, indicating a
 bidirectional association rather than clear temporal precedence.
 
-We therefore interpret output drift as a co-symptom of the same underlying
+Output drift is therefore interpreted as a co-symptom of the same underlying
 high-pressure process, rather than a demonstrated causal antecedent of factual
 loss. Output drift remains valuable as a diagnostic signature: it is
 consistently present in degradative and distributionally degraded configurations,
-consistently absent in homeostatic ones, and can appear even when factual
+consistently absent in stable configurations, and can appear even when factual
 retention remains bounded, as illustrated by the $r=128$ configuration.
 Determining the causal relationship between output-distribution changes and
 factual degradation remains an open question.
@@ -1384,10 +1376,8 @@ Table~\ref{tab:interventions} summarizes K0 retention at Gen5 for each
 intervention condition relative to the unmodified C1 baseline.
 
 \begin{table}[width=.95\linewidth,cols=5,pos=htbp]
-\caption{Synthetic-exposure interventions on Qwen $r=256$. C3 is evaluated with
-three training seeds (15, 137, 256); C5 is evaluated with three independent
-random downsampling masks. Token counts refer to the total synthetic training
-stream per generation. Means are reported for multi-seed or multi-mask
+\caption{Synthetic-exposure interventions on Qwen $r=256$. C3: three seeds;
+C5: three independent masks. Means reported for multi-seed/mask
 conditions.}\label{tab:interventions}
 \begin{tabular*}{\tblwidth}{@{} llrrl@{} }
 \toprule
@@ -1511,15 +1501,10 @@ training pipelines (Section~\ref{sec:disc_practical}).
   \centering
   \includegraphics[width=0.75\textwidth]{figs/fig_etp_framework.png}
   \caption{Pressure-response relationship guiding recursive fine-tuning
-  stability. As effective training pressure increases (controlled by adapter
-  rank, learning rate, and synthetic exposure), factual retention ($K_0$)
-  transitions through three regimes: homeostatic (retention above 90\%,
-  distribution stable), bounded (retention stable but output quality degrades),
-  and degradative (progressive factual loss). The green, yellow, and red markers
-  indicate representative operating points observed in the experiments. Dashed
-  vertical lines mark the backbone-dependent regime boundaries. The transition
-  is sharp rather than gradual, and its location varies by approximately an
-  order of magnitude across the evaluated architectures.}\label{fig:etp}
+  stability. Factual retention transitions through three regimes as effective
+  training pressure increases. Dashed lines mark backbone-dependent boundaries;
+  the transition is sharp and its location varies by roughly an order of
+  magnitude across architectures.}\label{fig:etp}
 \end{figure*}
 
 The results presented in Section~\ref{sec:results} converge on a consistent
@@ -1533,7 +1518,7 @@ motivation for treating them as manifestations of a common organizing principle.
 
 The framework is empirical rather than theoretical. We do not propose a
 closed-form expression that combines rank, learning rate, and exposure into a
-single scalar predictor. Instead, we observe that each variable independently
+single scalar predictor. Instead, the experiments reveal that each variable independently
 controls the same qualitative transition, and that the transition is sharp:
 approximately 5\% reduction in synthetic exposure at the $r=256$ boundary
 configuration is sufficient to shift the system from degradative to bounded
@@ -1541,8 +1526,8 @@ behavior. This sharpness suggests that the underlying phenomenon operates near
 an abrupt regime boundary rather than degrading gradually as any single
 parameter increases.
 
-We emphasize that the contribution is the existence and reproducibility of this
-sharp transition, not the numerical threshold itself. We do not claim that the
+The contribution is the existence and reproducibility of this
+sharp transition, not the numerical threshold itself. The present work does not claim that the
 specific effective-rank values at which regimes change will generalize to
 arbitrary models or tasks. What appears to generalize is the qualitative
 structure: a pressure-dependent boundary separating stable from degradative
@@ -1557,7 +1542,7 @@ single-variable effects. Developing a quantitative formulation that combines
 update capacity, perturbation magnitude, and exposure into a single predictive
 scalar remains an important direction for future work.
 
-We note that the evidence for treating these axes as manifestations of a
+The evidence for treating these axes as manifestations of a
 common pressure is not merely that each produces regime transitions, but that
 (i)~they interact compensatorily (higher rank at lower LR preserves stability),
 (ii)~the transition boundary they induce shares the same qualitative signature
@@ -1610,7 +1595,7 @@ and synthetic exposure operates on the data stream rather than the update
 itself. Their shared effect on the regime transition is the empirical
 observation that motivates the framework, not a theoretical prediction.
 
-We therefore interpret effective training pressure not as a physical quantity
+Effective training pressure is therefore interpreted not as a physical quantity
 with defined units, but as a conceptual framework for organizing the observed
 control structure of recursive fine-tuning. Its practical value lies in
 identifying multiple independent knobs that practitioners can adjust to maintain
@@ -1739,21 +1724,21 @@ metrics showed substantial degradation across generations during which retention
 remained bounded, suggesting that they could serve as earlier indicators of
 regime departure than retention alone.
 
-We emphasize that this diagnostic value does not rest on a causal claim. The
+This diagnostic value does not rest on a causal claim. The
 cross-lag analysis showed that after controlling for shared temporal trend, the
 association between output drift and subsequent retention loss weakens
-substantially (partial $\rho = -0.22$). We interpret output drift as a
+substantially (partial $\rho = -0.22$). The analysis suggests that output drift is a
 co-symptom of the same high-pressure process rather than a demonstrated causal
 driver. Its value lies in being observable, measurable, and consistently present
 in above-threshold and distributionally degraded configurations, while remaining
-low in homeostatic ones, regardless of whether it contributes to, or simply
+low in stable configurations, regardless of whether it contributes to, or simply
 accompanies, factual degradation.
 
 \subsection{Practical implications}\label{sec:disc_practical}
 
 The results and interpretations above translate into actionable considerations
 for practitioners designing or monitoring recursive synthetic fine-tuning
-pipelines. We organize these around three operational concerns: configuration
+pipelines. The following discussion is organized around three operational concerns: configuration
 selection, runtime monitoring, and intervention design.
 
 Regarding configuration selection, the dose-response results indicate that
@@ -1762,7 +1747,7 @@ recursive stability. For applications where recursive synthetic data reuse is
 anticipated, selecting a rank that places the system well below the observed
 pressure threshold is a practical strategy for maintaining recursive stability.
 On Qwen~2.5~1.5B, ranks at or below 64 (effective rank $\leq 30$) remained
-homeostatic through ten recursive generations with no sign of drift. Although
+stable through ten recursive generations with no sign of drift. Although
 the numerical threshold is backbone-dependent, the underlying principle appears
 consistent across the evaluated models: lower effective training pressure is
 associated with greater recursive stability in the tested configurations. When
@@ -1778,7 +1763,7 @@ observed patterns, tracking at minimum mean response length, content efficiency
 (retention normalized by length), and baseline response persistence can help
 detect regime departure earlier than factual accuracy alone. Rising response
 length or declining content efficiency signals that the system may be departing
-from its homeostatic operating regime, even if factual retention metrics appear
+from its stable operating regime, even if factual retention metrics appear
 stable. These signals are computationally inexpensive and require no additional
 evaluation infrastructure beyond what is already needed for generation-level
 quality assessment.
@@ -1833,7 +1818,7 @@ All experiments use models in the 1--2B parameter range (Qwen~2.5~1.5B,
 Gemma~3~1B, Gemma~4~E2B). Whether these findings generalize to 7B, 70B, or
 larger models has not been established in this work. Larger models may exhibit
 different pressure thresholds for reasons not evaluated in the present study.
-We note that this scale is consistent with prior model-collapse studies
+This scale is consistent with prior model-collapse studies
 \citep{shumailov2024,keisha2025} and reflects the computational constraints of
 running ten recursive generations with multiple seeds and configurations.
 
@@ -1846,7 +1831,7 @@ generation, open-ended dialogue, code synthesis, or other domains where output
 structure and evaluation criteria differ substantially.
 
 The recursive horizon extends to ten generations. The long-term dynamics beyond
-Gen10 are unknown: configurations classified as homeostatic over this horizon
+Gen10 are unknown: configurations classified as stable over this horizon
 may eventually degrade given sufficient generations, and configurations
 classified as bounded may stabilize or worsen.
 
@@ -1901,8 +1886,7 @@ would be needed to fully disentangle quantization effects from rank effects.
 
 The synthetic-exposure interventions (C3/C5) are tested only at the $r=256$
 boundary on Qwen. Whether comparable sensitivity exists at other ranks, on other
-backbones, or with different datasets has not been established. We note that the
-restriction to a single boundary configuration is deliberate: the purpose of
+backbones, or with different datasets has not been established. The restriction to a single boundary configuration is deliberate: the purpose of
 these experiments is to demonstrate pressure sensitivity at the regime
 transition, not to propose a general mitigation method. Whether the same
 intervention would recover stability under extreme pressure (e.g., FFT at high
@@ -1921,7 +1905,7 @@ and deployment conditions, has not been assessed. Regarding the $K_0$ metric
 itself, substring matching could in principle confound verbosity-induced format
 changes with genuine knowledge loss. However, the C2 intervention (which
 constrains response format to short answers) improves retention without fully
-restoring homeostatic levels, indicating that the degradation measured by $K_0$
+restoring baseline levels, indicating that the degradation measured by $K_0$
 reflects actual factual displacement rather than format masking alone.
 
 Finally, the present work establishes which variables shift which regimes,
@@ -1934,7 +1918,7 @@ Despite these limitations, we note that the central qualitative phenomenon was
 reproduced independently in two model families (Qwen and Gemma), under two
 update mechanisms (QLoRA and full fine-tuning), across three independently
 manipulated pressure components, and with multiple seeds at the headline
-configurations. We therefore interpret the contribution as evidence for a
+configurations. The contribution is therefore best interpreted as evidence for a
 reproducible qualitative regime structure rather than a universal quantitative
 predictor.
 
@@ -1968,8 +1952,8 @@ Rather, in the present experiments, it is a pressure-gated phenomenon: the
 boundary between stability and degradation can be controlled through multiple
 independent axes. This suggests that recursive synthetic training can be
 managed as an engineering challenge, provided that effective training pressure
-is monitored and maintained below the relevant backbone-dependent threshold. We
-note that the present contribution is the identification of this reproducible
+is monitored and maintained below the relevant backbone-dependent threshold. The
+present contribution is the identification of this reproducible
 qualitative regime structure, not the specific numerical thresholds, which are
 expected to vary across architectures, scales, and tasks.
 
