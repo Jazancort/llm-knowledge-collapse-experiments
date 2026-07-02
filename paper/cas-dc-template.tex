@@ -9,6 +9,7 @@
 \usepackage{caption}
 \usepackage{microtype}
 \usepackage{adjustbox}
+\renewcommand{\arraystretch}{1.8}
 
 \begin{document}
 \let\WriteBookmarks\relax
@@ -582,16 +583,20 @@ at \url{https://github.com/Jazancort/llm-knowledge-collapse}.
 
 \begin{figure*}[t]
   \centering
-  \includegraphics[width=0.95\textwidth]{figs/fig7_methodology.png}
-  \caption{Experimental methodology organized in five phases. (1)~Data
-  preparation: TriviaQA split, model selection, and $K_0$ baseline
-  establishment. (2)~Recursive training: replace-only synthetic retraining over
-  ten generations with fresh adapters. (3)~Pressure manipulation: systematic
-  variation of adapter rank, learning rate, rank$\times$LR interaction, and
-  synthetic exposure. (4)~Evaluation: factual retention, distributional
-  diagnostics, and adapter metrics at each generation. (5)~Regime
-  classification: assignment to homeostatic, bounded, or degradative categories
-  based on observed trajectories.}\label{fig:methodology}
+  \includegraphics[width=0.98\textwidth, trim=0 15px 0 0, clip]{figs/fig1_overview.png}%
+  \vspace{4pt}
+  \caption{Overview of the experimental pipeline. Our study consists of five
+  main stages: (1)~data preparation, including TriviaQA dataset splitting,
+  $K_0$ factual baseline establishment, and evaluation protocol definition;
+  (2)~recursive training over ten generations using QLoRA or FFT with a strict
+  replace-only protocol across three backbones; (3)~systematic pressure
+  manipulation along four axes: adapter rank ($r \in \{4,16,32,64,128,256\}$),
+  learning rate ($10^{-6}$ to $2{\times}10^{-5}$), their joint interaction, and
+  synthetic exposure reduction; (4)~comprehensive evaluation of factual
+  retention, distributional shift, behavioral metrics, and effective rank at
+  each generation; and (5)~regime classification into homeostatic, bounded, or
+  degradative categories based on observed retention trajectories and
+  distributional drift.}\label{fig:methodology}
 \end{figure*}
 
 \subsection{Experimental axes}\label{sec:axes}
@@ -605,20 +610,20 @@ magnitude, module topology, and synthetic exposure) affect recursive stability.
 Table~\ref{tab:axes} summarizes the experimental axes, the manipulated variable,
 and the tested range.
 
-\begin{table}[width=.95\linewidth,cols=3,pos=htbp]
+\begin{table}[htbp]
 \caption{Experimental axes and their corresponding pressure
 components.}\label{tab:axes}
-\begin{tabular*}{\tblwidth}{@{} lp{1.8cm}p{3.4cm}@{} }
+\begin{tabular}{@{}clll@{}}
 \toprule
-Axis & Variable & Range \\
+\# & Axis & Variable & Range \\
 \midrule
-1. Capacity & QLoRA rank & $r \in \{4,16,32,64,128,256\}$ \\
-2. Magnitude & FFT learning rate & $10^{-6}$ to $2{\times}10^{-5}$ \\
-3. Method & QLoRA vs FFT & Matched pert., $N{=}3$, Gen10 \\
-4. Topology & Target modules & Attention vs full-linear \\
-5. Exposure & Training examples & 100\% vs ${\sim}$95\% \\
+1 & Capacity & QLoRA rank $r$ & $\{4, 16, 32, 64, 128, 256\}$ \\
+2 & Magnitude & FFT learning rate & $10^{-6}$--$2{\times}10^{-5}$ \\
+3 & Method & QLoRA vs FFT & Matched pert., $N{=}3$ \\
+4 & Topology & Target modules & Attention vs full-linear \\
+5 & Exposure & Training examples & 100\% vs ${\sim}$95\% \\
 \bottomrule
-\end{tabular*}
+\end{tabular}
 \end{table}
 
 The experimental design manipulates effective training pressure along five axes:
@@ -1546,23 +1551,32 @@ scalar remains an important direction for future work.
 Table~\ref{tab:evidence} summarizes how each component of the framework is
 supported by independent experimental evidence.
 
-\begin{table}[width=.95\linewidth,cols=2,pos=htbp]
+\begin{table}[htbp]
 \caption{Evidence matrix: mapping framework components to supporting
 experiments.}\label{tab:evidence}
-\begin{tabular*}{\tblwidth}{@{} p{3.5cm}p{3.8cm}@{} }
+\footnotesize
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}ll@{}}
 \toprule
-Observation & Supporting evidence \\
+\textbf{Observation} & \textbf{Supporting evidence} \\
 \midrule
-Rank governs regime transition & QLoRA rank sweep (6 values, $N{=}3$) \\
-Magnitude governs transition & FFT learning-rate sweep (4 values) \\
-Exposure governs transition & Intervention C3/C5 ($N{=}3$ masks) \\
-Threshold is backbone-dependent & Qwen vs Gemma 3 ($10{\times}$ gap) \\
-Output drift accompanies degradation & Distribution metrics (5 indicators) \\
-Transition is sharp, not gradual & 5\% exposure shift flips regime \\
-Capacity and magnitude interact & Rank $\times$ LR matrix (3$\times$3) \\
-Magnitude generalizes cross-backbone & FFT sweep on Gemma 3 \\
+Rank governs transition & Rank sweep, 6 values, $N{=}3$ \\
+\addlinespace
+Magnitude governs transition & FFT LR sweep, 4 values \\
+\addlinespace
+Exposure governs transition & Intervention C3/C5, $N{=}3$ masks \\
+\addlinespace
+Threshold is backbone-dependent & Qwen vs Gemma~3 ($10{\times}$ gap) \\
+\addlinespace
+Drift accompanies degradation & 5 distribution metrics \\
+\addlinespace
+Transition is sharp & 5\% exposure shift flips regime \\
+\addlinespace
+Capacity $\times$ magnitude interact & Rank $\times$ LR matrix ($3{\times}3$) \\
+\addlinespace
+Generalizes cross-backbone & FFT sweep on Gemma~3 \\
 \bottomrule
-\end{tabular*}
+\end{tabular}
 \end{table}
 
 Two features of this framework merit emphasis. First, the threshold is
@@ -1650,22 +1664,30 @@ more productive than treating collapse as a monolithic threat.
 To clarify the scope of the present findings, Table~\ref{tab:generalization}
 distinguishes what the evidence supports from what remains open.
 
-\begin{table}[width=.95\linewidth,cols=2,pos=htbp]
+\begin{table}[htbp]
 \caption{Scope of generalization: what the present evidence supports versus
 what remains unknown.}\label{tab:generalization}
-\begin{tabular*}{\tblwidth}{@{} p{3.5cm}p{3.8cm}@{} }
+\footnotesize
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}p{3.6cm}p{3.6cm}@{}}
 \toprule
-Supported by evidence & Remains unknown \\
+\textbf{Supported by evidence} & \textbf{Remains unknown} \\
 \midrule
-Existence of regime transition & Threshold value at larger scales \\
-Pressure dependence of transition & Exact functional form of pressure \\
+Regime transition exists & Threshold at larger scales \\
+\addlinespace
+Pressure dependence & Exact functional form \\
+\addlinespace
 Sharp (not gradual) boundary & Behavior beyond Gen10 \\
-Reproducibility across 5 seeds & Transfer to non-factoid tasks \\
-Cross-backbone regime structure & Normalization across architectures \\
-Capacity and magnitude interact & Exposure sensitivity cross-backbone \\
-Magnitude axis cross-backbone (FFT) & Interaction strength at scale \\
+\addlinespace
+Reproducibility (5 seeds) & Transfer to non-factoid tasks \\
+\addlinespace
+Cross-backbone regime structure & Cross-architecture normalization \\
+\addlinespace
+Capacity $\times$ magnitude interact & Exposure sensitivity cross-backbone \\
+\addlinespace
+Magnitude axis cross-backbone & Interaction strength at scale \\
 \bottomrule
-\end{tabular*}
+\end{tabular}
 \end{table}
 
 \subsection{Distributional degradation as a diagnostic signal}\label{sec:disc_drift}
@@ -1817,23 +1839,32 @@ conditions but does not substitute for larger-scale replication.
 
 Cross-architecture threshold normalization was attempted using several
 architectural ratios, none of which aligned the thresholds between Qwen and
-Gemma~3:
+Gemma~3 (Table~\ref{tab:normalization}).
 
-\begin{center}
-\small
-\begin{tabular}{lc}
+\begin{table}[htbp]
+\caption{Cross-architecture threshold normalization attempts. None of the
+tested ratios aligned effective-rank thresholds between Qwen and
+Gemma~3.}\label{tab:normalization}
+\footnotesize
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}lc@{}}
 \toprule
-Normalization attempted & Aligned thresholds? \\
+\textbf{Normalization attempted} & \textbf{Aligned thresholds?} \\
 \midrule
 erank / hidden dimension & No \\
+\addlinespace
 erank / $\sqrt{d}$ & No \\
+\addlinespace
 erank / num.\ layers & No \\
+\addlinespace
 erank / num.\ attention heads & No \\
+\addlinespace
 erank / num.\ KV heads & No \\
+\addlinespace
 erank / baseline diversity & No \\
 \bottomrule
 \end{tabular}
-\end{center}
+\end{table}
 
 \noindent The raw effective-rank threshold is
 therefore not portable across backbones without empirical calibration, limiting
