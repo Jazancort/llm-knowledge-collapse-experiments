@@ -937,19 +937,19 @@ Increasing adapter rank produces a clear, monotonic decline in factual retention
 across the full rank sweep on Qwen~2.5~1.5B.
 Table~\ref{tab:rank_sweep} summarizes K0 retention, effective rank, trainable
 parameters, and regime classification for each tested configuration. Across the
-evaluated range, Gen10 retention decreases from 97.4\% at $r=16$ to 79.1\% at
-$r=256$, a difference of 18.3 percentage points.
+evaluated range, Gen10 retention decreases from 96.2\% at $r=16$ to 79.1\% at
+$r=256$, a difference of 17.1 percentage points.
 
 \begin{table}[width=.95\linewidth,cols=6,pos=htbp]
-\caption{QLoRA rank sweep on Qwen~2.5~1.5B-Instruct. Headline ranks ($r=16$,
-$r=256$) evaluated with three seeds; others with a single
+\caption{QLoRA rank sweep on Qwen~2.5~1.5B-Instruct. The $r=256$ endpoint is
+evaluated with three seeds; all others with a single
 seed.}\label{tab:rank_sweep}
 \begin{tabular*}{\tblwidth}{@{}l@{\hskip 4pt}l@{\hskip 4pt}l@{\hskip 4pt}l@{\hskip 4pt}l@{\hskip 4pt}l@{}}
 \toprule
 Rank & Params & Gen & Ret. & Eff.\ Rk & Regime \\
 \midrule
 $r=4$   & 545K  & 5  & 97.4\%           & 3.34  & Homeo. \\
-$r=16$  & 2.2M  & 10 & 97.4\% (N=3)     & 11.08 & Homeo. \\
+$r=16$  & 2.2M  & 10 & 96.2\%           & 11.08 & Homeo. \\
 $r=32$  & 4.4M  & 5  & 96.2\%           & 17.85 & Homeo. \\
 $r=64$  & 8.7M  & 10 & 92.3\%           & 29.52 & Homeo. \\
 $r=128$ & 17.4M & 10 & 89.7\%           & 50.16 & Bounded \\
@@ -976,8 +976,8 @@ different temporal dynamics across regimes.
 \vspace{6pt}
 
 At $r=16$, retention stabilizes after
-an initial one-generation adaptation cost and remains flat through Gen10 (mean
-97.4\% across three seeds). At $r=128$, retention settles at
+an initial one-generation adaptation cost and remains flat through Gen10
+(96.2\%). At $r=128$, retention settles at
 approximately 88--89\% by Gen5 and remains bounded through Gen10, neither
 recovering nor declining further. This bounded behavior distinguishes it from
 both the stable regime and the progressively degradative regime. At
@@ -997,12 +997,14 @@ configurations. Third, effective rank increases sub-linearly with nominal rank
 fully utilize their nominal capacity while still producing substantially larger
 effective updates.
 
-The multi-seed experiments at the rank-sweep endpoints confirm that the regime
-separation is reproducible. At $r=16$, per-seed Gen10 retention values are
-97.4\%, 97.4\%, and 97.4\%. At $r=256$, per-seed Gen10 values are 76.9\%,
-78.2\%, and 82.1\%. The ranges do not overlap: the lowest $r=16$ value (97.4\%)
-exceeds the highest $r=256$ value (82.1\%) by 15.3 percentage points,
-demonstrating clear empirical separation under the present experimental protocol.
+The multi-seed experiments at $r=256$ confirm that the degradative regime is
+reproducible. Per-seed Gen10 values are 76.9\%, 78.2\%, and 82.1\%. An
+independent replication of $r=16$ with three seeds (conducted as part of the
+QLoRA-versus-FFT comparison in Section~\ref{sec:res_fft}) yielded 97.4\% across
+all three seeds, confirming that the homeostatic regime is equally stable. The
+ranges do not overlap: the lowest replicated $r=16$ value (97.4\%) exceeds the
+highest $r=256$ value (82.1\%) by 15.3 percentage points, demonstrating clear
+empirical separation under the present experimental protocol.
 
 As a supportive ablation, we compared attention-only and full-linear module
 targeting on Qwen at a single seed. Targeting all linear modules
