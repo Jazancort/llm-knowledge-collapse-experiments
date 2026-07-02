@@ -6,351 +6,363 @@
   body {
     font-family: 'Inter', Arial, sans-serif;
     background: white;
-    width: 1100px;
-    padding: 30px 50px;
+    width: 1400px;
+    padding: 30px 30px;
   }
-  .overview {
+  .figure {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    align-items: stretch;
     gap: 0;
+    height: 420px;
   }
 
-  /* Phase labels */
-  .phase-label {
+  /* Macro-blocks */
+  .macro {
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    padding: 16px;
+    position: relative;
+  }
+  .macro-label {
     font-size: 9px;
     font-weight: 700;
-    color: #aaa;
     text-transform: uppercase;
-    letter-spacing: 2px;
-    margin-bottom: 6px;
+    letter-spacing: 1.5px;
+    text-align: center;
+    margin-bottom: 10px;
+    opacity: 0.7;
   }
-
-  /* Section containers */
-  .section {
-    width: 100%;
+  .macro-body {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    padding: 16px 0;
-  }
-
-  /* Arrow connector */
-  .connector {
-    color: #ccc;
-    font-size: 18px;
-    margin: 4px 0;
-  }
-
-  /* === PHASE I: Setup (compact) === */
-  .setup-row {
-    display: flex;
-    gap: 50px;
     justify-content: center;
+    align-items: center;
+    gap: 10px;
   }
+
+  /* Arrow connectors between macros */
+  .macro-arrow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 10px;
+    font-size: 22px;
+    color: #bbb;
+  }
+
+  /* === BLOCK A: Setup (narrow) === */
+  .block-setup {
+    width: 140px;
+    background: #fefcf0;
+    border: 1px solid #e8dfa0;
+  }
+  .block-setup .macro-label { color: #8a7a20; }
   .setup-item {
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+    text-align: center;
+    line-height: 1.8;
+  }
+  .setup-detail {
+    font-size: 10px;
+    color: #999;
     text-align: center;
   }
-  .setup-item .si-title {
-    font-size: 13px;
-    font-weight: 700;
-    color: #333;
-  }
-  .setup-item .si-detail {
-    font-size: 11px;
-    color: #888;
-    margin-top: 3px;
-  }
 
-  /* === PHASE II: Recursive cycle (THE CENTER) === */
-  .cycle-container {
-    background: #f7fafc;
-    border: 1.5px solid #d0dce5;
-    border-radius: 12px;
-    padding: 30px 50px;
+  /* === BLOCK B: Recursive Training (DOMINANT) === */
+  .block-recursive {
+    width: 440px;
+    background: #f0f6fc;
+    border: 1.5px solid #a3c4e0;
+  }
+  .block-recursive .macro-label { color: #2c5f8a; }
+  .cycle-box {
     display: flex;
     align-items: center;
-    gap: 40px;
-    width: 85%;
+    gap: 30px;
+    width: 100%;
+    justify-content: center;
   }
-  .cycle-visual {
+  .cycle-diagram {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0;
-    min-width: 200px;
+    position: relative;
   }
-  .cycle-node {
+  .cycle-step {
     background: white;
     border: 1.5px solid #4a7fa5;
-    border-radius: 6px;
-    padding: 10px 18px;
+    border-radius: 5px;
+    padding: 10px 16px;
     font-size: 12px;
     font-weight: 600;
-    color: #2c5f8a;
+    color: #1a3d5c;
     text-align: center;
+    width: 160px;
   }
-  .cycle-arrow {
+  .cycle-down {
     color: #4a7fa5;
-    font-size: 16px;
-    margin: 3px 0;
+    font-size: 14px;
+    margin: 4px 0;
   }
-  .cycle-loop {
-    position: relative;
+  .cycle-return {
+    position: absolute;
+    right: -40px;
+    top: 10px;
+    bottom: 10px;
+    width: 30px;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
   }
-  .cycle-loop .loop-label {
-    font-size: 11px;
+  .cycle-return-line {
+    width: 2px;
+    flex: 1;
+    background: #4a7fa5;
+    opacity: 0.5;
+    border-radius: 1px;
+  }
+  .cycle-return-label {
+    font-size: 10px;
+    font-weight: 700;
     color: #4a7fa5;
-    font-weight: 600;
-    font-style: italic;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    letter-spacing: 0.5px;
   }
-  .cycle-info {
+  .cycle-return-arrow {
+    color: #4a7fa5;
+    font-size: 12px;
+  }
+  .cycle-notes {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    max-width: 160px;
+  }
+  .cycle-note {
+    font-size: 11px;
+    color: #555;
+    line-height: 1.5;
+  }
+  .cycle-note strong {
+    color: #1a3d5c;
+  }
+
+  /* === BLOCK C: Pressure (medium) === */
+  .block-pressure {
+    width: 180px;
+    background: #f2faf3;
+    border: 1px solid #b8ddb8;
+  }
+  .block-pressure .macro-label { color: #2e6b32; }
+  .pressure-items {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-items: center;
   }
-  .cycle-info .ci-title {
-    font-size: 15px;
-    font-weight: 800;
-    color: #1a3d5c;
-    margin-bottom: 4px;
-  }
-  .cycle-info .ci-item {
-    font-size: 12px;
-    color: #555;
-    padding-left: 14px;
-    position: relative;
-    line-height: 1.6;
-  }
-  .cycle-info .ci-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 8px;
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #4a7fa5;
-    opacity: 0.4;
-  }
-
-  /* === PHASE III: Manipulations (horizontal cards) === */
-  .manip-row {
-    display: flex;
-    gap: 20px;
-    justify-content: center;
-  }
-  .manip-card {
-    background: #f4faf5;
+  .pressure-card {
+    background: white;
     border: 1px solid #c8e6c9;
-    border-radius: 6px;
-    padding: 14px 20px;
+    border-radius: 5px;
+    padding: 10px 16px;
     text-align: center;
-    min-width: 140px;
+    width: 140px;
   }
-  .manip-card .mc-title {
+  .pressure-card .pc-title {
     font-size: 12px;
     font-weight: 700;
     color: #2e6b32;
   }
-  .manip-card .mc-detail {
-    font-size: 10px;
-    color: #666;
-    margin-top: 4px;
+  .pressure-card .pc-sub {
+    font-size: 9.5px;
+    color: #888;
+    margin-top: 2px;
   }
 
-  /* === PHASE IV: Analysis (grouped) === */
-  .analysis-row {
+  /* === BLOCK D: Evaluation (narrow) === */
+  .block-eval {
+    width: 140px;
+    background: #fffaf0;
+    border: 1px solid #edd9a3;
+  }
+  .block-eval .macro-label { color: #7a5500; }
+  .eval-items {
     display: flex;
-    gap: 40px;
-    justify-content: center;
+    flex-direction: column;
+    gap: 14px;
+    align-items: center;
   }
-  .analysis-group {
-    text-align: center;
-  }
-  .analysis-group .ag-title {
-    font-size: 11px;
+  .eval-group-title {
+    font-size: 10px;
     font-weight: 700;
-    color: #7a4a00;
+    color: #7a5500;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    margin-bottom: 6px;
   }
-  .analysis-group .ag-items {
+  .eval-group-items {
     font-size: 11px;
     color: #666;
-    line-height: 1.7;
+    text-align: center;
+    line-height: 1.6;
   }
 
-  /* === PHASE V: Outcomes (gradient bar) === */
-  .outcomes {
+  /* === BLOCK E: Regimes (medium) === */
+  .block-regimes {
+    width: 200px;
+    background: #fafafa;
+    border: 1px solid #ddd;
+  }
+  .block-regimes .macro-label { color: #555; }
+  .regime-cards {
     display: flex;
-    align-items: center;
-    gap: 0;
-    width: 70%;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
   }
-  .outcome-segment {
-    flex: 1;
-    padding: 14px 10px;
-    text-align: center;
+  .regime-card {
+    border-left: 4px solid;
+    border-radius: 4px;
+    padding: 12px 14px;
   }
-  .outcome-segment .os-name {
+  .regime-card .rc-name {
     font-size: 14px;
     font-weight: 800;
   }
-  .outcome-segment .os-desc {
-    font-size: 9.5px;
-    color: #666;
-    margin-top: 3px;
+  .regime-card .rc-desc {
+    font-size: 10px;
+    color: #777;
+    margin-top: 2px;
   }
-  .seg-homeo { background: #e8f5e9; border-radius: 6px 0 0 6px; }
-  .seg-homeo .os-name { color: #2e7d32; }
-  .seg-bound { background: #fff8e1; }
-  .seg-bound .os-name { color: #c68c00; }
-  .seg-degrad { background: #ffebee; border-radius: 0 6px 6px 0; }
-  .seg-degrad .os-name { color: #c62828; }
-
-  .pressure-arrow {
-    width: 70%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-top: 6px;
-  }
-  .pressure-arrow .pa-label {
-    font-size: 9px;
-    color: #aaa;
-  }
-  .pressure-arrow .pa-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(to right, #2e7d32, #c68c00, #c62828);
-    margin: 0 8px;
-    opacity: 0.5;
-  }
+  .rc-homeo { border-color: #2e7d32; background: #f0f9f1; }
+  .rc-homeo .rc-name { color: #2e7d32; }
+  .rc-bound { border-color: #f9a825; background: #fffde7; }
+  .rc-bound .rc-name { color: #b8860b; }
+  .rc-degrad { border-color: #c62828; background: #fff5f5; }
+  .rc-degrad .rc-name { color: #c62828; }
 </style>
 </head>
 <body>
-<div class="overview">
+<div class="figure">
 
-  <!-- PHASE I: Setup -->
-  <div class="section">
-    <div class="phase-label">Phase I &mdash; Experimental Setup</div>
-    <div class="setup-row">
-      <div class="setup-item">
-        <div class="si-title">TriviaQA</div>
-        <div class="si-detail">2k train &middot; 200 eval</div>
-      </div>
-      <div class="setup-item">
-        <div class="si-title">3 Backbones</div>
-        <div class="si-detail">Qwen &middot; Gemma 3 &middot; Gemma 4</div>
-      </div>
-      <div class="setup-item">
-        <div class="si-title">Baseline K&#8320;</div>
-        <div class="si-detail">5 seeds per config</div>
+  <!-- A: Setup -->
+  <div class="macro block-setup">
+    <div class="macro-label">Setup</div>
+    <div class="macro-body">
+      <div class="setup-item">TriviaQA</div>
+      <div class="setup-detail">2k train &middot; 200 eval</div>
+      <div style="height: 16px;"></div>
+      <div class="setup-item">3 Backbones</div>
+      <div class="setup-detail">Qwen 2.5</div>
+      <div class="setup-detail">Gemma 3</div>
+      <div class="setup-detail">Gemma 4</div>
+      <div style="height: 16px;"></div>
+      <div class="setup-item">Baseline K&#8320;</div>
+      <div class="setup-detail">5 seeds</div>
+    </div>
+  </div>
+
+  <div class="macro-arrow">&#8594;</div>
+
+  <!-- B: Recursive Training (DOMINANT) -->
+  <div class="macro block-recursive">
+    <div class="macro-label">Recursive Fine-Tuning</div>
+    <div class="macro-body">
+      <div class="cycle-box">
+        <div class="cycle-diagram">
+          <div class="cycle-step">Generate Synthetic</div>
+          <div class="cycle-down">&#9663;</div>
+          <div class="cycle-step">Fine-tune<br><span style="font-size:10px;font-weight:400;color:#666;">(replace-only)</span></div>
+          <div class="cycle-down">&#9663;</div>
+          <div class="cycle-step">Evaluate K&#8320;</div>
+          <div class="cycle-return">
+            <div class="cycle-return-arrow">&#9651;</div>
+            <div class="cycle-return-line"></div>
+            <div class="cycle-return-label">&times;10 gen</div>
+            <div class="cycle-return-line"></div>
+          </div>
+        </div>
+        <div class="cycle-notes">
+          <div class="cycle-note"><strong>Fresh adapter</strong> each generation</div>
+          <div class="cycle-note"><strong>No accumulation</strong></div>
+          <div class="cycle-note">QLoRA (4-bit) or<br>full fine-tuning</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="connector">&#9663;</div>
+  <div class="macro-arrow">&#8594;</div>
 
-  <!-- PHASE II: Recursive cycle (CENTER, DOMINANT) -->
-  <div class="section">
-    <div class="phase-label">Phase II &mdash; Recursive Fine-Tuning</div>
-    <div class="cycle-container">
-      <div class="cycle-visual">
-        <div class="cycle-node">Base Model</div>
-        <div class="cycle-arrow">&#9663;</div>
-        <div class="cycle-node">Generate Synthetic</div>
-        <div class="cycle-arrow">&#9663;</div>
-        <div class="cycle-node">Fine-tune (replace)</div>
-        <div class="cycle-arrow">&#9663;</div>
-        <div class="cycle-node">Evaluate K&#8320;</div>
-        <div class="cycle-arrow" style="transform: rotate(180deg); margin-top: 6px;">&#8634;</div>
-        <div class="loop-label">&times;10 generations</div>
-      </div>
-      <div class="cycle-info">
-        <div class="ci-title">Replace-Only Protocol</div>
-        <div class="ci-item">Fresh adapter initialized each generation</div>
-        <div class="ci-item">No data accumulation across generations</div>
-        <div class="ci-item">QLoRA (4-bit) or full fine-tuning</div>
-        <div class="ci-item">Stochastic generation (T=0.7)</div>
+  <!-- C: Pressure -->
+  <div class="macro block-pressure">
+    <div class="macro-label">Pressure Axes</div>
+    <div class="macro-body">
+      <div class="pressure-items">
+        <div class="pressure-card">
+          <div class="pc-title">Rank</div>
+          <div class="pc-sub">update capacity</div>
+        </div>
+        <div class="pressure-card">
+          <div class="pc-title">Learning Rate</div>
+          <div class="pc-sub">perturbation magnitude</div>
+        </div>
+        <div class="pressure-card">
+          <div class="pc-title">Exposure</div>
+          <div class="pc-sub">synthetic proportion</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="connector">&#9663;</div>
+  <div class="macro-arrow">&#8594;</div>
 
-  <!-- PHASE III: Manipulations -->
-  <div class="section">
-    <div class="phase-label">Phase III &mdash; Pressure Manipulation</div>
-    <div class="manip-row">
-      <div class="manip-card">
-        <div class="mc-title">Adapter Rank</div>
-        <div class="mc-detail">r = 4 to 256</div>
-      </div>
-      <div class="manip-card">
-        <div class="mc-title">Learning Rate</div>
-        <div class="mc-detail">1e-6 to 2e-5</div>
-      </div>
-      <div class="manip-card">
-        <div class="mc-title">Rank &times; LR</div>
-        <div class="mc-detail">interaction (3&times;3)</div>
-      </div>
-      <div class="manip-card">
-        <div class="mc-title">Exposure</div>
-        <div class="mc-detail">~5% reduction</div>
+  <!-- D: Evaluation -->
+  <div class="macro block-eval">
+    <div class="macro-label">Evaluation</div>
+    <div class="macro-body">
+      <div class="eval-items">
+        <div>
+          <div class="eval-group-title">Factual</div>
+          <div class="eval-group-items">K&#8320; retention<br>Item transitions</div>
+        </div>
+        <div>
+          <div class="eval-group-title">Distributional</div>
+          <div class="eval-group-items">Efficiency<br>Persistence</div>
+        </div>
+        <div>
+          <div class="eval-group-title">Structural</div>
+          <div class="eval-group-items">Effective rank</div>
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="connector">&#9663;</div>
+  <div class="macro-arrow">&#8594;</div>
 
-  <!-- PHASE IV: Analysis -->
-  <div class="section">
-    <div class="phase-label">Phase IV &mdash; Evaluation</div>
-    <div class="analysis-row">
-      <div class="analysis-group">
-        <div class="ag-title">Knowledge</div>
-        <div class="ag-items">K&#8320; retention<br>Item transitions</div>
+  <!-- E: Regimes -->
+  <div class="macro block-regimes">
+    <div class="macro-label">Outcome</div>
+    <div class="macro-body">
+      <div class="regime-cards">
+        <div class="regime-card rc-homeo">
+          <div class="rc-name">Homeostatic</div>
+          <div class="rc-desc">knowledge preserved</div>
+        </div>
+        <div class="regime-card rc-bound">
+          <div class="rc-name">Bounded</div>
+          <div class="rc-desc">hidden output drift</div>
+        </div>
+        <div class="regime-card rc-degrad">
+          <div class="rc-name">Degradative</div>
+          <div class="rc-desc">progressive collapse</div>
+        </div>
       </div>
-      <div class="analysis-group">
-        <div class="ag-title">Distribution</div>
-        <div class="ag-items">Content efficiency<br>Persistence<br>Length drift</div>
-      </div>
-      <div class="analysis-group">
-        <div class="ag-title">Adaptation</div>
-        <div class="ag-items">Effective rank</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="connector">&#9663;</div>
-
-  <!-- PHASE V: Outcomes -->
-  <div class="section">
-    <div class="phase-label">Phase V &mdash; Regime Identification</div>
-    <div class="outcomes">
-      <div class="outcome-segment seg-homeo">
-        <div class="os-name">Homeostatic</div>
-        <div class="os-desc">stable</div>
-      </div>
-      <div class="outcome-segment seg-bound">
-        <div class="os-name">Bounded</div>
-        <div class="os-desc">hidden drift</div>
-      </div>
-      <div class="outcome-segment seg-degrad">
-        <div class="os-name">Degradative</div>
-        <div class="os-desc">collapse</div>
-      </div>
-    </div>
-    <div class="pressure-arrow">
-      <div class="pa-label">low pressure</div>
-      <div class="pa-line"></div>
-      <div class="pa-label">high pressure</div>
     </div>
   </div>
 
