@@ -110,7 +110,7 @@ for s, dash in zip([15, 137, 256], [None, "dot", "dash"]):
         marker=dict(size=5), legendgroup="r256", showlegend=(s==15)))
 
 fig1.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
-    title=dict(text="<b>(a)</b> Retention Trajectories", font=dict(size=13, family=FONT, color="#333"), x=0.5, xanchor="center", y=0.98),
+    title=dict(text="<b>(a)</b> Retention Trajectories", font=dict(size=15, family=FONT, color="#333"), x=0.5, xanchor="center", y=0.98),
     xaxis_title="Generation", yaxis_title="K0 Retention (%)",
     yaxis_range=[65, 102],
     legend=dict(x=0.5, y=-0.22, xanchor="center", orientation="h", font=dict(size=13)),
@@ -147,7 +147,7 @@ fig2.update_yaxes(title_text="K0 Retention (%)", secondary_y=False,
 fig2.update_yaxes(title_text="Effective Rank", secondary_y=True,
     range=[0, 100], title_font_color=COLORS["degradative"])
 fig2.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
-    title=dict(text="<b>(b)</b> Dose-Response (Retention and Effective Rank)", font=dict(size=13, family=FONT, color="#333"), x=0.5, xanchor="center", y=0.98),
+    title=dict(text="<b>(b)</b> Dose-Response (Retention and Effective Rank)", font=dict(size=15, family=FONT, color="#333"), x=0.5, xanchor="center", y=0.98),
     legend=dict(x=0.5, y=-0.22, xanchor="center", orientation="h", font=dict(size=13)),
     margin=dict(l=60, r=60, t=35, b=70))
 fig2.update_annotations(visible=False)

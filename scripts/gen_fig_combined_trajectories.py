@@ -176,15 +176,17 @@ fig.update_layout(
     font=dict(family=FONT, size=13),
     paper_bgcolor="white",
     plot_bgcolor="white",
-    width=480, height=620,
+    width=480, height=640,
     legend=dict(x=0.5, y=-0.16, xanchor="center", yanchor="top",
                 orientation="h", font=dict(size=12)),
-    margin=dict(l=55, r=15, t=30, b=60),
+    margin=dict(l=55, r=15, t=40, b=60),
 )
+# Match subplot title size with gen_all_plotly style
+fig.update_annotations(font=dict(size=15, family=FONT, color="#333"))
 
 # Save
-pio.write_image(fig, str(FIG_DIR / "fig_combined_trajectories.png"), width=480, height=620, scale=4)
-pio.write_image(fig, str(FIG_DIR / "fig_combined_trajectories.pdf"), width=480, height=620)
+pio.write_image(fig, str(FIG_DIR / "fig_combined_trajectories.png"), width=480, height=640, scale=4)
+pio.write_image(fig, str(FIG_DIR / "fig_combined_trajectories.pdf"), width=480, height=640)
 sz = (FIG_DIR / "fig_combined_trajectories.png").stat().st_size / 1024
 print(f"Saved: fig_combined_trajectories.png ({sz:.0f} KB)")
 print(f"Saved: fig_combined_trajectories.pdf")
