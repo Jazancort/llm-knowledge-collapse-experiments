@@ -780,12 +780,12 @@ from content-word diversity changes.
 
 Finally, we define the \textit{Synthetic Drift Index} (SDI-3) to summarize
 output-distribution change:
-\begin{multline}\label{eq:sdi}
-    \mathrm{SDI}\text{-}3 =
-    \log\!\left(\frac{\mathrm{MeanLen}_T}{\mathrm{MeanLen}_0}\right)
-    + \log\!\left(\frac{\mathrm{D1}_0}{\mathrm{D1}_T}\right) \\
+\begin{equation}\label{eq:sdi}
+    \mathrm{SDI\text{-}3} =
+    \log\!\frac{\mathrm{MeanLen}_T}{\mathrm{MeanLen}_0}
+    + \log\!\frac{\mathrm{D1}_0}{\mathrm{D1}_T}
     + \Delta\mathrm{Instability},
-\end{multline}
+\end{equation}
 where $\Delta\mathrm{Instability} = \mathrm{Instability}(T) -
 \mathrm{Instability}(1)$ and $\mathrm{Instability}(t)$ denotes the fraction of
 training items whose normalized response differs between generation~$t{-}1$ and
