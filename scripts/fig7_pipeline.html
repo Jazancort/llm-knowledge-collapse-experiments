@@ -1,288 +1,368 @@
 <!DOCTYPE html>
 <html>
 <head>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: 'Inter', sans-serif;
     background: white;
     width: 1800px;
-    padding: 50px 40px;
-  }
-  .figure {
-    display: flex;
-    align-items: stretch;
-    gap: 16px;
+    padding: 40px 30px;
   }
 
-  /* === MACRO BLOCK === */
-  .macro-block {
+  /* === MAIN GRID === */
+  .pipeline {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  /* === COLUMN === */
+  .col {
+    flex: 1;
     border-radius: 12px;
     padding: 24px 20px;
     display: flex;
     flex-direction: column;
-  }
-  .macro-title {
-    font-size: 13px;
-    font-weight: 800;
-    text-align: center;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    padding-bottom: 14px;
-    margin-bottom: 18px;
-    border-bottom: 2px solid rgba(0,0,0,0.12);
-  }
-  .macro-content {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 14px;
+    gap: 22px;
   }
 
-  /* Arrow between blocks */
-  .macro-arrow {
+  /* Column header */
+  .col-header {
     display: flex;
     align-items: center;
-    font-size: 26px;
-    color: #444;
+    gap: 12px;
+    padding-bottom: 14px;
+    border-bottom: 2px solid rgba(0,0,0,0.08);
+  }
+  .col-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+  }
+  .col-title {
+    font-size: 17px;
+    font-weight: 800;
+    color: #222;
   }
 
-  /* === ITEM BOX (consistent everywhere) === */
-  .item {
+  /* === SUB-BLOCK === */
+  .sub-block {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .sub-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+  }
+  .sub-detail {
+    font-size: 12px;
+    color: #555;
+    line-height: 1.6;
+    padding-left: 2px;
+  }
+  .sub-detail .bullet {
+    display: block;
+    padding-left: 12px;
+    position: relative;
+  }
+  .sub-detail .bullet::before {
+    content: '\2022';
+    position: absolute;
+    left: 0;
+    color: #999;
+  }
+
+  /* === REGIME ITEMS === */
+  .regime-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
     background: white;
-    border: 2px solid #333;
-    border-radius: 6px;
-    padding: 14px 16px;
-    text-align: center;
+    border: 1.5px solid rgba(0,0,0,0.08);
   }
-  .item-title {
-    font-size: 16px;
-    font-weight: 800;
-    color: #111;
+  .regime-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    margin-top: 2px;
+    flex-shrink: 0;
   }
-  .item-sub {
-    font-size: 11.5px;
+  .regime-text .regime-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: #222;
+  }
+  .regime-text .regime-desc {
+    font-size: 11px;
     color: #666;
-    margin-top: 4px;
+    margin-top: 2px;
     line-height: 1.4;
   }
 
-  /* === BLOCK COLORS === */
-  .blk-setup {
-    width: 190px;
-    background: #fef3cd;
-  }
-  .blk-setup .macro-title { color: #664d03; }
-
-  .blk-recursive {
-    width: 560px;
-    background: #d1ecf1;
-  }
-  .blk-recursive .macro-title { color: #0c5460; }
-
-  .blk-pressure {
-    width: 220px;
-    background: #d4edda;
-  }
-  .blk-pressure .macro-title { color: #155724; }
-
-  .blk-eval {
-    width: 210px;
-    background: #e2e3e5;
-  }
-  .blk-eval .macro-title { color: #383d41; }
-
-  .blk-regimes {
-    width: 240px;
-    background: #f8d7da;
-  }
-  .blk-regimes .macro-title { color: #721c24; }
-
-  /* === CYCLE LAYOUT === */
-  .cycle-row {
+  /* === BOTTOM BAR === */
+  .outputs-bar {
+    border: 2px dashed #ccc;
+    border-radius: 10px;
+    padding: 16px 30px;
     display: flex;
     align-items: center;
-    gap: 36px;
+    gap: 40px;
+    justify-content: center;
   }
-  .cycle-col {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    position: relative;
-    padding-left: 30px;
-  }
-  .cycle-arrow-down {
-    font-size: 16px;
-    color: #0c5460;
+  .outputs-title {
+    font-size: 13px;
     font-weight: 700;
+    color: #444;
   }
-  .cycle-col .item { width: 200px; }
-
-  /* Return arc */
-  .return-arc {
-    position: absolute;
-    left: 0;
-    top: 10px;
-    bottom: 10px;
-    width: 24px;
+  .output-item {
+    text-align: center;
+  }
+  .output-item .oi-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #333;
+  }
+  .output-item .oi-sub {
+    font-size: 10px;
+    color: #888;
+    margin-top: 2px;
   }
 
-  /* Meta items on the right of cycle */
-  .meta-col {
+  /* === COLORS PER COLUMN === */
+  .col-1 { background: #fef9e7; }
+  .col-1 .col-number { background: #d4a017; }
+  .col-2 { background: #eaf4fb; }
+  .col-2 .col-number { background: #2980b9; }
+  .col-3 { background: #eafaf1; }
+  .col-3 .col-number { background: #27ae60; }
+  .col-4 { background: #fdf2e9; }
+  .col-4 .col-number { background: #d35400; }
+  .col-5 { background: #fdedec; }
+  .col-5 .col-number { background: #c0392b; }
+
+  /* Connector lines from columns to bottom bar */
+  .connectors {
     display: flex;
-    flex-direction: column;
-    gap: 14px;
+    justify-content: space-around;
+    padding: 0 80px;
+    margin-bottom: 0;
   }
-  .meta-col .item {
-    width: 190px;
-    border-style: dashed;
-    border-color: #0c5460;
+  .conn-line {
+    width: 2px;
+    height: 16px;
+    background: #ccc;
   }
-
-  /* Regime color bars */
-  .regime-green { border-left: 6px solid #28a745; }
-  .regime-green .item-title { color: #155724; }
-  .regime-yellow { border-left: 6px solid #ffc107; }
-  .regime-yellow .item-title { color: #664d03; }
-  .regime-red { border-left: 6px solid #dc3545; }
-  .regime-red .item-title { color: #721c24; }
 </style>
 </head>
 <body>
-<div class="figure">
 
-  <!-- SETUP -->
-  <div class="macro-block blk-setup">
-    <div class="macro-title">Setup</div>
-    <div class="macro-content">
-      <div class="item">
-        <div class="item-title">TriviaQA</div>
-        <div class="item-sub">2,000 train<br>200 eval</div>
+<div class="pipeline">
+
+  <!-- 1: Data Preparation -->
+  <div class="col col-1">
+    <div class="col-header">
+      <div class="col-number">1</div>
+      <div class="col-title">Data Preparation</div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Dataset</div>
+      <div class="sub-detail">
+        TriviaQA (rc.nocontext)<br>
+        2,000 train samples<br>
+        200 eval samples
       </div>
-      <div class="item">
-        <div class="item-title">3 Backbones</div>
-        <div class="item-sub">Qwen 2.5 1.5B<br>Gemma 3 1B<br>Gemma 4 E2B</div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Models</div>
+      <div class="sub-detail">
+        Qwen 2.5 1.5B<br>
+        Gemma 3 1B<br>
+        Gemma 4 E2B
       </div>
-      <div class="item">
-        <div class="item-title">Baseline K&#8320;</div>
-        <div class="item-sub">5 seeds per config</div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Baseline K&#8320;</div>
+      <div class="sub-detail">
+        Evaluate original model<br>
+        5 seeds per configuration
       </div>
     </div>
   </div>
 
-  <div class="macro-arrow">&#10141;</div>
-
-  <!-- RECURSIVE -->
-  <div class="macro-block blk-recursive">
-    <div class="macro-title">Recursive Fine-Tuning</div>
-    <div class="macro-content">
-      <div class="cycle-row">
-        <div class="cycle-col">
-          <div class="item">
-            <div class="item-title">Generate</div>
-            <div class="item-sub">synthetic data (T=0.7)</div>
-          </div>
-          <div class="cycle-arrow-down">&#9660;</div>
-          <div class="item">
-            <div class="item-title">Fine-tune</div>
-            <div class="item-sub">replace-only</div>
-          </div>
-          <div class="cycle-arrow-down">&#9660;</div>
-          <div class="item">
-            <div class="item-title">Evaluate</div>
-            <div class="item-sub">K&#8320; retention</div>
-          </div>
-          <div class="return-arc">
-            <svg viewBox="0 0 24 280" fill="none" preserveAspectRatio="none" width="24" height="100%">
-              <path d="M 20,268 C 4,268 4,12 20,12" stroke="#0c5460" stroke-width="2.5" fill="none"/>
-              <polygon points="17,16 20,6 23,16" fill="#0c5460"/>
-            </svg>
-          </div>
-        </div>
-        <div class="meta-col">
-          <div class="item">
-            <div class="item-title">10 Generations</div>
-            <div class="item-sub">iterative loop</div>
-          </div>
-          <div class="item">
-            <div class="item-title">Fresh Adapter</div>
-            <div class="item-sub">no accumulation</div>
-          </div>
-          <div class="item">
-            <div class="item-title">QLoRA / FFT</div>
-            <div class="item-sub">4-bit or full</div>
-          </div>
-        </div>
+  <!-- 2: Recursive Training -->
+  <div class="col col-2">
+    <div class="col-header">
+      <div class="col-number">2</div>
+      <div class="col-title">Recursive Training</div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Training Setup</div>
+      <div class="sub-detail">
+        QLoRA (4-bit) or FFT<br>
+        Replace-only updates<br>
+        10 generations (G&#8321;&#8211;G&#8321;&#8320;)
+      </div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Recursive Loop</div>
+      <div class="sub-detail">
+        At each generation t:<br>
+        <span class="bullet">Generate synthetic data</span>
+        <span class="bullet">Fine-tune on synthetic only</span>
+        <span class="bullet">Evaluate K&#8320; retention</span>
+        <span class="bullet">Save checkpoint</span>
+      </div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Key Constraints</div>
+      <div class="sub-detail">
+        Fresh adapter each gen<br>
+        No data accumulation<br>
+        No replay buffer
       </div>
     </div>
   </div>
 
-  <div class="macro-arrow">&#10141;</div>
-
-  <!-- PRESSURE -->
-  <div class="macro-block blk-pressure">
-    <div class="macro-title">Pressure Axes</div>
-    <div class="macro-content">
-      <div class="item">
-        <div class="item-title">Rank</div>
-        <div class="item-sub">update capacity<br>(r = 4 to 256)</div>
+  <!-- 3: Pressure Manipulation -->
+  <div class="col col-3">
+    <div class="col-header">
+      <div class="col-number">3</div>
+      <div class="col-title">Pressure Manipulation</div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Adapter Rank Sweep</div>
+      <div class="sub-detail">
+        r &isin; {4, 10, 12, 14, 16, 32, 64, 128, 256}<br>
+        Fix LR and exposure
       </div>
-      <div class="item">
-        <div class="item-title">Learning Rate</div>
-        <div class="item-sub">perturbation magnitude<br>(1e-6 to 2e-5)</div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Learning Rate Sweep</div>
+      <div class="sub-detail">
+        LR &isin; {1e-6, 5e-6, 1e-5, 2e-5}<br>
+        Full fine-tuning mode
       </div>
-      <div class="item">
-        <div class="item-title">Exposure</div>
-        <div class="item-sub">synthetic proportion<br>(~5% reduction)</div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Exposure Intervention</div>
+      <div class="sub-detail">
+        Downsample synthetic data<br>
+        ~5% reduction at boundary
       </div>
     </div>
   </div>
 
-  <div class="macro-arrow">&#10141;</div>
-
-  <!-- EVALUATION -->
-  <div class="macro-block blk-eval">
-    <div class="macro-title">Evaluation</div>
-    <div class="macro-content">
-      <div class="item">
-        <div class="item-title">Factual</div>
-        <div class="item-sub">K&#8320; retention<br>Item transitions</div>
+  <!-- 4: Evaluation -->
+  <div class="col col-4">
+    <div class="col-header">
+      <div class="col-number">4</div>
+      <div class="col-title">Evaluation</div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Factual Retention</div>
+      <div class="sub-detail">
+        K&#8320; exact-match score<br>
+        Item-level transitions<br>
+        Per-generation trajectories
       </div>
-      <div class="item">
-        <div class="item-title">Distributional</div>
-        <div class="item-sub">Efficiency<br>Persistence</div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Distributional Metrics</div>
+      <div class="sub-detail">
+        Content efficiency<br>
+        Response persistence<br>
+        Output length drift
       </div>
-      <div class="item">
-        <div class="item-title">Structural</div>
-        <div class="item-sub">Effective rank</div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Structural Analysis</div>
+      <div class="sub-detail">
+        Effective rank (erank)<br>
+        Adapter singular values
       </div>
     </div>
   </div>
 
-  <div class="macro-arrow">&#10141;</div>
-
-  <!-- REGIMES -->
-  <div class="macro-block blk-regimes">
-    <div class="macro-title">Regime Classification</div>
-    <div class="macro-content">
-      <div class="item regime-green">
-        <div class="item-title">Homeostatic</div>
-        <div class="item-sub">knowledge preserved</div>
+  <!-- 5: Regime Classification -->
+  <div class="col col-5">
+    <div class="col-header">
+      <div class="col-number">5</div>
+      <div class="col-title">Regime Classification</div>
+    </div>
+    <div class="sub-block">
+      <div class="sub-title">Classification Criteria</div>
+      <div class="sub-detail">
+        Based on K&#8320; trajectory<br>
+        and distributional drift
       </div>
-      <div class="item regime-yellow">
-        <div class="item-title">Bounded</div>
-        <div class="item-sub">hidden output drift</div>
+    </div>
+    <div class="regime-item">
+      <div class="regime-dot" style="background: #27ae60;"></div>
+      <div class="regime-text">
+        <div class="regime-name">Homeostatic</div>
+        <div class="regime-desc">Retention &gt;90%<br>Distribution stable<br>Low cumulative pressure</div>
       </div>
-      <div class="item regime-red">
-        <div class="item-title">Degradative</div>
-        <div class="item-sub">progressive collapse</div>
+    </div>
+    <div class="regime-item">
+      <div class="regime-dot" style="background: #f39c12;"></div>
+      <div class="regime-text">
+        <div class="regime-name">Bounded</div>
+        <div class="regime-desc">Retention stable<br>Distribution drifts<br>Intermediate pressure</div>
+      </div>
+    </div>
+    <div class="regime-item">
+      <div class="regime-dot" style="background: #e74c3c;"></div>
+      <div class="regime-text">
+        <div class="regime-name">Degradative</div>
+        <div class="regime-desc">Retention declines<br>Distribution collapses<br>High cumulative pressure</div>
       </div>
     </div>
   </div>
 
 </div>
+
+<!-- Connector lines -->
+<div class="connectors">
+  <div class="conn-line"></div>
+  <div class="conn-line"></div>
+  <div class="conn-line"></div>
+  <div class="conn-line"></div>
+  <div class="conn-line"></div>
+</div>
+
+<!-- Bottom outputs bar -->
+<div class="outputs-bar">
+  <div class="outputs-title">Experimental Outputs</div>
+  <div class="output-item">
+    <div class="oi-name">K&#8320; Retention Curves</div>
+    <div class="oi-sub">Over generations</div>
+  </div>
+  <div class="output-item">
+    <div class="oi-name">Distributional Analysis</div>
+    <div class="oi-sub">Efficiency, persistence</div>
+  </div>
+  <div class="output-item">
+    <div class="oi-name">Rank &times; LR Matrix</div>
+    <div class="oi-sub">Interaction effects</div>
+  </div>
+  <div class="output-item">
+    <div class="oi-name">Regime Boundaries</div>
+    <div class="oi-sub">Threshold identification</div>
+  </div>
+</div>
+
 </body>
 </html>
