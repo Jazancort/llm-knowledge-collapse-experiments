@@ -13,80 +13,65 @@
   .figure {
     display: flex;
     align-items: stretch;
-    gap: 20px;
+    gap: 16px;
   }
 
-  /* === MACRO BLOCK (colored bg, no internal borders) === */
+  /* === MACRO BLOCK === */
   .macro-block {
     border-radius: 12px;
-    padding: 28px 24px;
+    padding: 24px 20px;
     display: flex;
     flex-direction: column;
   }
   .macro-title {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 800;
     text-align: center;
-    padding-bottom: 16px;
-    border-bottom: 2px solid rgba(0,0,0,0.1);
-    margin-bottom: 20px;
-    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding-bottom: 14px;
+    margin-bottom: 18px;
+    border-bottom: 2px solid rgba(0,0,0,0.12);
   }
   .macro-content {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: center;
-    gap: 24px;
+    gap: 14px;
   }
 
-  /* Arrow between macro blocks */
+  /* Arrow between blocks */
   .macro-arrow {
     display: flex;
     align-items: center;
-    font-size: 28px;
-    font-weight: 300;
-    color: #333;
+    font-size: 26px;
+    color: #444;
   }
 
-  /* === Internal boxes (white bg, black border) === */
-  .ibox {
+  /* === ITEM BOX (consistent everywhere) === */
+  .item {
     background: white;
     border: 2px solid #333;
     border-radius: 6px;
-    padding: 14px 18px;
+    padding: 14px 16px;
     text-align: center;
   }
-  .ibox-title {
-    font-size: 17px;
+  .item-title {
+    font-size: 16px;
     font-weight: 800;
     color: #111;
   }
-  .ibox-sub {
-    font-size: 12px;
+  .item-sub {
+    font-size: 11.5px;
     color: #666;
     margin-top: 4px;
-  }
-
-  /* === Text items (no box) === */
-  .text-item {
-    text-align: center;
-  }
-  .text-item .ti-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: #222;
-  }
-  .text-item .ti-sub {
-    font-size: 12px;
-    color: #777;
-    margin-top: 3px;
-    line-height: 1.5;
+    line-height: 1.4;
   }
 
   /* === BLOCK COLORS === */
   .blk-setup {
-    width: 200px;
+    width: 190px;
     background: #fef3cd;
   }
   .blk-setup .macro-title { color: #664d03; }
@@ -98,103 +83,72 @@
   .blk-recursive .macro-title { color: #0c5460; }
 
   .blk-pressure {
-    width: 240px;
+    width: 220px;
     background: #d4edda;
   }
   .blk-pressure .macro-title { color: #155724; }
 
   .blk-eval {
-    width: 220px;
-    background: #fff3cd;
+    width: 210px;
+    background: #e2e3e5;
   }
-  .blk-eval .macro-title { color: #856404; }
+  .blk-eval .macro-title { color: #383d41; }
 
   .blk-regimes {
-    width: 260px;
+    width: 240px;
     background: #f8d7da;
   }
   .blk-regimes .macro-title { color: #721c24; }
 
-  /* Cycle layout */
+  /* === CYCLE LAYOUT === */
   .cycle-row {
     display: flex;
     align-items: center;
-    gap: 30px;
+    gap: 36px;
   }
   .cycle-col {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+    position: relative;
+    padding-left: 30px;
   }
   .cycle-arrow-down {
-    font-size: 18px;
+    font-size: 16px;
     color: #0c5460;
     font-weight: 700;
   }
-  .cycle-return {
-    position: relative;
-    width: 240px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .cycle-return-svg {
-    position: absolute;
-    left: -28px;
-    top: 0;
-    bottom: 0;
-    width: 28px;
-  }
+  .cycle-col .item { width: 200px; }
 
-  .meta-list {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-  }
-  .meta-item {
-    font-size: 14px;
-    color: #333;
-    line-height: 1.4;
-  }
-  .meta-item strong {
-    font-weight: 700;
-    color: #0c5460;
-  }
-
-  /* Regime cards */
-  .regime-card {
-    background: white;
-    border: 2px solid #333;
-    border-radius: 6px;
-    padding: 14px 16px;
-    text-align: center;
-    position: relative;
-    overflow: hidden;
-  }
-  .regime-card::before {
-    content: '';
+  /* Return arc */
+  .return-arc {
     position: absolute;
     left: 0;
-    top: 0;
-    bottom: 0;
-    width: 6px;
+    top: 10px;
+    bottom: 10px;
+    width: 24px;
   }
-  .regime-card .rc-name {
-    font-size: 17px;
-    font-weight: 800;
+
+  /* Meta items on the right of cycle */
+  .meta-col {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
   }
-  .regime-card .rc-sub {
-    font-size: 11px;
-    color: #666;
-    margin-top: 3px;
+  .meta-col .item {
+    width: 190px;
+    border-style: dashed;
+    border-color: #0c5460;
   }
-  .rc-green::before { background: #28a745; }
-  .rc-green .rc-name { color: #155724; }
-  .rc-yellow::before { background: #ffc107; }
-  .rc-yellow .rc-name { color: #664d03; }
-  .rc-red::before { background: #dc3545; }
-  .rc-red .rc-name { color: #721c24; }
+
+  /* Regime color bars */
+  .regime-green { border-left: 6px solid #28a745; }
+  .regime-green .item-title { color: #155724; }
+  .regime-yellow { border-left: 6px solid #ffc107; }
+  .regime-yellow .item-title { color: #664d03; }
+  .regime-red { border-left: 6px solid #dc3545; }
+  .regime-red .item-title { color: #721c24; }
 </style>
 </head>
 <body>
@@ -202,55 +156,65 @@
 
   <!-- SETUP -->
   <div class="macro-block blk-setup">
-    <div class="macro-title">EXPERIMENTAL SETUP</div>
+    <div class="macro-title">Setup</div>
     <div class="macro-content">
-      <div class="text-item">
-        <div class="ti-title">TriviaQA</div>
-        <div class="ti-sub">2,000 train<br>200 eval</div>
+      <div class="item">
+        <div class="item-title">TriviaQA</div>
+        <div class="item-sub">2,000 train<br>200 eval</div>
       </div>
-      <div class="text-item">
-        <div class="ti-title">3 LLM Backbones</div>
-        <div class="ti-sub">Qwen 2.5 1.5B<br>Gemma 3 1B<br>Gemma 4 E2B</div>
+      <div class="item">
+        <div class="item-title">3 Backbones</div>
+        <div class="item-sub">Qwen 2.5 1.5B<br>Gemma 3 1B<br>Gemma 4 E2B</div>
       </div>
-      <div class="text-item">
-        <div class="ti-title">Baseline K&#8320;</div>
-        <div class="ti-sub">5 seeds per config</div>
+      <div class="item">
+        <div class="item-title">Baseline K&#8320;</div>
+        <div class="item-sub">5 seeds per config</div>
       </div>
     </div>
   </div>
 
   <div class="macro-arrow">&#10141;</div>
 
-  <!-- RECURSIVE TRAINING -->
+  <!-- RECURSIVE -->
   <div class="macro-block blk-recursive">
-    <div class="macro-title">RECURSIVE FINE-TUNING (10 GENERATIONS)</div>
+    <div class="macro-title">Recursive Fine-Tuning</div>
     <div class="macro-content">
       <div class="cycle-row">
         <div class="cycle-col">
-          <div class="ibox" style="width: 220px;">
-            <div class="ibox-title">Generate</div>
-            <div class="ibox-sub">synthetic data (T=0.7)</div>
+          <div class="item">
+            <div class="item-title">Generate</div>
+            <div class="item-sub">synthetic data (T=0.7)</div>
           </div>
           <div class="cycle-arrow-down">&#9660;</div>
-          <div class="ibox" style="width: 220px;">
-            <div class="ibox-title">Fine-tune</div>
-            <div class="ibox-sub">replace-only, fresh adapter</div>
+          <div class="item">
+            <div class="item-title">Fine-tune</div>
+            <div class="item-sub">replace-only</div>
           </div>
           <div class="cycle-arrow-down">&#9660;</div>
-          <div class="ibox" style="width: 220px;">
-            <div class="ibox-title">Evaluate</div>
-            <div class="ibox-sub">factual retention (K&#8320;)</div>
+          <div class="item">
+            <div class="item-title">Evaluate</div>
+            <div class="item-sub">K&#8320; retention</div>
           </div>
-          <!-- Return arc SVG overlay -->
-          <svg style="position:absolute; left: 12px; top: 60px; width: 24px; height: 260px;" viewBox="0 0 24 260" fill="none">
-            <path d="M 20,250 C 4,250 4,10 20,10" stroke="#0c5460" stroke-width="2.5" fill="none"/>
-            <polygon points="18,14 20,4 22,14" fill="#0c5460"/>
-          </svg>
+          <div class="return-arc">
+            <svg viewBox="0 0 24 280" fill="none" preserveAspectRatio="none" width="24" height="100%">
+              <path d="M 20,268 C 4,268 4,12 20,12" stroke="#0c5460" stroke-width="2.5" fill="none"/>
+              <polygon points="17,16 20,6 23,16" fill="#0c5460"/>
+            </svg>
+          </div>
         </div>
-        <div class="meta-list">
-          <div class="meta-item"><strong>Replace-only</strong><br>no data accumulation</div>
-          <div class="meta-item"><strong>Fresh adapter</strong><br>initialized each gen</div>
-          <div class="meta-item"><strong>QLoRA</strong> (4-bit NF4)<br>or full fine-tuning</div>
+        <div class="meta-col">
+          <div class="item">
+            <div class="item-title">10 Generations</div>
+            <div class="item-sub">iterative loop</div>
+          </div>
+          <div class="item">
+            <div class="item-title">Fresh Adapter</div>
+            <div class="item-sub">no accumulation</div>
+          </div>
+          <div class="item">
+            <div class="item-title">QLoRA / FFT</div>
+            <div class="item-sub">4-bit or full</div>
+          </div>
         </div>
       </div>
     </div>
@@ -258,21 +222,21 @@
 
   <div class="macro-arrow">&#10141;</div>
 
-  <!-- PRESSURE AXES -->
+  <!-- PRESSURE -->
   <div class="macro-block blk-pressure">
-    <div class="macro-title">PRESSURE AXES</div>
+    <div class="macro-title">Pressure Axes</div>
     <div class="macro-content">
-      <div class="ibox">
-        <div class="ibox-title">Rank</div>
-        <div class="ibox-sub">update capacity (r=4 to 256)</div>
+      <div class="item">
+        <div class="item-title">Rank</div>
+        <div class="item-sub">update capacity<br>(r = 4 to 256)</div>
       </div>
-      <div class="ibox">
-        <div class="ibox-title">Learning Rate</div>
-        <div class="ibox-sub">perturbation magnitude</div>
+      <div class="item">
+        <div class="item-title">Learning Rate</div>
+        <div class="item-sub">perturbation magnitude<br>(1e-6 to 2e-5)</div>
       </div>
-      <div class="ibox">
-        <div class="ibox-title">Exposure</div>
-        <div class="ibox-sub">synthetic proportion</div>
+      <div class="item">
+        <div class="item-title">Exposure</div>
+        <div class="item-sub">synthetic proportion<br>(~5% reduction)</div>
       </div>
     </div>
   </div>
@@ -281,19 +245,19 @@
 
   <!-- EVALUATION -->
   <div class="macro-block blk-eval">
-    <div class="macro-title">EVALUATION</div>
+    <div class="macro-title">Evaluation</div>
     <div class="macro-content">
-      <div class="text-item">
-        <div class="ti-title">Factual</div>
-        <div class="ti-sub">K&#8320; retention<br>Item transitions</div>
+      <div class="item">
+        <div class="item-title">Factual</div>
+        <div class="item-sub">K&#8320; retention<br>Item transitions</div>
       </div>
-      <div class="text-item">
-        <div class="ti-title">Distributional</div>
-        <div class="ti-sub">Efficiency<br>Persistence</div>
+      <div class="item">
+        <div class="item-title">Distributional</div>
+        <div class="item-sub">Efficiency<br>Persistence</div>
       </div>
-      <div class="text-item">
-        <div class="ti-title">Structural</div>
-        <div class="ti-sub">Effective rank</div>
+      <div class="item">
+        <div class="item-title">Structural</div>
+        <div class="item-sub">Effective rank</div>
       </div>
     </div>
   </div>
@@ -302,19 +266,19 @@
 
   <!-- REGIMES -->
   <div class="macro-block blk-regimes">
-    <div class="macro-title">REGIME CLASSIFICATION</div>
+    <div class="macro-title">Regime Classification</div>
     <div class="macro-content">
-      <div class="regime-card rc-green">
-        <div class="rc-name">Homeostatic</div>
-        <div class="rc-sub">knowledge preserved</div>
+      <div class="item regime-green">
+        <div class="item-title">Homeostatic</div>
+        <div class="item-sub">knowledge preserved</div>
       </div>
-      <div class="regime-card rc-yellow">
-        <div class="rc-name">Bounded</div>
-        <div class="rc-sub">hidden output drift</div>
+      <div class="item regime-yellow">
+        <div class="item-title">Bounded</div>
+        <div class="item-sub">hidden output drift</div>
       </div>
-      <div class="regime-card rc-red">
-        <div class="rc-name">Degradative</div>
-        <div class="rc-sub">progressive collapse</div>
+      <div class="item regime-red">
+        <div class="item-title">Degradative</div>
+        <div class="item-sub">progressive collapse</div>
       </div>
     </div>
   </div>
