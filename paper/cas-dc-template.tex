@@ -427,7 +427,11 @@ effective-rank and perturbation metrics (Section~\ref{sec:pressure}),
 output-distribution diagnostics (Section~\ref{sec:metrics}), synthetic-exposure
 interventions (Section~\ref{sec:intervention}), and statistical conventions
 (Section~\ref{sec:statistics}). Figure~\ref{fig:methodology} provides a visual
-overview of the experimental pipeline.
+overview of the experimental pipeline. The distinguishing feature of this design
+is that pressure manipulation (Stage~3) systematically varies training intensity
+across multiple axes rather than evaluating a single fixed configuration. Each
+axis produces an independent dose-response curve, and the resulting regime
+classification (Stage~5) constitutes the primary empirical contribution.
 
 \subsection{Recursive replace-only protocol}\label{sec:protocol}
 
