@@ -153,10 +153,10 @@ fig.update_layout(
     yaxis_range=[55, 102],
     xaxis_range=[0.5, 5.5],
     xaxis_dtick=1,
-    legend=dict(x=0.02, y=0.02, xanchor="left", yanchor="bottom",
-                bgcolor="rgba(255,255,255,0.9)", bordercolor="#ccc", borderwidth=1,
+    legend=dict(x=0.5, y=-0.18, xanchor="center", yanchor="top",
+                orientation="h", bgcolor="rgba(255,255,255,0.9)",
                 font=dict(size=10)),
-    margin=dict(l=60, r=30, t=15, b=50),
+    margin=dict(l=60, r=30, t=15, b=70),
 )
 style_axes(fig)
 
