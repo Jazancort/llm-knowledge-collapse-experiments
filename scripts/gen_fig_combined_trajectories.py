@@ -93,7 +93,7 @@ for rank in [10, 12, 14]:
 fig = make_subplots(
     rows=2, cols=1,
     subplot_titles=["<b>(a)</b> Qwen 2.5 1.5B", "<b>(b)</b> Gemma 3 1B"],
-    vertical_spacing=0.15,
+    vertical_spacing=0.22,
 )
 
 # --- QWEN (left) ---
@@ -177,7 +177,7 @@ fig.update_layout(
     paper_bgcolor="white",
     plot_bgcolor="white",
     width=480, height=620,
-    legend=dict(x=0.5, y=-0.14, xanchor="center", yanchor="top",
+    legend=dict(x=0.5, y=-0.16, xanchor="center", yanchor="top",
                 orientation="h", font=dict(size=12)),
     margin=dict(l=55, r=15, t=30, b=60),
 )

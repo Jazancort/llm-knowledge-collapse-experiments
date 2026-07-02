@@ -113,7 +113,7 @@ fig1.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     title=dict(text="<b>(a)</b> Retention Trajectories", font=dict(size=13, family=FONT, color="#333"), x=0.5, xanchor="center", y=0.98),
     xaxis_title="Generation", yaxis_title="K0 Retention (%)",
     yaxis_range=[65, 102],
-    legend=dict(x=0.5, y=-0.2, xanchor="center", orientation="h", font=dict(size=13)),
+    legend=dict(x=0.5, y=-0.22, xanchor="center", orientation="h", font=dict(size=13)),
     margin=dict(l=60, r=20, t=35, b=70))
 fig1.update_annotations(visible=False)
 fig1.update_annotations(visible=False)
@@ -148,7 +148,7 @@ fig2.update_yaxes(title_text="Effective Rank", secondary_y=True,
     range=[0, 100], title_font_color=COLORS["degradative"])
 fig2.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     title=dict(text="<b>(b)</b> Dose-Response (Retention and Effective Rank)", font=dict(size=13, family=FONT, color="#333"), x=0.5, xanchor="center", y=0.98),
-    legend=dict(x=0.5, y=-0.2, xanchor="center", orientation="h", font=dict(size=13)),
+    legend=dict(x=0.5, y=-0.22, xanchor="center", orientation="h", font=dict(size=13)),
     margin=dict(l=60, r=60, t=35, b=70))
 fig2.update_annotations(visible=False)
 fig2.update_annotations(visible=False)
@@ -182,7 +182,7 @@ fig3.add_trace(go.Scatter(x=[d[0] for d in gemma4], y=[d[1] for d in gemma4],
 fig3.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     xaxis_title="Mean Effective Rank", yaxis_title="K0 Retention (%)",
     xaxis_type="log", yaxis_range=[60, 102],
-    legend=dict(x=0.5, y=-0.2, xanchor="center", orientation="h", font=dict(size=13)),
+    legend=dict(x=0.5, y=-0.22, xanchor="center", orientation="h", font=dict(size=13)),
     margin=dict(l=60, r=20, t=10, b=70))
 style_axes(fig3)
 save(fig3, "fig3_cross_backbone")
@@ -209,7 +209,7 @@ for s, dash in zip([15, 137, 256], [None, "dot", "dash"]):
 fig4.update_layout(**LAYOUT_DEFAULTS, width=560, height=360,
     xaxis_title="Generation", yaxis_title="K0 Retention (%)",
     yaxis_range=[85, 102],
-    legend=dict(x=0.5, y=-0.2, xanchor="center", orientation="h", font=dict(size=13)),
+    legend=dict(x=0.5, y=-0.22, xanchor="center", orientation="h", font=dict(size=13)),
     margin=dict(l=60, r=20, t=10, b=70))
 style_axes(fig4)
 save(fig4, "fig4_fft_vs_qlora")
@@ -261,7 +261,7 @@ for data, name, color in [(pers_r16, "r=16", COLORS["homeostatic"]),
 
 fig5.update_xaxes(title_text="Generation", row=3, col=1)
 fig5.update_layout(**LAYOUT_DEFAULTS, width=560, height=560, showlegend=True,
-    legend=dict(x=0.5, y=-0.12, xanchor="center", orientation="h", font=dict(size=13)),
+    legend=dict(x=0.5, y=-0.22, xanchor="center", orientation="h", font=dict(size=13)),
     margin=dict(l=60, r=20, t=30, b=80))
 style_axes(fig5)
 save(fig5, "fig5_distributional", w=560, h=560)
