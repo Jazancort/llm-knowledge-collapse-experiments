@@ -88,7 +88,7 @@ pattern, confirming that the transition is not unique to low-rank adaptation;
 and perturbation magnitude jointly determine the operating regime rather than
 acting as independent axes; (4) a retention/distribution dissociation at
 intermediate pressure, where output efficiency degrades threefold while factual
-retention remains above 88\%; and (5) restoration of near-homeostatic behavior
+retention remains near 90\%; and (5) restoration of near-homeostatic behavior
 through approximately 5\% reduction in synthetic exposure at the Qwen boundary
 configuration. These findings characterize recursive degradation as a
 pressure-dependent phenomenon whose stability depends on a multidimensional
@@ -509,13 +509,10 @@ Normalization consists of lowercasing, removing articles
 written number words to digits, and collapsing whitespace.
 
 The subset of held-out questions answered correctly at generation~0 defines
-$K_0$. For example, for Qwen~2.5~1.5B, $|K_0|=79$ out of 200 held-out
-questions in the main rank sweep; subsequent experiments (rank $\times$ LR
-matrix and interventions) obtain $|K_0|=78$ due to a minor normalization
-difference affecting one borderline item. Results are always reported relative
-to the $K_0$ established within each experimental batch. Other backbones have
-their own fixed $K_0$ sets, determined once at generation~0 and held constant
-across all experimental conditions for that backbone.
+$K_0$. For example, for Qwen~2.5~1.5B, $|K_0|=78$ out of 200 held-out
+questions. Other backbones have their own fixed $K_0$ sets, determined once at
+generation~0 and held constant across all experimental conditions for that
+backbone.
 
 At each subsequent generation~$t$, only the corresponding $K_0$ items are used
 to compute retention:
@@ -940,8 +937,8 @@ Increasing adapter rank produces a clear, monotonic decline in factual retention
 across the full rank sweep on Qwen~2.5~1.5B.
 Table~\ref{tab:rank_sweep} summarizes K0 retention, effective rank, trainable
 parameters, and regime classification for each tested configuration. Across the
-evaluated range, Gen10 retention decreases from 94.9\% at $r=16$ to 78.0\% at
-$r=256$, a difference of 16.9 percentage points.
+evaluated range, Gen10 retention decreases from 97.4\% at $r=16$ to 79.1\% at
+$r=256$, a difference of 18.3 percentage points.
 
 \begin{table}[width=.95\linewidth,cols=6,pos=htbp]
 \caption{QLoRA rank sweep on Qwen~2.5~1.5B-Instruct. Headline ranks ($r=16$,
@@ -951,12 +948,12 @@ seed.}\label{tab:rank_sweep}
 \toprule
 Rank & Params & Gen & Ret. & Eff.\ Rk & Regime \\
 \midrule
-$r=4$   & 545K  & 5  & 96.2\%           & 3.34  & Homeo. \\
-$r=16$  & 2.2M  & 10 & 94.9\% (N=3)     & 11.08 & Homeo. \\
-$r=32$  & 4.4M  & 5  & 94.9\%           & 17.85 & Homeo. \\
-$r=64$  & 8.7M  & 10 & 91.1\%           & 29.52 & Homeo. \\
-$r=128$ & 17.4M & 10 & 88.6\%           & 50.16 & Bounded \\
-$r=256$ & 34.9M & 10 & 78.0\% (N=3)     & 87.57 & Degrad. \\
+$r=4$   & 545K  & 5  & 97.4\%           & 3.34  & Homeo. \\
+$r=16$  & 2.2M  & 10 & 97.4\% (N=3)     & 11.08 & Homeo. \\
+$r=32$  & 4.4M  & 5  & 96.2\%           & 17.85 & Homeo. \\
+$r=64$  & 8.7M  & 10 & 92.3\%           & 29.52 & Homeo. \\
+$r=128$ & 17.4M & 10 & 89.7\%           & 50.16 & Bounded \\
+$r=256$ & 34.9M & 10 & 79.1\% (N=3)     & 87.57 & Degrad. \\
 \bottomrule
 \end{tabular*}
 \end{table}
@@ -980,12 +977,12 @@ different temporal dynamics across regimes.
 
 At $r=16$, retention stabilizes after
 an initial one-generation adaptation cost and remains flat through Gen10 (mean
-94.9\%, range 94.9--97.4\% across three seeds). At $r=128$, retention settles at
-approximately 88--89\% by Gen3 and remains bounded through Gen10, neither
+97.4\% across three seeds). At $r=128$, retention settles at
+approximately 88--89\% by Gen5 and remains bounded through Gen10, neither
 recovering nor declining further. This bounded behavior distinguishes it from
 both the stable regime and the progressively degradative regime. At
 $r=256$, retention declines progressively at approximately 2 percentage points
-per generation on average, reaching 78.0\% (mean across three seeds) by Gen10
+per generation on average, reaching 79.1\% (mean across three seeds) by Gen10
 with no sign of stabilization within the observed horizon.
 
 The dose-response curve (Fig.~\ref{fig:trajectories}, bottom) reveals several
@@ -993,8 +990,8 @@ additional features. First, the
 relationship between rank and retention is monotonically decreasing across all
 six values, spanning more than an order of magnitude in trainable parameters
 (545K to 34.9M). No rank reversal or non-monotonicity is observed. Second, the
-decline accelerates at higher ranks: the gap between $r=64$ (91.1\%) and $r=256$
-(78.0\%) is substantially larger than any gap between adjacent lower-rank
+decline accelerates at higher ranks: the gap between $r=64$ (92.3\%) and $r=256$
+(79.1\%) is substantially larger than any gap between adjacent lower-rank
 configurations. Third, effective rank increases sub-linearly with nominal rank
 (3.34 at $r=4$ to 87.57 at $r=256$), indicating that higher-rank adapters do not
 fully utilize their nominal capacity while still producing substantially larger
@@ -1002,15 +999,15 @@ effective updates.
 
 The multi-seed experiments at the rank-sweep endpoints confirm that the regime
 separation is reproducible. At $r=16$, per-seed Gen10 retention values are
-94.9\%, 97.4\%, and 97.4\%. At $r=256$, per-seed Gen10 values are 75.9\%,
-77.2\%, and 81.0\%. The ranges do not overlap: the lowest $r=16$ value (94.9\%)
-exceeds the highest $r=256$ value (81.0\%) by 13.9 percentage points,
+97.4\%, 97.4\%, and 97.4\%. At $r=256$, per-seed Gen10 values are 76.9\%,
+78.2\%, and 82.1\%. The ranges do not overlap: the lowest $r=16$ value (97.4\%)
+exceeds the highest $r=256$ value (82.1\%) by 15.3 percentage points,
 demonstrating clear empirical separation under the present experimental protocol.
 
 As a supportive ablation, we compared attention-only and full-linear module
 targeting on Qwen at a single seed. Targeting all linear modules
 (\texttt{q,k,v,o,gate,up,down}) at $r=4$ produces 4.6M trainable parameters and
-94.9\% Gen5 retention, matching attention-only targeting at $r=16$ (2.2M
+96.2\% Gen5 retention, matching attention-only targeting at $r=16$ (2.2M
 parameters, same retention). The full-linear $r=4$ adapter has a mean effective
 rank of 3.43, compared to 11.08 for attention-only $r=16$. This preliminary
 observation is consistent with effective update capacity, rather than module
@@ -1279,7 +1276,7 @@ one-generation adaptation cost but no progressive drift.
 
 \subsubsection{Bounded regime ($r=128$)}
 The $r=128$ configuration reveals a dissociation between factual retention and
-output-distribution quality. While K0 retention remains bounded at 88.6\% through
+output-distribution quality. While K0 retention remains bounded at 89.7\% through
 Gen10, the output distribution degrades substantially: mean response length
 inflates from 2.47 to 7.0 words, content efficiency collapses from 0.41 to 0.13
 (a threefold dilution), stopwords double from 12\% to 25\%, MTLD collapses from
