@@ -1019,6 +1019,32 @@ location or parameter count alone, being the primary predictor of regime
 membership. Because it is based on a single seed, we treat it as supportive
 evidence.
 
+Table~\ref{tab:transitions} summarizes item-level transitions across the rank
+sweep. In the homeostatic regime, facts lost at one generation are recovered at
+similar rates (net loss $\approx 0$), indicating bounded oscillation rather than
+progressive forgetting. In the degradative regime, losses consistently exceed
+recoveries, producing monotonic net displacement.
+
+\begin{table}[htbp]
+\caption{Item-level transitions across recursive generations on
+Qwen~2.5~1.5B (seed~15, $K_0 = 78$). C$\to$W: facts lost; W$\to$C: facts
+recovered.}\label{tab:transitions}
+\footnotesize
+\renewcommand{\arraystretch}{1.4}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+Rank & Gens & C$\to$W & W$\to$C & Net loss \\
+\midrule
+$r=4$   & 5  & 1  & 0 & 1 \\
+$r=16$  & 10 & 3  & 3 & 0 \\
+$r=32$  & 5  & 2  & 3 & $-$1 \\
+$r=64$  & 10 & 7  & 7 & 0 \\
+$r=128$ & 10 & 10 & 7 & 3 \\
+$r=256$ & 10 & 19 & 4 & 15 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
 Together, these results establish that increasing update capacity through adapter
 rank is sufficient to produce a monotonic transition from homeostatic to
 degradative recursive fine-tuning on the Qwen backbone. The following sections
