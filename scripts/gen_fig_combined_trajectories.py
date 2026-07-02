@@ -93,7 +93,7 @@ for rank in [10, 12, 14]:
 fig = make_subplots(
     rows=2, cols=1,
     subplot_titles=["<b>(a)</b> Qwen 2.5 1.5B", "<b>(b)</b> Gemma 3 1B"],
-    vertical_spacing=0.22,
+    vertical_spacing=0.18,
 )
 
 # --- QWEN (left) ---
