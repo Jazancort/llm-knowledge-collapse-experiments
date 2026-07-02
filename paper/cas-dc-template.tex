@@ -1568,7 +1568,7 @@ experiments.}\label{tab:evidence}
 \toprule
 \textbf{Observation} & \textbf{Supporting evidence} \\
 \midrule
-Rank governs transition & Rank sweep, 6 values, $N{=}3$ \\
+Rank governs transition & Rank sweep, 6 values, $N{=}3$ at endpoint \\
 \addlinespace
 Magnitude governs transition & FFT LR sweep, 4 values \\
 \addlinespace
@@ -1588,8 +1588,8 @@ Generalizes cross-backbone & FFT sweep on Gemma~3 \\
 \end{table}
 
 Two features of this framework merit emphasis. First, the threshold is
-backbone-dependent: Gemma~3 transitions at effective rank 3--9, while Qwen
-remains bounded at effective rank 50. No simple normalization by architectural
+backbone-dependent: Gemma~3 transitions at effective rank 3--6, while Qwen
+remains stable up to effective rank ${\sim}$50. No simple normalization by architectural
 parameters (hidden dimension, depth, head count) aligned these thresholds. This
 likely reflects properties of the pretrained backbone not captured by simple
 architectural dimensions. Second, the framework does not assume that the three
@@ -1687,7 +1687,7 @@ Pressure dependence & Exact functional form \\
 \addlinespace
 Sharp (not gradual) boundary & Behavior beyond Gen10 \\
 \addlinespace
-Reproducibility (5 seeds) & Transfer to non-factoid tasks \\
+Reproducibility (3--5 seeds) & Transfer to non-factoid tasks \\
 \addlinespace
 Cross-backbone regime structure & Cross-architecture normalization \\
 \addlinespace
@@ -1702,7 +1702,7 @@ Magnitude axis cross-backbone & Interaction strength at scale \\
 
 The distributional analysis in Section~\ref{sec:res_distribution} reveals that
 factual retention alone provides an incomplete picture of recursive degradation.
-The $r=128$ configuration on Qwen retains 88.6\% of $K_0$ facts through Gen10,
+The $r=128$ configuration on Qwen retains 89.7\% of $K_0$ facts through Gen10,
 a level that could reasonably be interpreted as stable under a retention-only
 monitoring strategy. Yet its output distribution degrades substantially: content
 efficiency collapses to 0.13, baseline persistence falls to 5.2\%, and MTLD
