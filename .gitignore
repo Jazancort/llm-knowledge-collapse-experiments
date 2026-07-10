@@ -25,7 +25,7 @@ uv.lock
 .DS_Store
 Thumbs.db
 
-# Outputs (large JSON/model files — download separately)
+# Outputs (large files — download separately)
 outputs/*/synthetic_gen*.json
 outputs/*/syn_*.json
 outputs/*/synthetic_gen0_*.json
@@ -40,6 +40,9 @@ outputs/**/retention_tmp/
 *.safetensors
 checkpoints/
 
+# HTML figure drafts
+scripts/*.html
+
 # Logs
 logs/*.log
 wandb/
@@ -49,3 +52,11 @@ wandb/
 
 # Jupyter
 .ipynb_checkpoints/
+
+
+# Internal development docs (not for public repo)
+docs/
+figures/
+notebooks/
+data/
+.kiro/
