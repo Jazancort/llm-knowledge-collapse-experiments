@@ -17,7 +17,7 @@ plt.rcParams.update({
 })
 
 OUT = Path(__file__).parent.parent / "outputs"
-FIG_DIR = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\Paradoxo\llm-knowledge-collapse (paper)\v2\figs")
+FIG_DIR = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\Paradoxo\llm-knowledge-collapse (paper)\v3\figs")
 FIG_DIR.mkdir(exist_ok=True, parents=True)
 
 
@@ -83,6 +83,7 @@ ax.plot(r256_seeds[15][0], r256_mean, color='#D55E00', linewidth=2.0,
         label='$r=256$ (N=3)', zorder=3)
 
 # Formatting
+ax.set_title('(a) $K_0$ retention trajectories', fontsize=9, fontweight='bold', loc='left')
 ax.set_xlabel('Generation', fontsize=9)
 ax.set_ylabel('$K_0$ Retention (%)', fontsize=9)
 ax.set_xlim(0, 10)

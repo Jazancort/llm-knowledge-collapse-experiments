@@ -2,16 +2,18 @@
 __pycache__/
 *.py[cod]
 *$py.class
+*.so
 *.egg-info/
 dist/
 build/
-*.egg
 
 # Virtual environments
+.venv/
 venv/
 env/
-.venv/
-.python-version
+
+# uv
+uv.lock
 
 # IDE
 .vscode/
@@ -23,29 +25,27 @@ env/
 .DS_Store
 Thumbs.db
 
-# Model checkpoints and outputs (large files)
-outputs/
-logs/
+# Outputs (large JSON/model files — download separately)
+outputs/*/synthetic_gen*.json
+outputs/*/syn_*.json
+outputs/*/synthetic_gen0_*.json
+outputs/*/tmp/
+outputs/*/tmp_extract/
+outputs/**/adapter_*/
+outputs/**/gen*_tmp/
+outputs/**/retention_tmp/
+
+# Model checkpoints
 *.bin
 *.safetensors
-*.gguf
-*.pt
-*.pth
+checkpoints/
 
-# Data (downloaded at runtime)
-data/train_seed/*.json
-data/evaluation/*.json
-data/probe/*.json
+# Logs
+logs/*.log
+wandb/
 
-# HuggingFace cache
-.cache/
+# Kiro (local dev config)
+.kiro/
 
 # Jupyter
 .ipynb_checkpoints/
-notebooks/*.ipynb
-
-# Secrets
-.env
-
-athena_access.md
-../athena_access.md

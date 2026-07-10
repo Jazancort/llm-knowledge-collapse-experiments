@@ -1,0 +1,43 @@
+{
+  "model": "google/gemma-3-1b-it",
+  "rank": 10,
+  "seed": 15,
+  "k0_size": 46,
+  "generations": [
+    {
+      "gen": 1,
+      "retention": 41,
+      "eff_rank": 6.365263553766104,
+      "frobenius": 0.04215327686128708,
+      "time_sec": 233.9
+    },
+    {
+      "gen": 2,
+      "retention": 39,
+      "eff_rank": 6.397665881193602,
+      "frobenius": 0.04170810467062088,
+      "time_sec": 243.9
+    },
+    {
+      "gen": 3,
+      "retention": 38,
+      "eff_rank": 6.386177957057953,
+      "frobenius": 0.042002846845067464,
+      "time_sec": 241.8
+    },
+    {
+      "gen": 4,
+      "retention": 39,
+      "eff_rank": 6.357040680371798,
+      "frobenius": 0.042282474549630515,
+      "time_sec": 244.2
+    },
+    {
+      "gen": 5,
+      "retention": 36,
+      "eff_rank": 6.361891210079193,
+      "frobenius": 0.04218530332526335,
+      "time_sec": 234.4
+    }
+  ]
+}
