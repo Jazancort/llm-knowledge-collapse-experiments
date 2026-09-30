@@ -143,10 +143,26 @@ def downsample_relative(texts, dose, rng_seed):
     return kept if kept else list(texts[:100])
 
 
+
+def _git_commit():
+    """Return short git commit hash, or 'unknown' on failure."""
+    try:
+        r = subprocess.run(
+            ["git", "log", "--format=%H", "-1", "HEAD"],
+            capture_output=True, text=True,
+            cwd=str(Path(__file__).parent.parent)
+        )
+        return r.stdout.strip()[:12] if r.returncode == 0 else "unknown"
+    except Exception:
+        return "unknown"
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--rank", type=int, default=64)
     parser.add_argument("--seed", type=int, default=15)
+    parser.add_argument("--steps", type=int, default=None,
+                        help="pin max_steps (7b: steps-matched control; None = no pin)")
     parser.add_argument("--dose", type=float, default=0.0,
                         help="C5 dose: fraction of synthetic tokens to remove (0=C1 baseline)")
     parser.add_argument("--tag", type=str, default="",
@@ -271,6 +287,7 @@ def main():
                 learning_rate=args.lr, bf16=True, logging_steps=100,
                 save_strategy="no", report_to="none", seed=seed + gen,
                 gradient_checkpointing=len(target_modules) > 2,
+                **({"max_steps": args.steps} if args.steps is not None else {}),
             ),
             train_dataset=train_ds,
             data_collator=DataCollatorForLanguageModeling(tokenizer, mlm=False),
@@ -312,8 +329,20 @@ def main():
         with open(output_dir / f"synthetic_gen{gen}.json", "w") as f:
             json.dump(new_synthetic, f)
 
+        # Provenance (Bloco 7: dose, tokens, steps, git commit)
+        _n_before = len(prev_synthetic)
+        _n_after  = len(train_texts)
+        _tok_before = sum(len(t.split()) for t in prev_synthetic)
+        _tok_after  = sum(len(t.split()) for t in train_texts)
+        _n_steps = getattr(trainer.state, "global_step", None)
         results.append({"generation": gen, "accuracy": acc, "retention": ret,
-                        "transitions": trans, "adapter": spectrum, "all_results": all_res})
+                        "transitions": trans, "adapter": spectrum, "all_results": all_res,
+                        "dose_frac": args.dose,
+                        "examples_before": _n_before, "examples_after": _n_after,
+                        "tokens_before_words": _tok_before, "tokens_after_words": _tok_after,
+                        "n_steps_actual": _n_steps,
+                        "steps_override": args.steps,
+                        "git_commit": _git_commit()})
         with open(results_path, "w") as f:
             json.dump(results, f, indent=2, default=str)
 
