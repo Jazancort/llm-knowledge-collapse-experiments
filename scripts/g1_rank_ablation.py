@@ -158,7 +158,7 @@ def main():
 
     # Load data (same split as all other experiments)
     print("\n[SETUP] Loading TriviaQA...")
-    ds = load_dataset("trivia_qa", "rc.nocontext", split="train", trust_remote_code=True)
+    ds = load_dataset("mandarjoshi/trivia_qa", "rc.nocontext", split="train", trust_remote_code=True)
     ds = ds.shuffle(seed=15)
 
     train_questions = [ds[i]["question"] for i in range(TRAIN_SIZE)]
