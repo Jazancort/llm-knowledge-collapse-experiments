@@ -122,10 +122,33 @@ def compute_lora_spectrum(model):
     return {"eff_rank": np.mean(ranks), "spectral": np.mean(s_norms), "frobenius": np.mean(f_norms)}
 
 
+
+def downsample_relative(texts, dose, rng_seed):
+    """C5: remove `dose` fraction of the synthetic token mass.
+    Identical to run_window.py downsample_relative — whole examples only."""
+    import numpy as _np
+    if dose <= 0.0:
+        return texts
+    total = sum(len(t.split()) for t in texts)
+    target = total * (1.0 - dose)
+    rng = _np.random.default_rng(rng_seed)
+    order = rng.permutation(len(texts))
+    kept, acc = [], 0
+    for i in order:
+        n = len(texts[i].split())
+        if acc + n > target:
+            continue
+        kept.append(texts[i])
+        acc += n
+    return kept if kept else list(texts[:100])
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--rank", type=int, default=64)
     parser.add_argument("--seed", type=int, default=15)
+    parser.add_argument("--dose", type=float, default=0.0,
+                        help="C5 dose: fraction of synthetic tokens to remove (0=C1 baseline)")
     parser.add_argument("--tag", type=str, default="",
                         help="suffix for output dir")
     parser.add_argument("--lr", type=float, default=1e-5,
@@ -232,7 +255,11 @@ def main():
 
         def tok_fn(ex):
             return tokenizer(ex["text"], truncation=True, max_length=256, padding="max_length")
-        train_ds = Dataset.from_dict({"text": prev_synthetic})
+        # C5 intervention: downsample if dose > 0
+        train_texts = downsample_relative(prev_synthetic, args.dose, seed + gen)
+        if args.dose > 0:
+            print(f"    C5 dose={args.dose:.1%}: {len(prev_synthetic)} -> {len(train_texts)} examples")
+        train_ds = Dataset.from_dict({"text": train_texts})
         train_ds = train_ds.map(tok_fn, batched=True, remove_columns=["text"])
         train_ds.set_format("torch")
 
