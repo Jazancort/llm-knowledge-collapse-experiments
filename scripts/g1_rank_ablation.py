@@ -126,6 +126,10 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--rank", type=int, default=64)
     parser.add_argument("--seed", type=int, default=15)
+    parser.add_argument("--tag", type=str, default="",
+                        help="suffix for output dir")
+    parser.add_argument("--lr", type=float, default=1e-5,
+                        help="learning rate (default: 1e-5)")
     parser.add_argument("--generations", type=int, default=5)
     parser.add_argument("--target", choices=["attention", "full_linear"], default="attention")
     args = parser.parse_args()
@@ -140,7 +144,8 @@ def main():
     target_modules = TARGET_MODULES[args.target]
 
     suffix = f"_full" if args.target == "full_linear" else ""
-    output_dir = Path(__file__).parent.parent / "outputs" / f"g1_rank{rank}{suffix}_seed{seed}"
+    tag = args.tag
+    output_dir = Path(__file__).parent.parent / "outputs" / f"g1_rank{rank}{suffix}_seed{seed}{tag}"
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print("=" * 60)
@@ -236,7 +241,7 @@ def main():
             args=TrainingArguments(
                 output_dir=str(output_dir / "tmp"), num_train_epochs=2,
                 per_device_train_batch_size=2, gradient_accumulation_steps=8,
-                learning_rate=1e-5, bf16=True, logging_steps=100,
+                learning_rate=args.lr, bf16=True, logging_steps=100,
                 save_strategy="no", report_to="none", seed=seed + gen,
                 gradient_checkpointing=len(target_modules) > 2,
             ),
