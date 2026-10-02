@@ -51,14 +51,19 @@ def exact_match(pred, gts):
     return any(normalize_answer(g) in p or p in normalize_answer(g) for g in gts)
 
 
-def load_base():
-    bnb = BitsAndBytesConfig(
-        load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16,
-        bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True,
-    )
-    model = AutoModelForCausalLM.from_pretrained(
-        MODEL_NAME, quantization_config=bnb, device_map="auto", torch_dtype=torch.bfloat16,
-    )
+def load_base(no_quant=False):
+    if no_quant:
+        model = AutoModelForCausalLM.from_pretrained(
+            MODEL_NAME, device_map="auto", torch_dtype=torch.bfloat16,
+        )
+    else:
+        bnb = BitsAndBytesConfig(
+            load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16,
+            bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True,
+        )
+        model = AutoModelForCausalLM.from_pretrained(
+            MODEL_NAME, quantization_config=bnb, device_map="auto", torch_dtype=torch.bfloat16,
+        )
     tokenizer = AutoTokenizer.from_pretrained(MODEL_NAME)
     if tokenizer.pad_token is None:
         tokenizer.pad_token = tokenizer.eos_token
@@ -171,7 +176,15 @@ def main():
                         help="learning rate (default: 1e-5)")
     parser.add_argument("--generations", type=int, default=5)
     parser.add_argument("--target", choices=["attention", "full_linear"], default="attention")
+    parser.add_argument("--model", type=str, default=None,
+                        help="HuggingFace model ID (overrides MODEL_NAME). "
+                             "e.g. google/gemma-3-1b-it")
+    parser.add_argument("--no-quant", action="store_true", default=False,
+                        help="Use bf16 LoRA without NF4 quantisation (G3 ablation)")
     args = parser.parse_args()
+    global MODEL_NAME
+    if args.model is not None:
+        MODEL_NAME = args.model
     rank = args.rank
     seed = args.seed
     NUM_GENERATIONS = args.generations
@@ -338,6 +351,8 @@ def main():
         results.append({"generation": gen, "accuracy": acc, "retention": ret,
                         "transitions": trans, "adapter": spectrum, "all_results": all_res,
                         "dose_frac": args.dose,
+                        "no_quant": args.no_quant,
+                        "model_id": MODEL_NAME,
                         "examples_before": _n_before, "examples_after": _n_after,
                         "tokens_before_words": _tok_before, "tokens_after_words": _tok_after,
                         "n_steps_actual": _n_steps,
