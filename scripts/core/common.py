@@ -203,7 +203,10 @@ def load_base(cfg, quantized=True, device=None):
             load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16,
             bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True)
     model = AutoModelForCausalLM.from_pretrained(cfg["model"], **kwargs)
-    tok = AutoTokenizer.from_pretrained(cfg["model"])
+    # Sheared-LLaMA (and other LLaMA-2 based models) fail with the fast tokenizer
+    # when the new transformers tries to convert SentencePiece to tiktoken.
+    use_fast = cfg.get("chat_style") != "alpaca"
+    tok = AutoTokenizer.from_pretrained(cfg["model"], use_fast=use_fast)
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
     tok.padding_side = "left"
