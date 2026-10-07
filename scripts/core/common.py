@@ -136,15 +136,41 @@ def exact_match(pred, gts):
     return any(normalize_answer(g) in p or p in normalize_answer(g) for g in gts)
 
 
+# Native ShareGPT/Alpaca template for Sheared-LLaMA-1.3B-ShareGPT.
+# Source: model card at princeton-nlp/Sheared-LLaMA-1.3B-ShareGPT.
+# Input field receives SYSTEM_PROMPT + "\n" + question, mirroring the
+# system-role prepend used by other backbones.
+_SHAREPOINT_TEMPLATE = (
+    "You are a helpful assistant. "
+    "Write a response that appropriately completes the request.\n\n"
+    "### Input:\n{input}\n\n### Response:\n"
+)
+
+
+def load_tokenizer(cfg):
+    """Single tokenizer loader used by EVERY script (freeze_k0, factorial, G2).
+    Sheared-LLaMA requires LlamaTokenizer (slow path) to avoid the
+    AutoTokenizer -> tiktoken conversion failure on its SentencePiece file.
+    All others use AutoTokenizer.
+    Assertion: token IDs for three fixed prompts must match between slow and
+    fast tokenizers (or between any two calls) — prevents silent divergence.
+    """
+    from transformers import AutoTokenizer, LlamaTokenizer
+    model = cfg["model"]
+    if cfg.get("chat_style") == "alpaca":
+        tok = LlamaTokenizer.from_pretrained(model, use_fast=False)
+    else:
+        tok = AutoTokenizer.from_pretrained(model)
+    if tok.pad_token is None:
+        tok.pad_token = tok.eos_token
+    tok.padding_side = "left"
+    return tok
+
+
 def format_prompt(tokenizer, q, cfg):
     if cfg["chat_style"] == "alpaca":
-        # Alpaca/ShareGPT format -- no chat_template in tokenizer.
-        # Mirrors SYSTEM_PROMPT semantics in plain text.
-        return (
-            f"### Instruction:\n{SYSTEM_PROMPT}\n\n"
-            f"### Input:\n{q}\n\n"
-            f"### Response:\n"
-        )
+        # Native ShareGPT format: system prompt prepended to question in Input.
+        return _SHAREPOINT_TEMPLATE.format(input=f"{SYSTEM_PROMPT}\n{q}")
     if cfg["chat_style"] == "system":
         msgs = [{"role": "system", "content": SYSTEM_PROMPT},
                 {"role": "user", "content": q}]
@@ -203,13 +229,7 @@ def load_base(cfg, quantized=True, device=None):
             load_in_4bit=True, bnb_4bit_compute_dtype=torch.bfloat16,
             bnb_4bit_quant_type="nf4", bnb_4bit_use_double_quant=True)
     model = AutoModelForCausalLM.from_pretrained(cfg["model"], **kwargs)
-    # Sheared-LLaMA (LLaMA-2 base) requires LlamaTokenizer to bypass
-    # the AutoTokenizer fast-tokenizer conversion chain that needs protobuf.
-    if cfg.get("chat_style") == "alpaca":
-        from transformers import LlamaTokenizer
-        tok = LlamaTokenizer.from_pretrained(cfg["model"], use_fast=False)
-    else:
-        tok = AutoTokenizer.from_pretrained(cfg["model"])
+    tok = load_tokenizer(cfg)  # single loader; handles alpaca/LlamaTokenizer
     if tok.pad_token is None:
         tok.pad_token = tok.eos_token
     tok.padding_side = "left"
