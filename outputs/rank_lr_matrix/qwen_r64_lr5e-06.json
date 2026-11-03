@@ -1,0 +1,44 @@
+{
+  "model": "Qwen/Qwen2.5-1.5B-Instruct",
+  "rank": 64,
+  "lr": 5e-06,
+  "seed": 15,
+  "k0_size": 78,
+  "generations": [
+    {
+      "gen": 1,
+      "retention": 76,
+      "eff_rank": 31.700672490256174,
+      "frobenius": 0.05102256036895726,
+      "time_sec": 250.8
+    },
+    {
+      "gen": 2,
+      "retention": 76,
+      "eff_rank": 31.720717770712717,
+      "frobenius": 0.050622383664761274,
+      "time_sec": 269.5
+    },
+    {
+      "gen": 3,
+      "retention": 75,
+      "eff_rank": 31.564824989863805,
+      "frobenius": 0.05141605353648109,
+      "time_sec": 251.1
+    },
+    {
+      "gen": 4,
+      "retention": 75,
+      "eff_rank": 32.07609479767935,
+      "frobenius": 0.04861024976707995,
+      "time_sec": 255.1
+    },
+    {
+      "gen": 5,
+      "retention": 76,
+      "eff_rank": 31.42258616856166,
+      "frobenius": 0.050426090768139274,
+      "time_sec": 251.8
+    }
+  ]
+}

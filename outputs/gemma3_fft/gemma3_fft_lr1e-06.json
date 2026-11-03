@@ -1,0 +1,34 @@
+{
+  "model": "google/gemma-3-1b-it",
+  "method": "FFT",
+  "lr": 1e-06,
+  "seed": 15,
+  "k0_size": 46,
+  "generations": [
+    {
+      "gen": 1,
+      "retention": 40,
+      "time_sec": 528.5
+    },
+    {
+      "gen": 2,
+      "retention": 38,
+      "time_sec": 576.4
+    },
+    {
+      "gen": 3,
+      "retention": 39,
+      "time_sec": 561.1
+    },
+    {
+      "gen": 4,
+      "retention": 37,
+      "time_sec": 577.4
+    },
+    {
+      "gen": 5,
+      "retention": 36,
+      "time_sec": 540.8
+    }
+  ]
+}
