@@ -1,4 +1,4 @@
-"""
+﻿"""
 Figure: Longitudinal K0 Retention Trajectories with regime bands
 Qwen 2.5 1.5B, r=16 (N=3), r=128 (N=1), r=256 (N=3), Gen0-10
 """
@@ -17,7 +17,7 @@ plt.rcParams.update({
 })
 
 OUT = Path(__file__).parent.parent / "outputs"
-FIG_DIR = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\Paradoxo\llm-knowledge-collapse (paper)\v2\figs")
+FIG_DIR = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\papers\survey-taxonomy\llm-knowledge-collapse (paper)\v2\figs")
 FIG_DIR.mkdir(exist_ok=True, parents=True)
 
 

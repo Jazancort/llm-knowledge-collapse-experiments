@@ -1,4 +1,4 @@
-"""Figure: Combined Qwen + Gemma 3 trajectories (matplotlib, stacked).
+﻿"""Figure: Combined Qwen + Gemma 3 trajectories (matplotlib, stacked).
 Addresses Carlos #35-37: regime bands, no confusing dotted lines, clear legend.
 """
 import json
@@ -16,7 +16,7 @@ plt.rcParams.update({
 })
 
 OUT = Path(__file__).parent.parent / "outputs"
-FIG_DIR = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\Paradoxo\llm-knowledge-collapse (paper)\v2\figs")
+FIG_DIR = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\papers\survey-taxonomy\llm-knowledge-collapse (paper)\v2\figs")
 FIG_DIR.mkdir(exist_ok=True, parents=True)
 
 # Colors (Wong palette)

@@ -1,4 +1,4 @@
-"""
+﻿"""
 Figure: Rank × LR Interaction Plot (replaces heatmap)
 Shows 3 lines (one per rank) with LR on x-axis and Gen5 retention on y-axis.
 Non-parallel lines demonstrate interaction between rank and LR.
@@ -18,7 +18,7 @@ plt.rcParams.update({
     'ytick.major.width': 0.6,
 })
 
-FIG_DIR = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\Paradoxo\llm-knowledge-collapse (paper)\v2\figs")
+FIG_DIR = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\papers\survey-taxonomy\llm-knowledge-collapse (paper)\v2\figs")
 FIG_DIR.mkdir(exist_ok=True, parents=True)
 
 # Data: Rank × LR interaction matrix (Qwen 2.5 1.5B, K0=78, Gen5, seed 15)

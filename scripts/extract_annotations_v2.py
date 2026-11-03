@@ -1,7 +1,7 @@
-"""Extract annotations from Carlos v2 review PDF."""
+﻿"""Extract annotations from Carlos v2 review PDF."""
 import fitz
 
-doc = fitz.open(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\Paradoxo\Review\Carlos\v2\Knowledge Degradation in LLMs - Julio Azancort (1).pdf")
+doc = fitz.open(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\papers\survey-taxonomy\Review\Carlos\v2\Knowledge Degradation in LLMs - Julio Azancort (1).pdf")
 annotations = []
 
 for page_num in range(len(doc)):
@@ -46,7 +46,7 @@ for i, a in enumerate(annotations, 1):
         output_lines.append(f"  COMMENT: {a['content']}")
     output_lines.append("")
 
-out_path = r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\Paradoxo\Review\Carlos\v2\annotations_extracted.txt"
+out_path = r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\papers\survey-taxonomy\Review\Carlos\v2\annotations_extracted.txt"
 with open(out_path, "w", encoding="utf-8") as f:
     f.write("\n".join(output_lines))
 print(f"Saved to {out_path}")

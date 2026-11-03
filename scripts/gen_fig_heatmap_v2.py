@@ -1,4 +1,4 @@
-"""Generate Rank × LR heatmap figure using matplotlib.
+﻿"""Generate Rank × LR heatmap figure using matplotlib.
 Green = high retention (good), Red = low retention (bad).
 """
 import numpy as np
@@ -13,7 +13,7 @@ plt.rcParams.update({
     'axes.linewidth': 0.8,
 })
 
-FIG_DIR = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\Paradoxo\llm-knowledge-collapse (paper)\v2\figs")
+FIG_DIR = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\papers\survey-taxonomy\llm-knowledge-collapse (paper)\v2\figs")
 FIG_DIR.mkdir(exist_ok=True, parents=True)
 
 # Data from rank_lr_matrix experiment (Qwen 2.5 1.5B, K0=78, Gen5, seed 15)

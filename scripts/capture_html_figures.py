@@ -1,8 +1,8 @@
-"""Recapture HTML figures at 4x device scale for print quality (450+ DPI)."""
+﻿"""Recapture HTML figures at 4x device scale for print quality (450+ DPI)."""
 from playwright.sync_api import sync_playwright
 from pathlib import Path
 
-FIGS = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\Paradoxo\llm-knowledge-collapse (paper)\v2\figs")
+FIGS = Path(r"G:\Lab\Labcity\LLM\Artigo\Paradoxo - springer\papers\survey-taxonomy\llm-knowledge-collapse (paper)\v2\figs")
 
 figures = [
     ("fig1_overview.html", "fig1_overview.png", 1400),
