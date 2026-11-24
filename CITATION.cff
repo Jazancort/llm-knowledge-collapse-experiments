@@ -1,0 +1,41 @@
+cff-version: 1.2.0
+message: "If you use this codebase, please cite the associated paper below."
+type: software
+title: "LLM Knowledge Collapse Experiments"
+version: "0.1.0"
+license: MIT
+repository-code: "https://github.com/Jazancort/llm-knowledge-collapse-experiments"
+authors:
+  - family-names: "Azancort Neto"
+    given-names: "Julio Leite"
+    orcid: "https://orcid.org/0000-0003-2866-5445"
+    affiliation: "Institute of Technology, Federal University of Pará (UFPA)"
+  - family-names: "Teixeira"
+    given-names: "Carlos André de Mattos"
+    orcid: "https://orcid.org/0000-0003-1902-4347"
+    affiliation: "Institute of Technology, Federal University of Pará (UFPA); iSACI"
+  - family-names: "de Carvalho"
+    given-names: "André Carlos Ponce de Leon Ferreira"
+    orcid: "https://orcid.org/0000-0002-1907-5913"
+    affiliation: "Institute of Mathematics and Computer Sciences (ICMC), University of São Paulo (USP)"
+  - family-names: "Francês"
+    given-names: "Carlos Renato Lisboa"
+    orcid: "https://orcid.org/0000-0003-0305-7662"
+    affiliation: "Institute of Technology, Federal University of Pará (UFPA)"
+preferred-citation:
+  type: article
+  title: "Effective Training Pressure Gates Recursive Knowledge Degradation in LLMs: A Multi-Axis Dose-Response Study"
+  authors:
+    - family-names: "Azancort Neto"
+      given-names: "Julio Leite"
+      orcid: "https://orcid.org/0000-0003-2866-5445"
+    - family-names: "Teixeira"
+      given-names: "Carlos André de Mattos"
+      orcid: "https://orcid.org/0000-0003-1902-4347"
+    - family-names: "de Carvalho"
+      given-names: "André Carlos Ponce de Leon Ferreira"
+      orcid: "https://orcid.org/0000-0002-1907-5913"
+    - family-names: "Francês"
+      given-names: "Carlos Renato Lisboa"
+      orcid: "https://orcid.org/0000-0003-0305-7662"
+  year: 2026
